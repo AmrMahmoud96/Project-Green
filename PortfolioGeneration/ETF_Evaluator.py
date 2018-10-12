@@ -1,0 +1,1 @@
+#Used to compare and evaluate ETFs with respect to chosen indicies
