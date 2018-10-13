@@ -1,5 +1,50 @@
 {% extends 'base.html' %}
- 
 {% block container %}
-<p>Join us</p>
+<html>
+     
+        <body>
+              <h1 class="center title">Tell us about yourself</h1>
+          <div class="container login-container">
+            <br>
+            <form>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="inputFirstName" placeholder="First Name">
+                </div>
+                <div class="form-group">
+                        <input type="text" class="form-control" id="inputLastName" placeholder="Last Name">
+                    </div>
+                    <div class="form-group">
+                            <input type="number" class="form-control" id="inputAge" placeholder="Age">
+                        </div>
+                  <div class="form-group">
+                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                  </div>
+                  <div class="form-group">
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                  </div>
+                  <button type="submit" class="btn basecolorbtn">Submit</button>
+                </form>
+            {% if error %}
+              <p class="error"><strong>Error:</strong> {{ error }}
+            {% endif %}
+          </div>
+          <div class="center join-link">
+          <a href={{url_for('login')}}><u class="basecolortext">Already a member? Log in now.</u></a>
+        </div>
+          </body>
+        
+      </html>
+      <style type="text/css">
+          .login-container{
+              border:1px solid black;
+              padding: 15px !important;
+              border-radius: 5px;
+              width: 80%;
+          }
+          .join-link{
+              margin-top: 10px;
+          }
+          </style>
+
 {% endblock %}
