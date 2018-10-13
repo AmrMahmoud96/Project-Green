@@ -12,22 +12,40 @@
       .samplebtn{
           margin-left:250px;
       }
+      .joinbtn{
+        width:80px;
+        height:40px;
+        background: transparent;
+        border-color: #F37649;
+        color:#F37649;
+        margin:0 auto;
+        border-radius: 25px;
+      }
+      .joinbtn:hover{
+        background: #F37649;
+        color:white;
+      }
+      .center{
+        text-align: center;
+      }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Navbar</a>
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="./static/images/LogoV3.png" width="50" height="50" class="d-inline-block align-top" alt="">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav">
-            <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
-            <a class="nav-item nav-link" href="#">Features</a>
-            <a class="nav-item nav-link" href="#">Pricing</a>
-            <a class="nav-item nav-link disabled" href="#">Disabled</a>
+          <div class="navbar-nav ml-auto center">
+            <a class="nav-item navbar-text nav-link active" href="#">About<span class="sr-only">(current)</span></a>
+            <a class="nav-item navbar-text  nav-link" href="#">Contact Us</a>
+            <a class="nav-item navbar-text  nav-link" href="#">Log in</a>
+            <button type="button" class="btn joinbtn">Join Us</button>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Dropdown link
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
