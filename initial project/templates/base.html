@@ -12,6 +12,13 @@
       .samplebtn{
           margin-left:250px;
       }
+      .basecolorbtn{
+        background:#F37649;
+        color: white;
+      }
+      .basecolortext{
+        color:#F37649;
+      }
       .joinbtn{
         width:80px;
         height:40px;
@@ -41,10 +48,10 @@
             {% if values != None %}
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
-                  <a class="nav-item navbar-text nav-link active" href="/about">About<span class="sr-only">(current)</span></a>
-                  <a class="nav-item navbar-text  nav-link" href="#">Contact Us</a>
-                  <a class="nav-item navbar-text  nav-link" href="#">Log in</a>
-                  <button type="button" class="btn joinbtn">Join Us</button>
+                  <a class="nav-item navbar-text nav-link active" href={{url_for('about')}}>About<span class="sr-only">(current)</span></a>
+                  <a class="nav-item navbar-text  nav-link" href={{url_for('contactus')}}>Contact Us</a>
+                  <a class="nav-item navbar-text  nav-link" href={{url_for('login')}}>Log in</a>
+                  <a href={{url_for('joinus')}}><button type="button" class="btn joinbtn">Join Us</button></a>
                 </div>
               </div>
             {% else %}
@@ -67,9 +74,7 @@
             {% endif %}
         
       </nav>
-      <div class="container">
       {% block container %}{% endblock %}
-    </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
   <script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
