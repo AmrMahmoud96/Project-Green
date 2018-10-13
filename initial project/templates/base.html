@@ -38,24 +38,34 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav ml-auto center">
-            <a class="nav-item navbar-text nav-link active" href="#">About<span class="sr-only">(current)</span></a>
-            <a class="nav-item navbar-text  nav-link" href="#">Contact Us</a>
-            <a class="nav-item navbar-text  nav-link" href="#">Log in</a>
-            <button type="button" class="btn joinbtn">Join Us</button>
-            <li class="nav-item dropdown">
-                <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Dropdown link
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
+            {% if values != None %}
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ml-auto center">
+                  <a class="nav-item navbar-text nav-link active" href="#">About<span class="sr-only">(current)</span></a>
+                  <a class="nav-item navbar-text  nav-link" href="#">Contact Us</a>
+                  <a class="nav-item navbar-text  nav-link" href="#">Log in</a>
+                  <button type="button" class="btn joinbtn">Join Us</button>
                 </div>
-            </li>
-          </div>
-        </div>
+              </div>
+            {% else %}
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ml-auto center">
+                  <a class="nav-item navbar-text nav-link active" href="#">Functions<span class="sr-only">(current)</span></a>
+                  <a class="nav-item navbar-text  nav-link" href="#">About</a>
+                  <a class="nav-item navbar-text  nav-link" href="#">Contact Us</a>
+                  <li class="nav-item dropdown">
+                      <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Amr Mahmoud
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="#">View Profile</a>
+                        <a class="dropdown-item" href="#">Sign Out</a>
+                      </div>
+                  </li>
+                </div>
+              </div>
+            {% endif %}
+        
       </nav>
       <div class="container">
       {% block container %}{% endblock %}
