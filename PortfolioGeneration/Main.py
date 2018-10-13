@@ -15,21 +15,21 @@ class portfolio:
         self.firstday = positions.index.values[0]
         self.lastday = positions.index.values[-1]
         self.calculate_rets()
+        self.portfolio_metrics()
         
     def portfolio_metrics(self):
-        self.cagr = 0
-        self.vol = 0
-        self.sharpe = 0
+        self.exp_ret = ((1+self.returns.mean())**252)-1
+        self.vol = self.returns.std()*np.sqrt(252)
+        self.sharpe = self.exp_ret/self.vol
         self.maxdd = 0
-        self.cumul_ret = 0 
+        #self.cumul_ret = 0 
     
     def calculate_rets(self):
         '''calculate portfolio returns based on positions'''
-        self.returns = self.positions*Returns[self.assets]
-        self.returns = self.returns.dropna()
-        #self.returns = pd.DataFrame()
-        #for i in positions.columns:
-            #self.returns[i] = self.positions[i]*Returns[i]
+        rets = self.positions*Returns[self.assets]
+        rets = rets.dropna()
+        self.returns = rets.sum(axis=1)
+        self.returns.name = self.name
         
     def plot_rets(self, startdate, enddate):
         '''plot cumulative returns from start to end date'''
@@ -50,13 +50,26 @@ class portfolio:
         plt.tight_layout()
         plt.show()            
 
-def compare_portfolios(portfolios):
-    return
+def compare_portfolios(portfolios,startdate,enddate):
+    cumul_rets = pd.DataFrame()
+    for port in portfolios:
+        temp_rets =  (1+port[(port.index>=startdate) & (port.index<=enddate)]).cumprod()-1
+        cumul_rets = pd.concat([cumul_rets, temp_rets], axis=1, sort=True)     
+    
+    ax = cumul_rets.plot()
+    plt.xlabel('Date')
+    plt.ylabel('Return (%)')
+    plt.title('Portfolio Compairison')  
+    #format y-axis as percentage
+    vals = ax.get_yticks()
+    ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])     
+    plt.tight_layout()
+    plt.show()                    
 
 def load_data(fname, Prices):
     '''load in historical prices'''
     ticker = fname[0:-4]
-    data = pd.read_csv("Data/" + fname)
+    data = pd.read_csv("Data/ETF/" + fname)
     data.set_index('Date', inplace=True)
     data = data[["Adj Close"]]
     data.columns = [ticker]
@@ -81,10 +94,10 @@ def Trend_Strategy(Prices):
     
     SMA = Prices.rolling(window=rolling_window).mean()
     
-    #plot SMA
-    ax = Prices.plot()
-    SMA.plot(ax=ax)
-    plt.show()
+    ##plot SMA
+    #ax = Prices.plot()
+    #SMA.plot(ax=ax)
+    #plt.show()
     
     #determine positions
     for day in SMA.index:
@@ -106,7 +119,7 @@ if __name__ == "__main__":
     #load prices and calculate returns
     Prices = pd.DataFrame()
     
-    for fname in os.listdir("Data"):
+    for fname in os.listdir("Data/ETF"):
         Prices = load_data(fname,Prices)
     
     Returns = Prices.pct_change() 
@@ -134,21 +147,21 @@ if __name__ == "__main__":
     #ax2.set_ylabel('SPY data')
     #plt.show()
     
-    #plot cumulative returns
-    startdate = datetime(2016,1,1)
-    enddate = datetime.now()
-    overlapping_rets = Returns[(Returns.index>=startdate) & (Returns.index<=enddate)]  
-    overlapping_rets.dropna(how='any',inplace=True)
-    Cumul_Returns = (1+overlapping_rets).cumprod()-1
-    ax = Cumul_Returns.plot()
-    plt.xlabel('Date')
-    plt.ylabel('Return (%)')
-    plt.title('Cumulative Returns')  
-    #format y-axis as percentage
-    vals = ax.get_yticks()
-    ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])          
-    plt.tight_layout()
-    plt.show()    
+    ##plot cumulative returns
+    #startdate = datetime(2016,1,1)
+    #enddate = datetime.now()
+    #overlapping_rets = Returns[(Returns.index>=startdate) & (Returns.index<=enddate)]  
+    #overlapping_rets.dropna(how='any',inplace=True)
+    #Cumul_Returns = (1+overlapping_rets).cumprod()-1
+    #ax = Cumul_Returns.plot()
+    #plt.xlabel('Date')
+    #plt.ylabel('Return (%)')
+    #plt.title('Cumulative Returns')   
+    ##format y-axis as percentage
+    #vals = ax.get_yticks()
+    #ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])          
+    #plt.tight_layout()
+    #plt.show()    
     
     
     ############################################################################
@@ -157,10 +170,18 @@ if __name__ == "__main__":
     #testing trend following strategy
     trend_following_pos  = Trend_Strategy(Prices[['SPY']])
     
+    #S&P500
+    SP500_pos = EW_positions(Prices[['SPY']])
+    
     #equal weight postions
-    ew_pos = EW_positions(Prices[['SPY']])
+    EW_pos = EW_positions(Prices[['SPY','TIP','VNQ','BND']])
     
     #initialize a portfolio
-    Trend_Port1 = portfolio("TF","Trend following test porfolio",trend_following_pos)
-    EW_Port = portfolio("EW","EW portfolio",ew_pos)
+    TF_Port = portfolio("TF","Trend following test porfolio",trend_following_pos)
+    SP500_Port = portfolio("S&P500","Just S&P500",SP500_pos)
+    EW_Port = portfolio("EW","Equal weight portfolio",EW_pos)
+    
+    compare_portfolios([SP500_Port.returns,TF_Port.returns,EW_Port.returns],datetime(2007,5,1),datetime.now())
+    
     print("Done!")
+    
