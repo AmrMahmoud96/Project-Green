@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 app = Flask(__name__)
 
 
@@ -12,7 +12,9 @@ def chart():
     labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
     values = [10, 9, 8, 7, 6, 4, 7, 8]
     return render_template('chart.html', values=values, labels=labels, legend=legend)
- 
+@app.errorhandler(404)
+def page_not_found(error):
+	return render_template('notfound.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
