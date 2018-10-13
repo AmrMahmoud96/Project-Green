@@ -7,20 +7,51 @@ import os
 
 class portfolio:
     
-    def __init__(self, assets, descrip, positions):
-        self.assets = assets
+    def __init__(self, name, descrip, positions):
+        self.assets = list(positions)
+        self.name = name
         self.descrip = descrip
-        self.postions = positions
+        self.positions = positions
+        self.firstday = positions.index.values[0]
+        self.lastday = positions.index.values[-1]
+        self.calculate_rets()
         
     def portfolio_metrics(self):
         self.cagr = 0
         self.vol = 0
         self.sharpe = 0
-        self.maxdd
+        self.maxdd = 0
+        self.cumul_ret = 0 
     
     def calculate_rets(self):
         '''calculate portfolio returns based on positions'''
+        self.returns = self.positions*Returns[self.assets]
+        self.returns = self.returns.dropna()
+        #self.returns = pd.DataFrame()
+        #for i in positions.columns:
+            #self.returns[i] = self.positions[i]*Returns[i]
         
+    def plot_rets(self, startdate, enddate):
+        '''plot cumulative returns from start to end date'''
+        if not startdate:
+            startdate = self.firstday
+        if not enddate:
+            enddate = self.lastday
+            
+        print('Plotting...')
+        cumul_rets = (1+self.returns[(self.returns.index>=startdate) & (self.returns.index<=enddate)]).cumprod()-1
+        ax = cumul_rets.plot()
+        plt.xlabel('Date')
+        plt.ylabel('Return (%)')
+        plt.title('Cumulative Returns of ' + self.name +" Portfolio")  
+        #format y-axis as percentage
+        vals = ax.get_yticks()
+        ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])          
+        plt.tight_layout()
+        plt.show()            
+
+def compare_portfolios(portfolios):
+    return
 
 def load_data(fname, Prices):
     '''load in historical prices'''
@@ -31,6 +62,16 @@ def load_data(fname, Prices):
     data.columns = [ticker]
     data.index = pd.to_datetime(data.index)    
     Prices = pd.concat([Prices, data], axis=1, sort=True)
+    return Prices
+    
+    
+def EW_positions(Prices):
+    '''determine positions in equal weight portfolio'''
+    Prices = Prices.dropna(how='any')
+    ew = 1/len(list(Prices))
+    #set all postions to ew
+    Prices[:] = ew
+    
     return Prices
     
 def Trend_Strategy(Prices):
@@ -53,7 +94,7 @@ def Trend_Strategy(Prices):
             else:
                 positions.loc[day,asset] = 0
     
-    return positions.shift(1).dropna(how='all')
+    return positions.shift(1).dropna(how='any')
     
 if __name__ == "__main__":
     print("Started...")
@@ -116,6 +157,10 @@ if __name__ == "__main__":
     #testing trend following strategy
     trend_following_pos  = Trend_Strategy(Prices[['SPY']])
     
+    #equal weight postions
+    ew_pos = EW_positions(Prices[['SPY']])
+    
     #initialize a portfolio
-    test_port1 = portfolio(['SPY'],"Trend following test porfolio",trend_following_pos)
+    Trend_Port1 = portfolio("TF","Trend following test porfolio",trend_following_pos)
+    EW_Port = portfolio("EW","EW portfolio",ew_pos)
     print("Done!")
