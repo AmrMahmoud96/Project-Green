@@ -46,14 +46,14 @@
   <body>
     <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">
-            <img src="./static/images/Logo" width="50" height="50" class="d-inline-block align-top" alt="">
-            <img src="./static/images/text.png" width="125" height="50" class="d-inline-block logo-text" alt="">
+            <img src="./static/images/logo" width="50" height="50" class="d-inline-block align-top" alt="">
+            <img src="./static/images/logo2" width="200" height="50" class="d-inline-block logo-text" alt="">
         
           </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-            {% if values != None %}
+            {% if values == None %}
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
                   <a class="nav-item navbar-text nav-link active" href={{url_for('about')}}>About<span class="sr-only">(current)</span></a>
@@ -66,8 +66,8 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
                   <a class="nav-item navbar-text nav-link active" href="#">Functions<span class="sr-only">(current)</span></a>
-                  <a class="nav-item navbar-text  nav-link" href="{{url_for(template_test)}}">About</a>
-                  <a class="nav-item navbar-text  nav-link" href="#">Contact Us</a>
+                  <a class="nav-item navbar-text  nav-link" href="{{url_for('about')}}">About</a>
+                  <a class="nav-item navbar-text  nav-link" href="{{url_for('contactus')}}">Contact Us</a>
                   <li class="nav-item dropdown">
                       <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Amr Mahmoud
