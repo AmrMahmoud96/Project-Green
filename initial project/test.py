@@ -1,9 +1,17 @@
-from flask import Flask, render_template, url_for,request, flash
-from forms import ContactForm
+from flask import Flask, render_template, url_for,request, flash, session,redirect
+from forms import ContactForm, RegisterForm
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
+from flask_pymongo import PyMongo
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+
+app.config['MONGO_DBNAME'] = 'alphadb'
+app.config['MONGO_URI'] = 'mongodb://localhost:27017/myDB'
+
+mongo = PyMongo(app)
+
 Bootstrap(app)
 
 app.secret_key = 'this@is!the~secret-Code1221'
@@ -23,8 +31,16 @@ def template_test():
 
 @app.route("/about")
 def about():
+    print(session)
     return render_template("about.html")
-@app.route("/contactus",methods=['GET', 'POST'])
+
+@app.route('/logout')
+def logout():
+    session['name'] = None
+    session['logged_in'] = None
+    return redirect(url_for('about'))
+    
+@app.route("/contactus", methods=['GET', 'POST'])
 def contactus():
     form = ContactForm()
     if request.method == 'POST':
@@ -43,13 +59,36 @@ def contactus():
         return render_template('contactus.html', form=form)
 
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        users = mongo.db.users
+        login_user = users.find_one({'email' : request.form['email']})
+
+        if login_user:
+            if check_password_hash(login_user['password'], request.form['password']):
+                session['name'] = login_user['firstName'] + ' '+ login_user['lastName']
+                session['logged_in']= True
+                return redirect(url_for('about'))
+        return render_template("login.html", error="Invalid Email/Password.")
     return render_template("login.html")
 
-@app.route("/joinus")
+@app.route("/joinus", methods=['GET', 'POST'])
 def joinus():
-    return render_template("joinus.html")
+    form = RegisterForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            users = mongo.db.users
+            existing_user = users.find_one({'email' : request.form['email']})
+            if existing_user is None:
+                hashpass = generate_password_hash(form.password.data, method='sha256')
+                users.insert({'firstName' : request.form['firstName'].capitalize(),'lastName' : request.form['lastName'].capitalize(),'dob' : request.form['dob'],'email' : request.form['email'], 'password' : hashpass})
+                session['name'] = request.form['firstName'] + ' '+ request.form['lastName']
+                session['logged_in'] = True
+                return redirect(url_for('about'))
+            return render_template("joinus.html",form=form,existing=True)
+        return render_template("joinus.html",form=form)
+    return render_template("joinus.html",form=form)
 
 @app.route("/forgotpass")
 def forgotpass():
