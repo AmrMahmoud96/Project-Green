@@ -1,7 +1,10 @@
 from flask import Flask, render_template, url_for,request, flash
 from forms import ContactForm
 from flask_mail import Mail,Message
+from flask_bootstrap import Bootstrap
+
 app = Flask(__name__)
+Bootstrap(app)
 
 app.secret_key = 'this@is!the~secret-Code1221'
 

@@ -10,7 +10,7 @@
     <style type="text/css">
       .container {
         max-width: 500px;
-        padding-top: 100px;
+        padding: 15px;
       }
       .samplebtn{
           margin-left:250px;
@@ -60,8 +60,8 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
                   <a class="nav-item navbar-text nav-link active" href={{url_for('about')}}>About<span class="sr-only">(current)</span></a>
-                  <a class="nav-item navbar-text  nav-link" href={{url_for('contactus')}}>Contact Us</a>
-                  <a class="nav-item navbar-text  nav-link" href={{url_for('login')}}>Log in</a>
+                  <a class="nav-item navbar-text  nav-link active" href={{url_for('contactus')}}>Contact Us</a>
+                  <a class="nav-item navbar-text  nav-link active" href={{url_for('login')}}>Log in</a>
                   <a href={{url_for('joinus')}}><button type="button" class="btn joinbtn">Join Us</button></a>
                 </div>
               </div>
