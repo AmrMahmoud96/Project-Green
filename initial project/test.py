@@ -60,6 +60,18 @@ def contactus():
     elif request.method == 'GET':
         return render_template('contactus.html', form=form)
 
+@app.route("/home")
+def home():
+    if session['logged_in']==None:
+        return redirect(url_for('login'))
+    elif session['fillQuestions']==True:
+        return redirect(url_for('questions'))
+    return render_template('home.html')
+
+@app.route("/questions")
+def questions():
+    questions = [{'qid':'1','optiona': 'option a', 'optionb':'option b'},{'qid':'2','optiona': 'THis is a super long test option to find out how it would look', 'optionb':'option b1'},{'qid':'3','optiona': 'option a2', 'optionb':'option b2'}]
+    return render_template('questions.html',questions=questions)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -70,8 +82,10 @@ def login():
         if login_user:
             if check_password_hash(login_user['password'], request.form['password']):
                 session['name'] = login_user['firstName'] + ' '+ login_user['lastName']
+                session['email'] = request.form['email']
                 session['logged_in']= True
-                return redirect(url_for('about'))
+                session['fillQuestions'] = login_user['fillQuestions']
+                return redirect(url_for('home'))
         return render_template("login.html", error="Invalid Email/Password.")
     return render_template("login.html")
 
@@ -84,10 +98,12 @@ def joinus():
             existing_user = users.find_one({'email' : request.form['email']})
             if existing_user is None:
                 hashpass = generate_password_hash(form.password.data, method='sha256')
-                users.insert({'firstName' : request.form['firstName'].capitalize(),'lastName' : request.form['lastName'].capitalize(),'dob' : request.form['dob'],'email' : request.form['email'], 'password' : hashpass})
+                users.insert({'firstName' : request.form['firstName'].capitalize(),'lastName' : request.form['lastName'].capitalize(),'dob' : request.form['dob'],'email' : request.form['email'], 'password' : hashpass,'fillQuestions':True})
                 session['name'] = request.form['firstName'] + ' '+ request.form['lastName']
+                session['email'] = request.form['email']
                 session['logged_in'] = True
-                return redirect(url_for('about'))
+                session['fillQuestions']=True
+                return redirect(url_for('questions'))
             return render_template("joinus.html",form=form,existing=True)
         return render_template("joinus.html",form=form)
     return render_template("joinus.html",form=form)
@@ -95,6 +111,20 @@ def joinus():
 @app.route("/forgotpass")
 def forgotpass():
     return render_template("forgotpass.html")
+
+@app.route('/check_questions', methods=['POST'])
+def check():
+    if request.method == 'POST':
+	    risk = request.get_json()
+    updateuserrisk(risk)
+    return ('', 200)
+
+def updateuserrisk(risk):
+    users = mongo.db.users
+    login_user = users.find_one({'email' : session['email']})
+    print(risk)
+    login_user['riskTol'] =risk['risk']
+    users.save(login_user)
 
 @app.route("/")
 def landingpage():
