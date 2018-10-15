@@ -26,12 +26,14 @@ mail = Mail()
 mail.init_app(app)
 
 @app.route("/simple_chart")
-def template_test():
-    return render_template('base.html', my_string="Wheeeee!", my_list=[0,1,2,3,4,5])
+def chart():
+    legend = 'Monthly Data'
+    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
+    values = [10, 9, 8, 7, 6, 4, 7, 8]
+    return render_template('chart.html', values=values, labels=labels, legend=legend)
 
 @app.route("/about")
 def about():
-    print(session)
     return render_template("about.html")
 
 @app.route('/logout')
@@ -94,13 +96,10 @@ def joinus():
 def forgotpass():
     return render_template("forgotpass.html")
 
-
 @app.route("/")
-def chart():
-    legend = 'Monthly Data'
-    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
-    values = [10, 9, 8, 7, 6, 4, 7, 8]
-    return render_template('about.html', values=values, labels=labels, legend=legend)
+def landingpage():
+    return render_template('about.html')
+
 @app.errorhandler(404)
 def page_not_found(error):
 	return render_template('notfound.html')
