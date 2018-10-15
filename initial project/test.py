@@ -120,7 +120,7 @@ def check():
     return ('', 200)
 
 def updateuserrisk(risk):
-    users = mongo.db.users
+    users = mongo.db['_Users']
     login_user = users.find_one({'email' : session['email']})
     print(risk)
     login_user['riskTol'] =risk['risk']
