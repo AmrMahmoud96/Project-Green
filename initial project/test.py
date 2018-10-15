@@ -128,6 +128,7 @@ def updateuserrisk(risk):
 
 @app.route("/")
 def landingpage():
+    
     return render_template('about.html')
 
 @app.errorhandler(404)
