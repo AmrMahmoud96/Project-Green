@@ -7,8 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-app.config['MONGO_DBNAME'] = 'alphadb'
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/myDB'
+app.config['MONGO_DBNAME'] = 'AlphaFactory'
+app.config['MONGO_URI'] = 'mongodb://Daniel_Kecman:M$FCapstone2018@alphafactory-shard-00-00-y7wfo.gcp.mongodb.net:27017,alphafactory-shard-00-01-y7wfo.gcp.mongodb.net:27017,alphafactory-shard-00-02-y7wfo.gcp.mongodb.net:27017/AlphaFactory?ssl=true&replicaSet=AlphaFactory-shard-0&authSource=admin&retryWrites=true'
 
 mongo = PyMongo(app)
 
@@ -64,7 +64,7 @@ def contactus():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        users = mongo.db.users
+        users = mongo.db['_Users']
         login_user = users.find_one({'email' : request.form['email']})
 
         if login_user:
@@ -80,7 +80,7 @@ def joinus():
     form = RegisterForm()
     if request.method == 'POST':
         if form.validate_on_submit():
-            users = mongo.db.users
+            users = mongo.db['_Users']
             existing_user = users.find_one({'email' : request.form['email']})
             if existing_user is None:
                 hashpass = generate_password_hash(form.password.data, method='sha256')
