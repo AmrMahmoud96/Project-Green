@@ -4,6 +4,8 @@
     <title>Alpha Factory</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <link rel="icon" 
       type="image/png" 
       href="./static/images/logo"/>
@@ -67,7 +69,7 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-            {% if session['logged_in'] == None %}
+            {% if session['logged_in'] == None and session['name']!= None%}
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
                   <a class="nav-item navbar-text nav-link active" href={{url_for('about')}}>About<span class="sr-only">(current)</span></a>
@@ -97,7 +99,5 @@
         
       </nav>
       {% block container %}{% endblock %}
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-  <script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-</body>
+  </body>
 </html>
