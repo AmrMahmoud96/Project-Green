@@ -3,6 +3,7 @@ import numpy as np
 from datetime import datetime
 import matplotlib.pyplot as plt
 import os
+import riskparity as erc_ver1
 
 
 class portfolio:
@@ -53,9 +54,14 @@ class portfolio:
 def compare_portfolios(portfolios,startdate,enddate):
     cumul_rets = pd.DataFrame()
     for port in portfolios:
-        temp_rets =  (1+port[(port.index>=startdate) & (port.index<=enddate)]).cumprod()-1
-        cumul_rets = pd.concat([cumul_rets, temp_rets], axis=1, sort=True)     
-    
+        temp_rets =  (1+port.returns[(port.returns.index>=startdate) & (port.returns.index<=enddate)]).cumprod()-1
+        cumul_rets = pd.concat([cumul_rets, temp_rets], axis=1, sort=True)
+        exp_ret = ((1+port.returns.mean())**252)-1
+        vol = port.returns.std()*np.sqrt(252)
+        print(port.name + "  (" + port.descrip + ")")
+        print("CAGR: %.3f%% \nVolatility: %.3f%% \nSharpe: %.3f" % (100*exp_ret, 100*vol, exp_ret/vol))
+        print("____________________________")
+            
     ax = cumul_rets.plot()
     plt.xlabel('Date')
     plt.ylabel('Return (%)')
@@ -86,6 +92,7 @@ def EW_positions(Prices):
     Prices[:] = ew
     
     return Prices
+    
     
 def Trend_Strategy(Prices):
     '''Determine postions based on trends of assets. If price is above 200 day SMA then long else no position'''
@@ -181,7 +188,8 @@ if __name__ == "__main__":
     SP500_Port = portfolio("S&P500","Just S&P500",SP500_pos)
     EW_Port = portfolio("EW","Equal weight portfolio",EW_pos)
     
-    compare_portfolios([SP500_Port.returns,TF_Port.returns,EW_Port.returns],datetime(2007,5,1),datetime.now())
+    compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     
+    weights = erc_ver1.get_weights(Returns.dropna(how='any'))
     print("Done!")
     
