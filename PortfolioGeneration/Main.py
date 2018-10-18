@@ -4,6 +4,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import os
 import riskparity as erc_ver1
+import riskparity2 as erc_ver2
 
 
 class portfolio:
@@ -22,8 +23,11 @@ class portfolio:
         self.exp_ret = ((1+self.returns.mean())**252)-1
         self.vol = self.returns.std()*np.sqrt(252)
         self.sharpe = self.exp_ret/self.vol
-        self.maxdd = 0
-        #self.cumul_ret = 0 
+        cum_returns = (1 + self.returns).cumprod()
+        self.dd = (1 - cum_returns.div(cum_returns.cummax()))*-1
+        self.maxdd = self.dd.min()
+        self.tot_ret = cum_returns.values[-1]-1
+        
     
     def calculate_rets(self):
         '''calculate portfolio returns based on positions'''
@@ -32,6 +36,23 @@ class portfolio:
         self.returns = rets.sum(axis=1)
         self.returns.name = self.name
         
+    def plot_dd(self,startdate,enddate):
+        '''plot drawdown plot'''
+        if not startdate:
+            startdate = self.firstday
+        if not enddate:
+            enddate = self.lastday        
+        ax = self.dd.plot()
+        plt.ylabel('Drawdown (%)')
+        plt.title('Underwater Chart - ' + self.name +" Portfolio")  
+        #format y-axis as percentage
+        vals = ax.get_yticks()
+        ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])          
+        plt.tight_layout()
+        plt.fill_between(self.dd.index,self.dd.values, alpha=0.8)
+        plt.show()          
+        
+    
     def plot_rets(self, startdate, enddate):
         '''plot cumulative returns from start to end date'''
         if not startdate:
@@ -44,12 +65,86 @@ class portfolio:
         ax = cumul_rets.plot()
         plt.xlabel('Date')
         plt.ylabel('Return (%)')
-        plt.title('Cumulative Returns of ' + self.name +" Portfolio")  
+        plt.title('Cumulative Returns - ' + self.name +" Portfolio")  
         #format y-axis as percentage
         vals = ax.get_yticks()
         ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])          
         plt.tight_layout()
         plt.show()            
+        
+    def plot_combo(self, startdate, enddate):
+        if not startdate:
+            startdate = self.firstday
+        if not enddate:
+            enddate = self.lastday        
+        cum_returns = (1 + self.returns).cumprod()-1
+        fig = plt.figure()
+        ax1 = fig.add_subplot(211)
+        ax1.plot(cum_returns)
+        ax2 = fig.add_subplot(212)
+        ax2.plot(self.dd)
+        plt.show()
+        
+    def tearsheet(self,startdate,enddate):
+        cum_returns = (1 + self.returns).cumprod()-1
+        plt.rcParams["figure.figsize"] = (8.5,11)            
+        ax1 = plt.subplot2grid((10, 3), (0, 0), colspan=3,rowspan=3)
+        ax1.plot(cum_returns)
+        ax1.set_ylabel('Return (%)')
+        ax1.set_title("Portfolio Tearsheet: " + self.name,y=1.1)  
+        ax1.margins(x=0,y=0)
+        #format y-axis as percentage
+        vals = ax1.get_yticks()
+        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])                
+        
+        
+        ax2 = plt.subplot2grid((10, 3), (3, 0), colspan=3,rowspan=2)
+        ax2.plot(self.dd)
+        ax2.margins(x=0,y=0)
+        #format y-axis as percentage
+        vals = ax2.get_yticks()
+        ax2.set_yticklabels(['{:,.0%}'.format(x) for x in vals])                
+        ax2.set_ylabel('Drawdown (%)')
+        #ax2.set_title('Drawdown')          
+        ax2.fill_between(self.dd.index,self.dd.values, alpha=0.5)
+        
+        ax4 = plt.subplot2grid((10, 3), (5, 0), rowspan=2, colspan=1)
+        
+        ax4.text(1, 8.5, 'Total Return:', fontsize=9)
+        ax4.text(9 , 8.5, '{:.2%}'.format(self.tot_ret), horizontalalignment='right', fontsize=9)   
+        ax4.text(1, 7.0, 'CAGR:', fontsize=9)
+        ax4.text(9 , 7.0, '{:.2%}'.format(self.exp_ret), horizontalalignment='right', fontsize=9)
+        ax4.text(1, 5.5, 'Annual Volatility:', fontsize=9)
+        ax4.text(9 , 5.5, '{:.2%}'.format(self.vol), horizontalalignment='right', fontsize=9)   
+        ax4.text(1, 4.0, 'Sharpe:', fontsize=9)
+        ax4.text(9 , 4.0, '{:.2f}'.format(self.sharpe), horizontalalignment='right', fontsize=9)
+        ax4.text(1, 2.5, 'Max Drawdown:', fontsize=9)
+        ax4.text(9 , 2.5, '{:.2%}'.format(self.maxdd), horizontalalignment='right', fontsize=9)    
+        ax4.text(1, 1, 'Sortino:', fontsize=9)
+        ax4.text(9 , 1, 'N/A', horizontalalignment='right', fontsize=9)        
+        
+        
+        
+        ax4.set_title('Statistics',fontsize=11)
+        ax4.grid(False)
+        ax4.spines['top'].set_linewidth(1.0)
+        ax4.spines['bottom'].set_linewidth(1.0)
+        ax4.spines['right'].set_visible(False)
+        ax4.spines['left'].set_visible(False)
+        ax4.get_yaxis().set_visible(False)
+        ax4.get_xaxis().set_visible(False)
+        ax4.set_ylabel('')
+        ax4.set_xlabel('')
+
+        ax4.axis([0, 10, 0, 10])        
+        
+        
+        ax6= plt.subplot2grid((10, 3), (5, 1), rowspan=2, colspan=1)
+        ax7 = plt.subplot2grid((10, 3), (5, 2), rowspan=2, colspan=1)
+        ax5 = plt.subplot2grid((10, 3), (7, 0), rowspan=3, colspan=3)
+        plt.tight_layout()
+        plt.show()
+        plt.rcParams["figure.figsize"] = (12,7)
 
 def compare_portfolios(portfolios,startdate,enddate):
     cumul_rets = pd.DataFrame()
@@ -119,7 +214,7 @@ def Trend_Strategy(Prices):
 if __name__ == "__main__":
     print("Started...")
     #plotting styles
-    plt.style.use('ggplot')
+    #plt.style.use('ggplot')
     plt.rcParams["figure.figsize"] = (12,7)    
     
     
@@ -190,6 +285,7 @@ if __name__ == "__main__":
     
     compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     
-    weights = erc_ver1.get_weights(Returns.dropna(how='any'))
+    weights_1 = erc_ver1.get_weights(Returns.dropna(how='any'))
+    weights_2 = erc_ver2.get_weights(Returns.dropna(how='any'))
     print("Done!")
     

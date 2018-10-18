@@ -1,5 +1,6 @@
 from __future__ import division
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 from numpy.linalg import inv,pinv
 from scipy.optimize import minimize
@@ -36,8 +37,15 @@ def total_weight_constraint(x):
 def long_only_constraint(x):
     return x
 
-x_t = [0.25, 0.25, 0.25, 0.25] # your risk budget percent of total portfolio risk (equal risk)
-cons = ({'type': 'eq', 'fun': total_weight_constraint},
-{'type': 'ineq', 'fun': long_only_constraint})
-res= minimize(risk_budget_objective, w0, args=[V,x_t], method='SLSQP',constraints=cons, options={'disp': True})
-w_rb = np.asmatrix(res.x)
+def get_weights(returns):
+    #x_t = [0.25, 0.25, 0.25, 0.25] # your risk budget percent of total portfolio risk (equal risk)
+    x_t = [1 / returns.shape[1]] * returns.shape[1]
+    V = returns.cov().values
+    w0 = [1 / returns.shape[1]] * returns.shape[1]
+    cons = ({'type': 'eq', 'fun': total_weight_constraint},
+    {'type': 'ineq', 'fun': long_only_constraint})
+    res= minimize(risk_budget_objective, w0, args=[V,x_t], method='SLSQP',constraints=cons, options={'disp': True},tol=1e-10)
+    # Convert the weights to a pandas Series
+    weights = pd.Series(res.x, index=returns.columns, name='weight')
+    return weights
+        

@@ -89,7 +89,7 @@ def _get_risk_parity_weights(covariances, assets_risk_budget, initial_weights):
 def get_weights(returns):
 
     # We calculate the covariance matrix
-    covariances = returns.iloc[1:, :].cov().values
+    covariances = returns.cov().values
 
     # The desired contribution of each asset to the portfolio risk: we want all
     # asset to contribute equally
