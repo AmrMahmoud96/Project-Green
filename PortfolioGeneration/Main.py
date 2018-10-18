@@ -14,8 +14,8 @@ class portfolio:
         self.name = name
         self.descrip = descrip
         self.positions = positions
-        self.firstday = positions.index.values[0]
-        self.lastday = positions.index.values[-1]
+        self.firstday = positions.index[0]
+        self.lastday = positions.index[-1]
         self.calculate_rets()
         self.portfolio_metrics()
         
@@ -104,7 +104,7 @@ class portfolio:
         ax2.fill_between(self.dd.index,self.dd.values, alpha=0.5,color='red')
         
         #Table 1: Basic Statitics
-        ax4 = plt.subplot2grid((10, 3), (5, 0), rowspan=2, colspan=1)
+        ax4 = plt.subplot2grid((10, 3), (7, 0), rowspan=2, colspan=1)
         ax4.text(0.5, 8.5, 'Total Return:', fontsize=9)
         ax4.text(9.5 , 8.5, '{:.2%}'.format(self.tot_ret), horizontalalignment='right', fontsize=9)   
         ax4.text(0.5, 7.0, 'CAGR:', fontsize=9)
@@ -120,8 +120,8 @@ class portfolio:
         
         ax4.set_title('Statistics',fontsize=11)
         ax4.grid(False)
-        ax4.spines['top'].set_linewidth(1.0)
-        ax4.spines['bottom'].set_linewidth(1.0)
+        ax4.spines['top'].set_linewidth(0.75)
+        ax4.spines['bottom'].set_linewidth(0.75)
         ax4.spines['right'].set_visible(False)
         ax4.spines['left'].set_visible(False)
         ax4.get_yaxis().set_visible(False)
@@ -130,12 +130,38 @@ class portfolio:
         ax4.set_xlabel('')
         ax4.axis([0, 10, 0, 10])        
         
+        #Table 2: Basic Info
+        ax6= plt.subplot2grid((10, 3), (7, 1), rowspan=2, colspan=1)
+        ax6.text(0.5, 8.5, 'Placeholder:', fontsize=9)
+        ax6.text(9.5 , 8.5, 'N/A', horizontalalignment='right', fontsize=9)   
+        ax6.text(0.5, 7.0, 'Start Date:', fontsize=9)
+        ax6.text(9.5 , 7.0, self.firstday.date(), horizontalalignment='right', fontsize=9)
+        ax6.text(0.5, 5.5, 'End Date:', fontsize=9)
+        ax6.text(9.5 , 5.5, self.lastday.date(), horizontalalignment='right', fontsize=9)   
+        ax6.text(0.5, 4.0, 'Placeholder:', fontsize=9)
+        ax6.text(9.5 , 4.0, 'N/A', horizontalalignment='right', fontsize=9)
+        ax6.text(0.5, 2.5, 'Placeholder:', fontsize=9)
+        ax6.text(9.5 , 2.5, 'N/A', horizontalalignment='right', fontsize=9)    
+        ax6.text(0.5, 1, 'Placeholder', fontsize=9)
+        ax6.text(9.5, 1, 'N/A', horizontalalignment='right', fontsize=9)        
         
-        ax6= plt.subplot2grid((10, 3), (5, 1), rowspan=2, colspan=1)
-        ax7 = plt.subplot2grid((10, 3), (5, 2), rowspan=2, colspan=1)
+        ax6.set_title('Basic Info',fontsize=11)
+        ax6.grid(False)
+        ax6.spines['top'].set_linewidth(0.75)
+        ax6.spines['bottom'].set_linewidth(0.75)
+        ax6.spines['right'].set_visible(False)
+        ax6.spines['left'].set_visible(False)
+        ax6.get_yaxis().set_visible(False)
+        ax6.get_xaxis().set_visible(False)
+        ax6.set_ylabel('')
+        ax6.set_xlabel('')
+        ax6.axis([0, 10, 0, 10])    
+        
+        #Table 3
+        ax7 = plt.subplot2grid((10, 3), (7, 2), rowspan=2, colspan=1)
         
         #Positioning Chart
-        ax5 = plt.subplot2grid((10, 3), (7, 0), rowspan=2, colspan=3)
+        ax5 = plt.subplot2grid((10, 3), (5, 0), rowspan=2, colspan=3)
         ax5.stackplot(self.positions.index,self.positions.T,labels = self.positions.columns,alpha=0.9)
         ax5.margins(x=0,y=0)
         ax5.legend(loc='upper left')
@@ -148,12 +174,12 @@ class portfolio:
         #generate plot
         plt.tight_layout()
 
-        #plt.show()
+        plt.show()
         
         #save tearsheet
-        plt.subplots_adjust(left=0.13, right=0.92, top=0.915)
-        plt.savefig('Tearsheet.png')
-        plt.savefig('Tearsheet.pdf')
+        #plt.subplots_adjust(left=0.13, right=0.92, top=0.915)
+        #plt.savefig('Tearsheet.png')
+        #plt.savefig('Tearsheet.pdf')
         
         #reset figsize to standard
         plt.rcParams["figure.figsize"] = (12,7)
@@ -200,6 +226,24 @@ def EW_positions(Prices):
     
     return Prices
     
+def EW_TF_positions(Prices):
+    '''determine postions in equal weight portfolio with trend following overlay'''
+    Prices = Prices.dropna(how='any')
+    ew = 1/len((Prices.columns))
+    rolling_window = 200
+    positions = pd.DataFrame(columns = Prices.columns)
+    SMA = Prices.rolling(window=rolling_window).mean()
+    SMA = SMA.iloc[200:]
+    #determine positions
+    for day in SMA.index:
+        for asset in SMA.columns:
+            if Prices.loc[day,asset] >= SMA.loc[day,asset]:
+                positions.loc[day,asset] = 1
+            else:
+                positions.loc[day,asset] = 0
+    
+    return positions.shift(1).dropna(how='any')*ew
+        
     
 def Trend_Strategy(Prices):
     '''Determine postions based on trends of assets. If price is above 200 day SMA then long else no position'''
@@ -207,7 +251,7 @@ def Trend_Strategy(Prices):
     positions = pd.DataFrame(columns = Prices.columns)
     
     SMA = Prices.rolling(window=rolling_window).mean()
-    
+    SMA.dropna(inplace=True)
     ##plot SMA
     #ax = Prices.plot()
     #SMA.plot(ax=ax)
@@ -290,11 +334,14 @@ if __name__ == "__main__":
     #equal weight postions
     EW_pos = EW_positions(Prices[['SPY','TIP','VNQ','BND']])
     
+    #equal weight with trend following overlay
+    EW_TF_pos = EW_TF_positions(Prices[['SPY','TIP','VNQ','BND']])
+    
     #initialize a portfolio
     TF_Port = portfolio("TF","Trend following test porfolio",trend_following_pos)
     SP500_Port = portfolio("S&P500","Just S&P500",SP500_pos)
     EW_Port = portfolio("EW","Equal weight portfolio",EW_pos)
-    
+    EW_TF_Port = portfolio("EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos)
     #compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     
     #weights_1 = erc_ver1.get_weights(Returns.dropna(how='any'))
