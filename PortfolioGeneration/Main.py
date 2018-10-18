@@ -70,46 +70,41 @@ class portfolio:
         vals = ax.get_yticks()
         ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])          
         plt.tight_layout()
-        plt.show()            
-        
-    def plot_combo(self, startdate, enddate):
-        if not startdate:
-            startdate = self.firstday
-        if not enddate:
-            enddate = self.lastday        
-        cum_returns = (1 + self.returns).cumprod()-1
-        fig = plt.figure()
-        ax1 = fig.add_subplot(211)
-        ax1.plot(cum_returns)
-        ax2 = fig.add_subplot(212)
-        ax2.plot(self.dd)
-        plt.show()
-        
+        plt.show()                    
+   
     def tearsheet(self,startdate,enddate):
+        #8.5X11 so that can fit on standard page
+        plt.rcParams["figure.figsize"] = (8.5,11)  
+        
+        #Chart 1: Cumulative Return
         cum_returns = (1 + self.returns).cumprod()-1
-        plt.rcParams["figure.figsize"] = (8.5,11)            
+        
         ax1 = plt.subplot2grid((10, 3), (0, 0), colspan=3,rowspan=3)
         ax1.plot(cum_returns)
+        
         ax1.set_ylabel('Return (%)')
         ax1.set_title("Portfolio Tearsheet: " + self.name,y=1.1)  
         ax1.margins(x=0,y=0)
+        ax1.grid(linestyle='-')
         #format y-axis as percentage
         vals = ax1.get_yticks()
         ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])                
+        ax1.set_facecolor('#F0F0F0')
         
-        
+        #Chart 2: Drawdown Graph
         ax2 = plt.subplot2grid((10, 3), (3, 0), colspan=3,rowspan=2)
-        ax2.plot(self.dd)
+        ax2.plot(self.dd, color = 'red')
         ax2.margins(x=0,y=0)
+        ax2.grid(linestyle='-')
         #format y-axis as percentage
         vals = ax2.get_yticks()
         ax2.set_yticklabels(['{:,.0%}'.format(x) for x in vals])                
         ax2.set_ylabel('Drawdown (%)')
-        #ax2.set_title('Drawdown')          
-        ax2.fill_between(self.dd.index,self.dd.values, alpha=0.5)
+        ax2.set_facecolor('#F0F0F0')          
+        ax2.fill_between(self.dd.index,self.dd.values, alpha=0.5,color='red')
         
+        #Table 1: Basic Statitics
         ax4 = plt.subplot2grid((10, 3), (5, 0), rowspan=2, colspan=1)
-        
         ax4.text(1, 8.5, 'Total Return:', fontsize=9)
         ax4.text(9 , 8.5, '{:.2%}'.format(self.tot_ret), horizontalalignment='right', fontsize=9)   
         ax4.text(1, 7.0, 'CAGR:', fontsize=9)
@@ -123,8 +118,6 @@ class portfolio:
         ax4.text(1, 1, 'Sortino:', fontsize=9)
         ax4.text(9 , 1, 'N/A', horizontalalignment='right', fontsize=9)        
         
-        
-        
         ax4.set_title('Statistics',fontsize=11)
         ax4.grid(False)
         ax4.spines['top'].set_linewidth(1.0)
@@ -135,15 +128,24 @@ class portfolio:
         ax4.get_xaxis().set_visible(False)
         ax4.set_ylabel('')
         ax4.set_xlabel('')
-
         ax4.axis([0, 10, 0, 10])        
         
         
         ax6= plt.subplot2grid((10, 3), (5, 1), rowspan=2, colspan=1)
         ax7 = plt.subplot2grid((10, 3), (5, 2), rowspan=2, colspan=1)
-        ax5 = plt.subplot2grid((10, 3), (7, 0), rowspan=3, colspan=3)
+        ax5 = plt.subplot2grid((10, 3), (7, 0), rowspan=2, colspan=3)
+        
+        #generate plot
         plt.tight_layout()
-        plt.show()
+
+        #plt.show()
+        
+        #save tearsheet
+        plt.subplots_adjust(left=0.13, right=0.95, top=0.915)
+        plt.savefig('Tearsheet.png')
+        plt.savefig('Tearsheet.pdf')
+        
+        #reset figsize to standard
         plt.rcParams["figure.figsize"] = (12,7)
 
 def compare_portfolios(portfolios,startdate,enddate):
@@ -165,7 +167,7 @@ def compare_portfolios(portfolios,startdate,enddate):
     vals = ax.get_yticks()
     ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])     
     plt.tight_layout()
-    plt.show()                    
+    plt.show()  
 
 def load_data(fname, Prices):
     '''load in historical prices'''
