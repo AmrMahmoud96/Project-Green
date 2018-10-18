@@ -105,18 +105,18 @@ class portfolio:
         
         #Table 1: Basic Statitics
         ax4 = plt.subplot2grid((10, 3), (5, 0), rowspan=2, colspan=1)
-        ax4.text(1, 8.5, 'Total Return:', fontsize=9)
-        ax4.text(9 , 8.5, '{:.2%}'.format(self.tot_ret), horizontalalignment='right', fontsize=9)   
-        ax4.text(1, 7.0, 'CAGR:', fontsize=9)
-        ax4.text(9 , 7.0, '{:.2%}'.format(self.exp_ret), horizontalalignment='right', fontsize=9)
-        ax4.text(1, 5.5, 'Annual Volatility:', fontsize=9)
-        ax4.text(9 , 5.5, '{:.2%}'.format(self.vol), horizontalalignment='right', fontsize=9)   
-        ax4.text(1, 4.0, 'Sharpe:', fontsize=9)
-        ax4.text(9 , 4.0, '{:.2f}'.format(self.sharpe), horizontalalignment='right', fontsize=9)
-        ax4.text(1, 2.5, 'Max Drawdown:', fontsize=9)
-        ax4.text(9 , 2.5, '{:.2%}'.format(self.maxdd), horizontalalignment='right', fontsize=9)    
-        ax4.text(1, 1, 'Sortino:', fontsize=9)
-        ax4.text(9 , 1, 'N/A', horizontalalignment='right', fontsize=9)        
+        ax4.text(0.5, 8.5, 'Total Return:', fontsize=9)
+        ax4.text(9.5 , 8.5, '{:.2%}'.format(self.tot_ret), horizontalalignment='right', fontsize=9)   
+        ax4.text(0.5, 7.0, 'CAGR:', fontsize=9)
+        ax4.text(9.5 , 7.0, '{:.2%}'.format(self.exp_ret), horizontalalignment='right', fontsize=9)
+        ax4.text(0.5, 5.5, 'Annual Volatility:', fontsize=9)
+        ax4.text(9.5 , 5.5, '{:.2%}'.format(self.vol), horizontalalignment='right', fontsize=9)   
+        ax4.text(0.5, 4.0, 'Sharpe:', fontsize=9)
+        ax4.text(9.5 , 4.0, '{:.2f}'.format(self.sharpe), horizontalalignment='right', fontsize=9)
+        ax4.text(0.5, 2.5, 'Max Drawdown:', fontsize=9)
+        ax4.text(9.5 , 2.5, '{:.2%}'.format(self.maxdd), horizontalalignment='right', fontsize=9)    
+        ax4.text(0.5, 1, 'Sortino:', fontsize=9)
+        ax4.text(9.5, 1, 'N/A', horizontalalignment='right', fontsize=9)        
         
         ax4.set_title('Statistics',fontsize=11)
         ax4.grid(False)
@@ -133,7 +133,17 @@ class portfolio:
         
         ax6= plt.subplot2grid((10, 3), (5, 1), rowspan=2, colspan=1)
         ax7 = plt.subplot2grid((10, 3), (5, 2), rowspan=2, colspan=1)
+        
+        #Positioning Chart
         ax5 = plt.subplot2grid((10, 3), (7, 0), rowspan=2, colspan=3)
+        ax5.stackplot(self.positions.index,self.positions.T,labels = self.positions.columns,alpha=0.9)
+        ax5.margins(x=0,y=0)
+        ax5.legend(loc='upper left')
+        ax5.set_ylabel('Weight (%)')
+        #format y-axis as percentage
+        vals = ax5.get_yticks()
+        ax5.set_yticklabels(['{:,.0%}'.format(x) for x in vals])          
+        ax5.set_facecolor('#F0F0F0')          
         
         #generate plot
         plt.tight_layout()
@@ -141,7 +151,7 @@ class portfolio:
         #plt.show()
         
         #save tearsheet
-        plt.subplots_adjust(left=0.13, right=0.95, top=0.915)
+        plt.subplots_adjust(left=0.13, right=0.92, top=0.915)
         plt.savefig('Tearsheet.png')
         plt.savefig('Tearsheet.pdf')
         
@@ -285,9 +295,9 @@ if __name__ == "__main__":
     SP500_Port = portfolio("S&P500","Just S&P500",SP500_pos)
     EW_Port = portfolio("EW","Equal weight portfolio",EW_pos)
     
-    compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
+    #compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     
-    weights_1 = erc_ver1.get_weights(Returns.dropna(how='any'))
-    weights_2 = erc_ver2.get_weights(Returns.dropna(how='any'))
+    #weights_1 = erc_ver1.get_weights(Returns.dropna(how='any'))
+    #weights_2 = erc_ver2.get_weights(Returns.dropna(how='any'))
     print("Done!")
     
