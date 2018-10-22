@@ -6,6 +6,7 @@ import os
 import riskparity as erc_ver1
 import riskparity2 as erc_ver2
 import seaborn as sns
+from matplotlib.ticker import FuncFormatter
 
 
 class portfolio:
@@ -93,9 +94,10 @@ class portfolio:
         ax1.margins(x=0,y=0)
         ax1.grid(linestyle='--',alpha=0.5,linewidth=0.7)
         #format y-axis as percentage
-        vals = ax1.get_yticks()
-        ax1.set_yticklabels(['{:,.0%}'.format(k) for k in vals],fontsize=9)
+        ax1.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y))) 
+        
         ax1.set_facecolor('#F0F0F0')
+        
         
         #Chart 2: Drawdown Graph
         ax2 = plt.subplot2grid((11, 3), (3, 0), colspan=3,rowspan=2)
@@ -103,8 +105,7 @@ class portfolio:
         ax2.margins(x=0,y=0)
         ax2.grid(linestyle='--',alpha=0.5,linewidth=0.7)
         #format y-axis as percentage
-        vals = ax2.get_yticks()
-        ax2.set_yticklabels(['{:,.0%}'.format(x) for x in vals],fontsize=9)                
+        ax2.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y)))              
         ax2.set_ylabel('Drawdown (%)',fontsize=9)
         ax2.set_facecolor('#F0F0F0')          
         ax2.fill_between(self.dd.index,self.dd.values, alpha=0.5,color='red')
@@ -168,8 +169,7 @@ class portfolio:
         yearly_rets = self.yearly_returns(self.returns)
         ax7.bar(yearly_rets.index.strftime("%Y"),yearly_rets.values,width=0.8,alpha=0.8)
         #format y-axis as percentage
-        vals = ax7.get_yticks()
-        ax7.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+        ax7.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y))) 
         ax7.set_xticklabels(yearly_rets.index.strftime("%Y"),rotation = '90',horizontalalignment='center',fontsize=8)
         #ax7.xaxis_date()
         ax7.set_facecolor('#F0F0F0')           
@@ -186,26 +186,26 @@ class portfolio:
         ax5.set_ylabel('Weight (%)',fontsize=9)
         
         #format y-axis as percentage
-        vals = ax5.get_yticks()
-        ax5.set_yticklabels(['{:,.0%}'.format(x) for x in vals],fontsize=9)          
+        ax5.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y)))        
         ax5.set_facecolor('#F0F0F0')          
         
         #Heatmap
         ax10 = plt.subplot2grid((11, 3), (9, 0), rowspan=2, colspan=2)
         assets_rets = self.yearly_returns(self.asset_returns_wgt)
-        sns.heatmap(assets_rets.T, linewidth=0.5, ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.2%', cmap='RdYlGn',annot_kws={"size": 8})
+        sns.heatmap(assets_rets.T, linewidth=0.5, ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 8})
         ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0)
         ax10.tick_params(axis='both',bottom=False,left=False)
         ax10.set_xlabel('')
+        ax10.set_title('Performance Attribution',fontsize=10)
         #generate plot
         plt.tight_layout()
 
-        plt.show()
+        #plt.show()
         
         #save tearsheet
-        #plt.subplots_adjust(left=0.115, right=0.95, top=0.93)
+        plt.subplots_adjust(left=0.115, right=0.95, top=0.93)
         #plt.savefig('Tearsheet.png')
-        #plt.savefig('Tearsheet.pdf')
+        plt.savefig('Tearsheet.pdf')
         
         #reset figsize to standard
         plt.rcParams["figure.figsize"] = (12,7)
