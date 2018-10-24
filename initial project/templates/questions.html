@@ -19,9 +19,10 @@
         width: 90%;
         margin-left: 5%;
     }
-    test{
+    /*
+    .test{
         background: red;
-    }
+    }*/
     label > div > input{ /* HIDE RADIO */
         visibility: hidden; /* Makes input not-clickable */
         position: absolute; /* Remove input from document flow */
@@ -41,6 +42,7 @@
       </style>
 <div class="container center">
     <h2 class="title center">Questions</h2>
+    <h4 class="center">Select the option that best suits your personality.</h4>
     {% for question in questions%}
     <div class="question">
    <label>
@@ -118,7 +120,8 @@ $('.option').click(function () {
           data: JSON.stringify({risk}),
           dataType: "json"
           });
-
+          
+        window.location.href +="/finished";
         } else {
             $($questions.get(currentQuestion)).fadeIn();
         }

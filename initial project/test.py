@@ -68,11 +68,6 @@ def home():
         return redirect(url_for('questions'))
     return render_template('home.html')
 
-@app.route("/questions")
-def questions():
-    questions = [{'qid':'1','optiona': 'option a', 'optionb':'option b'},{'qid':'2','optiona': 'THis is a super long test option to find out how it would look', 'optionb':'option b1'},{'qid':'3','optiona': 'option a2', 'optionb':'option b2'}]
-    return render_template('questions.html',questions=questions)
-
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -112,12 +107,26 @@ def joinus():
 def forgotpass():
     return render_template("forgotpass.html")
 
+@app.route("/questions")
+def questions():
+    questionDB = mongo.db['_Questions']
+    questions=[]
+    for q in questionDB.find({}):
+        questions.append(q)
+    #questions = [{'qid':'1','optiona': 'option a', 'optionb':'option b'},{'qid':'2','optiona': 'THis is a super long test option to find out how it would look', 'optionb':'option b1'},{'qid':'3','optiona': 'option a2', 'optionb':'option b2'}]
+    return render_template('questions.html',questions=questions)
+
 @app.route('/check_questions', methods=['POST'])
 def check():
     if request.method == 'POST':
 	    risk = request.get_json()
     updateuserrisk(risk)
     return ('', 200)
+
+@app.route('/questions/finished')
+def finished():
+    #print(finished)
+    return redirect(url_for('home'))
 
 def updateuserrisk(risk):
     users = mongo.db['_Users']
@@ -128,7 +137,9 @@ def updateuserrisk(risk):
 
 @app.route("/")
 def landingpage():
-    
+    if session.get('logged_in') == None:
+        session['name'] = None
+        session['logged_in'] = None
     return render_template('about.html')
 
 @app.errorhandler(404)
