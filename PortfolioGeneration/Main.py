@@ -7,13 +7,16 @@ import riskparity as erc_ver1
 import riskparity2 as erc_ver2
 import seaborn as sns
 from matplotlib.ticker import FuncFormatter
+from pandas.tseries.offsets import MonthEnd
+from datetime import timedelta
 
 
 class portfolio:
     
-    def __init__(self, name, descrip, positions):
+    def __init__(self, name, code, descrip, positions):
         self.assets = list(positions)
         self.name = name
+        self.code = code
         self.descrip = descrip
         self.positions = positions
         self.firstday = positions.index[0]
@@ -37,7 +40,7 @@ class portfolio:
         rets = rets.dropna()
         self.asset_returns_wgt = rets
         self.returns = rets.sum(axis=1)
-        self.returns.name = self.name
+        self.returns.name = self.code
         
     def plot_dd(self,startdate,enddate):
         '''plot drawdown plot'''
@@ -92,11 +95,14 @@ class portfolio:
         ax1.set_ylabel('Return (%)',fontsize=9)
         ax1.set_title("Portfolio Tearsheet: " + self.name,y=1.1)  
         ax1.margins(x=0,y=0)
+        y_range_add = (cum_returns.max()-cum_returns.min())/20
+        ax1.set_ylim(cum_returns.min()-y_range_add,cum_returns.max()+y_range_add)
         ax1.grid(linestyle='--',alpha=0.5,linewidth=0.7)
+        ax1.set_axisbelow(True)
         #format y-axis as percentage
         ax1.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y))) 
         
-        ax1.set_facecolor('#F0F0F0')
+        ax1.set_facecolor('#FFFFFF')
         
         
         #Chart 2: Drawdown Graph
@@ -105,13 +111,15 @@ class portfolio:
         ax2.margins(x=0,y=0)
         ax2.grid(linestyle='--',alpha=0.5,linewidth=0.7)
         #format y-axis as percentage
-        ax2.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y)))              
+        ax2.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y)))  
+        ax2.set_ylim(self.dd.min()*1.05,0)
         ax2.set_ylabel('Drawdown (%)',fontsize=9)
-        ax2.set_facecolor('#F0F0F0')          
+        ax2.set_facecolor('#FFFFFF')          
+        ax2.set_axisbelow(True)
         ax2.fill_between(self.dd.index,self.dd.values, alpha=0.5,color='red')
         
         #Table 1: Basic Statitics
-        ax4 = plt.subplot2grid((11, 3), (7, 0), rowspan=2, colspan=1)
+        ax4 = plt.subplot2grid((11, 3), (7, 1), rowspan=2, colspan=1)
         ax4.text(0.5, 8.5, 'Total Return:', fontsize=9)
         ax4.text(9.5 , 8.5, '{:.2%}'.format(self.tot_ret), horizontalalignment='right', fontsize=9)   
         ax4.text(0.5, 7.0, 'CAGR:', fontsize=9)
@@ -138,9 +146,9 @@ class portfolio:
         ax4.axis([0, 10, 0, 10])        
         
         #Table 2: Basic Info
-        ax6= plt.subplot2grid((11, 3), (7, 1), rowspan=2, colspan=1)
-        ax6.text(0.5, 8.5, 'Placeholder:', fontsize=9)
-        ax6.text(9.5 , 8.5, 'N/A', horizontalalignment='right', fontsize=9)   
+        ax6= plt.subplot2grid((11, 3), (7, 0), rowspan=2, colspan=1)
+        ax6.text(0.5, 8.5, 'Portfolio Code:', fontsize=9)
+        ax6.text(9.5 , 8.5, self.code, horizontalalignment='right', fontsize=9)   
         ax6.text(0.5, 7.0, 'Start Date:', fontsize=9)
         ax6.text(9.5 , 7.0, self.firstday.date(), horizontalalignment='right', fontsize=9)
         ax6.text(0.5, 5.5, 'End Date:', fontsize=9)
@@ -164,51 +172,81 @@ class portfolio:
         ax6.set_xlabel('')
         ax6.axis([0, 10, 0, 10])    
         
+        #Table 3: Basic Info
+        ax6= plt.subplot2grid((11, 3), (7, 2), rowspan=2, colspan=1)
+        ax6.text(0.5, 8.5, 'VaR:', fontsize=9)
+        ax6.text(9.5 , 8.5, 'N/A', horizontalalignment='right', fontsize=9)   
+        ax6.text(0.5, 7.0, 'CVaR:', fontsize=9)
+        ax6.text(9.5 , 7.0, 'N/A', horizontalalignment='right', fontsize=9)
+        ax6.text(0.5, 5.5, 'Placeholder:', fontsize=9)
+        ax6.text(9.5 , 5.5, 'N/A', horizontalalignment='right', fontsize=9)   
+        ax6.text(0.5, 4.0, 'Placeholder:', fontsize=9)
+        ax6.text(9.5 , 4.0, 'N/A', horizontalalignment='right', fontsize=9)
+        ax6.text(0.5, 2.5, 'Placeholder:', fontsize=9)
+        ax6.text(9.5 , 2.5, 'N/A', horizontalalignment='right', fontsize=9)    
+        ax6.text(0.5, 1, 'Placeholder', fontsize=9)
+        ax6.text(9.5, 1, 'N/A', horizontalalignment='right', fontsize=9)        
+        
+        ax6.set_title('Statistics #2',fontsize=10)
+        ax6.grid(False)
+        ax6.spines['top'].set_linewidth(0.75)
+        ax6.spines['bottom'].set_linewidth(0.75)
+        ax6.spines['right'].set_visible(False)
+        ax6.spines['left'].set_visible(False)
+        ax6.get_yaxis().set_visible(False)
+        ax6.get_xaxis().set_visible(False)
+        ax6.set_ylabel('')
+        ax6.set_xlabel('')
+        ax6.axis([0, 10, 0, 10])    
+                
+        
         #Table 3
-        ax7 = plt.subplot2grid((11, 3), (7, 2), rowspan=2, colspan=1)
+        ax7 = plt.subplot2grid((11, 3), (9, 2), rowspan=2, colspan=1)
         yearly_rets = self.yearly_returns(self.returns)
-        ax7.bar(yearly_rets.index.strftime("%Y"),yearly_rets.values,width=0.8,alpha=0.8)
+        ax7.bar(yearly_rets.index.strftime("%Y"),yearly_rets.values,width=0.8,alpha=1)
         #format y-axis as percentage
         ax7.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y))) 
-        ax7.set_xticklabels(yearly_rets.index.strftime("%Y"),rotation = '90',horizontalalignment='center',fontsize=8)
+        ax7.set_xticklabels(yearly_rets.index.strftime("%Y"),rotation = '70',horizontalalignment='center',fontsize=8)
         #ax7.xaxis_date()
-        ax7.set_facecolor('#F0F0F0')           
-        ax7.grid(linestyle='--',alpha=0.5,linewidth=0.5)
+        ax7.set_facecolor('#FFFFFF')
+        ax7.set_axisbelow(True)
+        ax7.grid(linestyle='--',alpha=0.5,linewidth=0.7)
         ax7.set_title('Yearly Returns (%)',fontsize=10)
         #ax7.plot(yearly_rets,type='bar')
         
         #Positioning Chart
         ax5 = plt.subplot2grid((11, 3), (5, 0), rowspan=2, colspan=3)
-        ax5.stackplot(self.positions.index,self.positions.T,labels = self.positions.columns,alpha=0.9)
-        #ax5.grid(linestyle='--',alpha=0.5,linewidth=0.7,axis='y')
+        ax5.stackplot(self.positions.index,self.positions.T,labels = self.positions.columns,alpha=1)
+        ax5.grid(linestyle='--',alpha=0.5,linewidth=0.7,axis='y')
+        ax5.set_axisbelow(True)
         ax5.margins(x=0,y=0)
-        ax5.legend(loc='upper left')
+        ax5.legend(loc=8,ncol=len(list(self.positions)),mode=None,bbox_to_anchor=(0., 1.02, 1., .102),fontsize=8,edgecolor="#FFFFFF")
         ax5.set_ylabel('Weight (%)',fontsize=9)
         
         #format y-axis as percentage
         ax5.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y)))        
-        ax5.set_facecolor('#F0F0F0')          
+        ax5.set_facecolor('#FFFFFF')          
         
         #Heatmap
         ax10 = plt.subplot2grid((11, 3), (9, 0), rowspan=2, colspan=2)
         assets_rets = self.yearly_returns(self.asset_returns_wgt)
-        sns.heatmap(assets_rets.T, linewidth=0.5, ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 8})
-        ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0)
+        sns.heatmap(assets_rets.T, linewidth=0.5, ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 7})
+        ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=8)
+        ax10.set_xticklabels(ax10.get_xticklabels(),fontsize=8)
         ax10.tick_params(axis='both',bottom=False,left=False)
         ax10.set_xlabel('')
         ax10.set_title('Performance Attribution',fontsize=10)
-        #generate plot
+        #generate plot    
         plt.tight_layout()
 
         #plt.show()
         
         #save tearsheet
-        plt.subplots_adjust(left=0.115, right=0.95, top=0.93)
-        #plt.savefig('Tearsheet.png')
+        plt.subplots_adjust(left=0.115, right=0.95, top=0.93,bottom=0.07)
         plt.savefig('Tearsheet.pdf')
         
         #reset figsize to standard
-        plt.rcParams["figure.figsize"] = (12,7)
+        plt.rcParams["figure.figsize"] = (12,7)        
 
 def compare_portfolios(portfolios,startdate,enddate):
     cumul_rets = pd.DataFrame()
@@ -261,6 +299,43 @@ def risk_parity_positions(Prices):
     return positions
 
 
+def risk_parity_generator(Prices,freq,TF=None, rolling_window=None):
+    '''generate positions for risk parity portfolio'''
+    Prices = Prices.dropna(how='any')
+    #get ERC weights
+    weights = erc_ver1.get_weights(Prices.pct_change().dropna(how='any'))
+    
+    #if trend following option selected
+    if TF:
+        positions = pd.DataFrame(columns = Prices.columns)
+        SMA = Prices.rolling(window=rolling_window).mean()
+        SMA = SMA.iloc[200:]
+        
+        day = SMA.index[0]
+        new_day = day
+        while day <= SMA.index[-1]:
+            if day in SMA.index:
+                if day >= new_day:
+                    for asset in SMA.columns:
+                        if Prices.loc[day,asset] >= SMA.loc[day,asset]:
+                            positions.loc[day,asset] = 1
+                        else:
+                            positions.loc[day,asset] = 0
+                    last_pos = positions.loc[day]
+                    new_day = day + pd.DateOffset(months=1)
+                    day = day + timedelta(days=1)
+                else:
+                    day = day + timedelta(days=1)
+                    positions.loc[day] = last_pos
+            else:
+                day = day + timedelta(days=1)
+        positions = positions.shift(1).dropna(how='any')*weights
+    
+    else:
+        positions = Prices.copy()
+        for asset in positions.columns:
+            positions[asset] = weights[asset]        
+    return positions
 
 def risk_parity_tf_positions(Prices):
     Prices = Prices.dropna(how='any')
@@ -276,6 +351,27 @@ def risk_parity_tf_positions(Prices):
             else:
                 positions.loc[day,asset] = 0
     return positions.shift(1).dropna(how='any')*weights
+
+def risk_parity_tf_positions_realloc(Prices):
+    Prices = Prices.dropna(how='any')
+    weights = erc_ver1.get_weights(Prices.pct_change().dropna(how='any'))
+    rolling_window = 200
+    positions = pd.DataFrame(columns = Prices.columns)
+    SMA = Prices.rolling(window=rolling_window).mean()
+    SMA = SMA.iloc[200:]    
+    for day in SMA.index:
+        for asset in SMA.columns:
+            if Prices.loc[day,asset] >= SMA.loc[day,asset]:
+                positions.loc[day,asset] = 1
+            else:
+                positions.loc[day,asset] = 0
+    positions = positions.shift(1).dropna(how='any')*weights
+    positions = realloc(positions)
+    return positions
+
+def realloc(positions):
+    positions = positions.loc[:,:].div(positions.sum(axis=1),axis=0)
+    return positions
 
 def EW_TF_positions(Prices):
     '''determine postions in equal weight portfolio with trend following overlay'''
@@ -324,6 +420,7 @@ if __name__ == "__main__":
     #plt.style.use('ggplot')
     plt.rcParams["figure.figsize"] = (12,7)    
     plt.rcParams.update({'font.size': 9})
+    plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#aec7e8','#ffbb78','#98df8a','#ff9896','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'])
     
     #load prices and calculate returns
     Prices = pd.DataFrame()
@@ -378,31 +475,44 @@ if __name__ == "__main__":
     #Determine Positions
     
     #testing trend following strategy
-    trend_following_pos  = Trend_Strategy(Prices[['SPY']])
+    #trend_following_pos  = Trend_Strategy(Prices[['SPY']])
+    #TF_Port = portfolio("Trend Following S&P500","TF","Trend following test porfolio",trend_following_pos)
     
     #S&P500
-    SP500_pos = EW_positions(Prices[['SPY']])
-    
+    #SP500_pos = EW_positions(Prices[['SPY']])
+    #SP500_Port = portfolio("S&P500","SP500","Just S&P500",SP500_pos)
+        
     #equal weight postions
-    EW_pos = EW_positions(Prices[['SPY','TIP','VNQ','BND']])
+    EW_pos = EW_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']])
+    EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
     
     #equal weight with trend following overlay
-    EW_TF_pos = EW_TF_positions(Prices[['SPY','TIP','VNQ','BND']])
+    EW_TF_pos = EW_TF_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']])
+    EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos)
     
     #risk parity weights
     RP_pos = risk_parity_positions(Prices[['SPY','TIP','VNQ','BND']])
+    RP_Port = portfolio("Static Risk Parity","RP","Risk parity portfolio with static weights",RP_pos)
     
     #risk pairty with trend following overlay
     RP_TF_pos = risk_parity_tf_positions(Prices[['SPY','TIP','VNQ','BND']])
+    RP_TF_Port = portfolio("Static Risk Parity with TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_TF_pos)
+    
+    #risk parity with trend following realloc overlay
+    RP_TF_RA_pos = risk_parity_tf_positions_realloc(Prices[['SPY','TIP','VNQ','BND']])
+    RP_TF_RA_Port = portfolio("Static Risk Parity with TF Realloc","RP_TF_RA","Risk parity portfolio with static weigths and trend following overlay that ensures full investment at all times",RP_TF_RA_pos)
+    
+    test = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
+    test_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",test)
     
     #initialize a portfolio
-    TF_Port = portfolio("TF","Trend following test porfolio",trend_following_pos)
-    SP500_Port = portfolio("S&P500","Just S&P500",SP500_pos)
-    EW_Port = portfolio("EW","Equal weight portfolio",EW_pos)
-    EW_TF_Port = portfolio("EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos)
-    RP_Port = portfolio("RP","Risk parity portfolio with static weights",RP_pos)
-    RP_TF_Port = portfolio("RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_TF_pos)
     
+
+    
+    
+    
+    
+
     #compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     
     #weights_1 = erc_ver1.get_weights(Returns.dropna(how='any'))
