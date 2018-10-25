@@ -118,10 +118,13 @@ $('.option').click(function () {
           url: "/check_questions",
           traditional: "true",
           data: JSON.stringify({risk}),
-          dataType: "json"
+          dataType: "json",
+          success: function(result){
+                //console.log(result)
+                window.location.href +="/finished";
+             }
           });
           
-        window.location.href +="/finished";
         } else {
             $($questions.get(currentQuestion)).fadeIn();
         }

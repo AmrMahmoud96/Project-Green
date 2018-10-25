@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for,request, flash, session,redirect
+from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify
 from forms import ContactForm, RegisterForm
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
@@ -77,9 +77,10 @@ def login():
         if login_user:
             if check_password_hash(login_user['password'], request.form['password']):
                 session['name'] = login_user['firstName'] + ' '+ login_user['lastName']
-                session['email'] = request.form['email']
+                session['email'] = login_user['email']
                 session['logged_in']= True
                 session['fillQuestions'] = login_user['fillQuestions']
+                session['riskTol'] = login_user.get('riskTol')
                 return redirect(url_for('home'))
         return render_template("login.html", error="Invalid Email/Password.")
     return render_template("login.html")
@@ -109,19 +110,21 @@ def forgotpass():
 
 @app.route("/questions")
 def questions():
-    questionDB = mongo.db['_Questions']
-    questions=[]
-    for q in questionDB.find({}):
-        questions.append(q)
-    #questions = [{'qid':'1','optiona': 'option a', 'optionb':'option b'},{'qid':'2','optiona': 'THis is a super long test option to find out how it would look', 'optionb':'option b1'},{'qid':'3','optiona': 'option a2', 'optionb':'option b2'}]
-    return render_template('questions.html',questions=questions)
+    print(session['fillQuestions'])
+    if session['fillQuestions'] == True:
+        questionDB = mongo.db['_Questions']
+        questions=[]
+        for q in questionDB.find({}):
+            questions.append(q)#questions = [{'qid':'1','optiona': 'option a', 'optionb':'option b'},{'qid':'2','optiona': 'THis is a super long test option to find out how it would look', 'optionb':'option b1'},{'qid':'3','optiona': 'option a2', 'optionb':'option b2'}]
+        return render_template('questions.html',questions=questions)
+    return redirect(url_for('home'))
 
 @app.route('/check_questions', methods=['POST'])
 def check():
     if request.method == 'POST':
 	    risk = request.get_json()
     updateuserrisk(risk)
-    return ('', 200)
+    return jsonify(success=True)
 
 @app.route('/questions/finished')
 def finished():
@@ -131,8 +134,10 @@ def finished():
 def updateuserrisk(risk):
     users = mongo.db['_Users']
     login_user = users.find_one({'email' : session['email']})
-    print(risk)
     login_user['riskTol'] =risk['risk']
+    session['riskTol'] = risk['risk']
+    login_user['fillQuestions']= False
+    session['fillQuestions']=False
     users.save(login_user)
 
 @app.route("/")
