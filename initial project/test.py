@@ -4,6 +4,7 @@ from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime,time
 
 app = Flask(__name__)
 
@@ -28,7 +29,9 @@ mail.init_app(app)
 @app.route("/simple_chart")
 def chart():
     legend = 'Monthly Data'
-    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
+    d = datetime.datetime.utcnow()
+    for_js = int(time.mktime(d.timetuple())) * 1000
+    labels = [for_js-900000,for_js-10000,for_js]
     values = [10, 9, 8, 7, 6, 4, 7, 8]
     return render_template('chart.html', values=values, labels=labels, legend=legend)
 
