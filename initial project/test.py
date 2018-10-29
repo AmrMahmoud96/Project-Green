@@ -145,7 +145,9 @@ def landingpage():
     if session.get('logged_in') == None:
         session['name'] = None
         session['logged_in'] = None
-    return render_template('about.html')
+        return render_template('about.html')
+    else:
+        return redirect(url_for('home'))
 
 @app.errorhandler(404)
 def page_not_found(error):
