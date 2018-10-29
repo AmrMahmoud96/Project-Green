@@ -281,14 +281,38 @@ def load_data(fname, Prices):
     return Prices
     
     
-def EW_positions(Prices):
+def EW_positions(Prices,rebal_freq='D'):
     '''determine positions in equal weight portfolio'''
     Prices = Prices.dropna(how='any')
-    ew = 1/len(list(Prices))
-    #set all postions to ew
-    Prices[:] = ew
-    
-    return Prices
+    assets = list(Prices)
+    ew = 1/len(assets)
+    if rebal_freq == 'D':
+        #set all postions to ew
+        Prices[:] = ew
+        positions = Prices
+    else:
+        positions = pd.DataFrame(columns = Prices.columns)
+        print('Monthly')
+        day = Prices.index[0]
+        new_day = day
+        while day <= Prices.index[-1]:
+            if day in Prices.index:
+                if day >= new_day:
+                    positions.loc[day] = ew
+                    last_pos = ew
+                    if rebal_freq == 'M':
+                        new_day = day + pd.DateOffset(months=1)
+                    if rebal_freq == 'Y':
+                        new_day = day + pd.DateOffset(years=1)
+                    day = day + timedelta(days=1)
+                else:
+                    positions.loc[day] = last_pos*(1+Returns[assets].loc[day])
+                    last_pos = positions.loc[day]                    
+                    day = day + timedelta(days=1)
+                    
+            else:
+                day = day + timedelta(days=1)            
+    return realloc(positions.shift(1).dropna(how='any'))
 
 def risk_parity_positions(Prices):
     Prices = Prices.dropna(how='any')
@@ -482,25 +506,29 @@ if __name__ == "__main__":
     #SP500_pos = EW_positions(Prices[['SPY']])
     #SP500_Port = portfolio("S&P500","SP500","Just S&P500",SP500_pos)
         
-    #equal weight postions
+    #equal weight positions
     EW_pos = EW_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']])
     EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
     
+    #equal weight positions rebalanced every 30 days
+    EW_M_pos = EW_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M')
+    EW_M_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_M_pos)
+    
     #equal weight with trend following overlay
-    EW_TF_pos = EW_TF_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']])
-    EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos)
+    #EW_TF_pos = EW_TF_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']])
+    #EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos)
     
     #risk parity weights
-    RP_pos = risk_parity_positions(Prices[['SPY','TIP','VNQ','BND']])
-    RP_Port = portfolio("Static Risk Parity","RP","Risk parity portfolio with static weights",RP_pos)
+    #RP_pos = risk_parity_positions(Prices[['SPY','TIP','VNQ','BND']])
+    #RP_Port = portfolio("Static Risk Parity","RP","Risk parity portfolio with static weights",RP_pos)
     
     #risk pairty with trend following overlay
-    RP_TF_pos = risk_parity_tf_positions(Prices[['SPY','TIP','VNQ','BND']])
-    RP_TF_Port = portfolio("Static Risk Parity with TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_TF_pos)
+    #RP_TF_pos = risk_parity_tf_positions(Prices[['SPY','TIP','VNQ','BND']])
+    #RP_TF_Port = portfolio("Static Risk Parity with TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_TF_pos)
     
     #risk parity with trend following realloc overlay
-    RP_TF_RA_pos = risk_parity_tf_positions_realloc(Prices[['SPY','TIP','VNQ','BND']])
-    RP_TF_RA_Port = portfolio("Static Risk Parity with TF Realloc","RP_TF_RA","Risk parity portfolio with static weigths and trend following overlay that ensures full investment at all times",RP_TF_RA_pos)
+    #RP_TF_RA_pos = risk_parity_tf_positions_realloc(Prices[['SPY','TIP','VNQ','BND']])
+    #RP_TF_RA_Port = portfolio("Static Risk Parity with TF Realloc","RP_TF_RA","Risk parity portfolio with static weigths and trend following overlay that ensures full investment at all times",RP_TF_RA_pos)
     
     test = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     test_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",test)
