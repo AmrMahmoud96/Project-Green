@@ -38,11 +38,21 @@
         cursor:pointer;
         border:2px solid transparent;
       }
-
+      .progress{
+          margin-top: 20px;
+          margin-bottom:20px;
+            
+      }
+      .progress-bar{
+        background:#F37649;
+      }
       </style>
 <div class="container center">
     <h2 class="title center">Questions</h2>
     <h4 class="center">Select the option that best suits your personality.</h4>
+    <div class="progress">
+        <div id = "prbar" class="progress-bar" role="progressbar"  style = "width:0" aria-valuenow="0" aria-valuemin="0" aria-valuemax= "100"></div>
+    </div>
     {% for question in questions%}
     <div class="question">
    <label>
@@ -107,6 +117,8 @@ $('.option').click(function () {
 
         //increment the current question by one
         currentQuestion = currentQuestion + 1;
+        valeur = (currentQuestion/totalQuestions )*100;
+        $('#prbar').css('width', valeur+'%').attr('aria-valuenow', valeur);
 
         //if there are no more questions do stuff
         if (currentQuestion == totalQuestions) {
@@ -138,6 +150,9 @@ if(currentQuestion>0){
 $($questions.get(currentQuestion)).fadeOut(function () {
 
    currentQuestion = currentQuestion - 1;
+
+        valeur = (currentQuestion/totalQuestions )*100;
+        $('#prbar').css('width', valeur+'%').attr('aria-valuenow', valeur);
     $($questions.get(currentQuestion)).fadeIn();
 
 });
