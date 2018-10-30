@@ -6,6 +6,7 @@ from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime,time
 
+riskDefnArr = ['risk averse','risky','very risky','too risky']
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'AlphaFactory'
@@ -31,7 +32,7 @@ def chart():
     legend = 'Monthly Data'
     d = datetime.datetime.utcnow()
     for_js = int(time.mktime(d.timetuple())) * 1000
-    labels = [for_js-900000,for_js-10000,for_js]
+    labels = [for_js-900000,for_js-100000,for_js]
     values = [10, 9, 8, 7, 6, 4, 7, 8]
     return render_template('chart.html', values=values, labels=labels, legend=legend)
 
@@ -42,9 +43,25 @@ def about():
 @app.route('/logout')
 def logout():
     session['name'] = None
+    session['email']=None
     session['logged_in'] = None
     return redirect(url_for('about'))
-    
+   
+@app.route('/profile')
+def profile():
+    if not checkLoggedIn():
+        return redirect(url_for('login'))
+    users = mongo.db['_Users']
+    profile = users.find_one({'email' : session['email']})
+    profile['risk'] = riskDefnArr[profile.get('riskTol')]
+    return render_template('profile.html',profile=profile) 
+def checkLoggedIn():
+    if session==None:
+        return False
+    elif session['logged_in']==None:
+        return False
+    return True
+
 @app.route("/contactus", methods=['GET', 'POST'])
 def contactus():
     form = ContactForm()
@@ -65,7 +82,7 @@ def contactus():
 
 @app.route("/home")
 def home():
-    if session['logged_in']==None:
+    if not checkLoggedIn():
         return redirect(url_for('login'))
     elif session['fillQuestions']==True:
         return redirect(url_for('questions'))
@@ -113,7 +130,8 @@ def forgotpass():
 
 @app.route("/questions")
 def questions():
-    print(session['fillQuestions'])
+    if not checkLoggedIn():
+        return redirect(url_for('login'))
     if session['fillQuestions'] == True:
         questionDB = mongo.db['_Questions']
         questions=[]
@@ -137,8 +155,8 @@ def finished():
 def updateuserrisk(risk):
     users = mongo.db['_Users']
     login_user = users.find_one({'email' : session['email']})
-    login_user['riskTol'] =risk['risk']
-    session['riskTol'] = risk['risk']
+    login_user['riskTol'] =int(risk['risk'])
+    session['riskTol'] = int(risk['risk'])
     login_user['fillQuestions']= False
     session['fillQuestions']=False
     users.save(login_user)

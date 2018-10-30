@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+ 
+{% block container %}
+<head>
+    <style type="text/css">
+    .profile-container{
+        max-width: 750px;
+        padding: 20px;
+        margin-top: 30px !important;
+        margin:0 auto;
+        border: 1px solid black;
+    }
+    .top-bar{
+        float: right;
+    }
+  </style>
+  </head>
+<div class="profile-container">
+    <div class="top-bar"><button class="btn basecolorbtn">Change Password</button> <button class="btn btn-primary">Edit</button></div>
+    <div class="user-info">
+        <p>Name: {{profile.firstName + " " + profile.lastName}}</p>
+        <p>Email: {{profile.email}}</p>
+        <p>Date of Birth: {{profile.dob}}</p>
+        <p>Risk Tolerance: {{profile.risk}}</p>
+    </div>
+</div>
+{% endblock %}

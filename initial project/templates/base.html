@@ -93,7 +93,7 @@
                         {{session['name']}}
                       </a>
                       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">View Profile</a>
+                        <a class="dropdown-item" href={{url_for('profile')}}>View Profile</a>
                         <a class="dropdown-item" href={{url_for('logout')}}>Sign Out</a>
                       </div>
                   </li>
