@@ -90,6 +90,8 @@ def home():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    if checkLoggedIn():
+        return redirect(url_for('home'))
     if request.method == 'POST':
         users = mongo.db['_Users']
         login_user = users.find_one({'email' : request.form['email']})
@@ -107,6 +109,8 @@ def login():
 
 @app.route("/joinus", methods=['GET', 'POST'])
 def joinus():
+    if checkLoggedIn():
+        return redirect(url_for('home'))
     form = RegisterForm()
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -126,6 +130,8 @@ def joinus():
 
 @app.route("/forgotpass")
 def forgotpass():
+    if checkLoggedIn():
+        return redirect(url_for('home'))
     return render_template("forgotpass.html")
 
 @app.route("/questions")
