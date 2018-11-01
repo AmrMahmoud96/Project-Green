@@ -52,9 +52,12 @@ def profile():
     if not checkLoggedIn():
         return redirect(url_for('login'))
     users = mongo.db['_Users']
+    userHistory = mongo.db['_User_History']
     profile = users.find_one({'email' : session['email']})
+    history = list(userHistory.find({'user':profile["_id"]}).limit(5))
     profile['risk'] = riskDefnArr[profile.get('riskTol')]
-    return render_template('profile.html',profile=profile) 
+    print(history)
+    return render_template('profile.html',profile=profile,history=history) 
 def checkLoggedIn():
     if session==None:
         return False

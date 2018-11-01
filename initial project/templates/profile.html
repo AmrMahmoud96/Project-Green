@@ -13,15 +13,72 @@
     .top-bar{
         float: right;
     }
+    .profBtnContainer{
+        margin-top:20px;
+    }
+    .prof-info-display{
+        display:flex;
+    }
+    .profileimg{
+        width:130px;
+        border-radius: 50%;
+    }
+    .prof-data{
+        margin-left:20px;
+    }
+    .user-history-table{
+        margin-top:20px;
+        padding: 5px;
+    }
   </style>
+  <!--  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+    <script >
+        $(document).ready(function () {
+          $('#user-history-table').DataTable({
+      "order": [[ 1, "desc" ]]
+    });
+});
+    </script>-->
   </head>
+
 <div class="profile-container">
-    <div class="top-bar"><button class="btn basecolorbtn">Change Password</button> <button class="btn btn-primary">Edit</button></div>
     <div class="user-info">
-        <p>Name: {{profile.firstName + " " + profile.lastName}}</p>
-        <p>Email: {{profile.email}}</p>
-        <p>Date of Birth: {{profile.dob}}</p>
-        <p>Risk Tolerance: {{profile.risk}}</p>
+        <div class="prof-info-display">
+                <img class="profileimg" src="/static/images/Avatar.png">
+                <div class="prof-data">
+                <p>Name: {{profile.firstName + " " + profile.lastName}}</p>
+                <p>Email: {{profile.email}}</p>
+                <p>Date of Birth: {{profile.dob}}</p>
+                <p>Risk Tolerance: {{profile.risk}}</p>
+            </div>
+        </div>
+        <div class="user-history-table">
+            <p>History</p>
+                <table class="table table-hover table-sm">
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Action</th>
+                            <th scope="col">Result</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(5) %}
+                                {% if history|length > i %}
+                                <tr>
+                                        <td>{{history[i].date}}</td>
+                                        <td><a href="#">{{history[i].action}}</a></td>
+                                        <td>{{history[i].result}}</td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                      </table>
+
+        </div>
     </div>
-</div>
+   </div>
+   <div class="profBtnContainer center"><button class="btn basecolorbtn" style="margin-right:10px;">Change Password</button> <button class="btn btn-primary">Edit Info</button></div>
+
 {% endblock %}
