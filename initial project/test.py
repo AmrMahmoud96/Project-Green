@@ -54,9 +54,8 @@ def profile():
     users = mongo.db['_Users']
     userHistory = mongo.db['_User_History']
     profile = users.find_one({'email' : session['email']})
-    history = list(userHistory.find({'user':profile["_id"]}).limit(5))
+    history = list(userHistory.find({'user':profile["_id"]}).limit(5).sort([("date", -1)]))
     profile['risk'] = riskDefnArr[profile.get('riskTol')]
-    print(history)
     return render_template('profile.html',profile=profile,history=history) 
 def checkLoggedIn():
     if session==None:

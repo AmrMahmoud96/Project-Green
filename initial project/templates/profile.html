@@ -30,6 +30,12 @@
         margin-top:20px;
         padding: 5px;
     }
+    .noinfo{
+        background: lightgray;
+    }
+    .noinfo:hover{
+        background: lightgray!important;
+    }
   </style>
   <!--  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
@@ -54,7 +60,7 @@
             </div>
         </div>
         <div class="user-history-table">
-            <p>History</p>
+            <h5>History</h5>
                 <table class="table table-hover table-sm">
                         <thead>
                           <tr>
@@ -64,7 +70,14 @@
                           </tr>
                         </thead>
                         <tbody>
-                            {% for i in range(5) %}
+                                {% if history|length == 0 %}
+                                <tr class="noinfo">
+                                        <td></td>
+                                        <td>No history to display</td>
+                                        <td></td>
+                                </tr>
+                                {% endif %}
+                                {% for i in range(5) %}
                                 {% if history|length > i %}
                                 <tr>
                                         <td>{{history[i].date}}</td>
