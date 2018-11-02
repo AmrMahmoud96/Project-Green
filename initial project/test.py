@@ -4,7 +4,9 @@ from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime,time
 
+riskDefnArr = ['risk averse','risky','very risky','too risky']
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'AlphaFactory'
@@ -28,7 +30,9 @@ mail.init_app(app)
 @app.route("/simple_chart")
 def chart():
     legend = 'Monthly Data'
-    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
+    d = datetime.datetime.utcnow()
+    for_js = int(time.mktime(d.timetuple())) * 1000
+    labels = [for_js-900000,for_js-100000,for_js]
     values = [10, 9, 8, 7, 6, 4, 7, 8]
     return render_template('chart.html', values=values, labels=labels, legend=legend)
 
@@ -39,9 +43,27 @@ def about():
 @app.route('/logout')
 def logout():
     session['name'] = None
+    session['email']=None
     session['logged_in'] = None
     return redirect(url_for('about'))
-    
+   
+@app.route('/profile')
+def profile():
+    if not checkLoggedIn():
+        return redirect(url_for('login'))
+    users = mongo.db['_Users']
+    userHistory = mongo.db['_User_History']
+    profile = users.find_one({'email' : session['email']})
+    history = list(userHistory.find({'user':profile["_id"]}).limit(5).sort([("date", -1)]))
+    profile['risk'] = riskDefnArr[profile.get('riskTol')]
+    return render_template('profile.html',profile=profile,history=history) 
+def checkLoggedIn():
+    if session==None:
+        return False
+    elif session['logged_in']==None:
+        return False
+    return True
+
 @app.route("/contactus", methods=['GET', 'POST'])
 def contactus():
     form = ContactForm()
@@ -62,7 +84,7 @@ def contactus():
 
 @app.route("/home")
 def home():
-    if session['logged_in']==None:
+    if not checkLoggedIn():
         return redirect(url_for('login'))
     elif session['fillQuestions']==True:
         return redirect(url_for('questions'))
@@ -70,6 +92,8 @@ def home():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    if checkLoggedIn():
+        return redirect(url_for('home'))
     if request.method == 'POST':
         users = mongo.db['_Users']
         login_user = users.find_one({'email' : request.form['email']})
@@ -87,6 +111,8 @@ def login():
 
 @app.route("/joinus", methods=['GET', 'POST'])
 def joinus():
+    if checkLoggedIn():
+        return redirect(url_for('home'))
     form = RegisterForm()
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -106,11 +132,14 @@ def joinus():
 
 @app.route("/forgotpass")
 def forgotpass():
+    if checkLoggedIn():
+        return redirect(url_for('home'))
     return render_template("forgotpass.html")
 
 @app.route("/questions")
 def questions():
-    print(session['fillQuestions'])
+    if not checkLoggedIn():
+        return redirect(url_for('login'))
     if session['fillQuestions'] == True:
         questionDB = mongo.db['_Questions']
         questions=[]
@@ -134,8 +163,8 @@ def finished():
 def updateuserrisk(risk):
     users = mongo.db['_Users']
     login_user = users.find_one({'email' : session['email']})
-    login_user['riskTol'] =risk['risk']
-    session['riskTol'] = risk['risk']
+    login_user['riskTol'] =int(risk['risk'])
+    session['riskTol'] = int(risk['risk'])
     login_user['fillQuestions']= False
     session['fillQuestions']=False
     users.save(login_user)
@@ -145,7 +174,9 @@ def landingpage():
     if session.get('logged_in') == None:
         session['name'] = None
         session['logged_in'] = None
-    return render_template('about.html')
+        return render_template('about.html')
+    else:
+        return redirect(url_for('home'))
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -1,5 +1,69 @@
 {% extends 'base.html' %}
  
 {% block container %}
-<p>about us</p>
+<style type="text/css">
+.class1{
+height:500px;
+background: #f8f9fa!important;
+}.class2{
+    height: 500px;
+    background: white!important;
+}
+.bg {
+    /* The image used */
+    background-image: url('/static/images/testimg.jpg') !important;
+    color: white;
+    width:100%;
+    height:100%;
+    display:inline-block;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.bg2 {
+    /* The image used */
+    background-image: url('/static/images/testimg2.jpg') !important;
+    color: white;
+    width:100%;
+    display:inline-block;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.about-content-container{
+padding: 20px;
+background: grey;
+color:white;
+height:400px;
+width: 50%;
+margin: 0 auto;
+margin-top:50px;
+margin-bottom: 50px;
+opacity: .8;
+}
+</style>
+
+<h1 class="title center">About Us</h1>
+<div>
+    <div  class="bg  center">
+        <div class="about-content-container">
+            <p>Content goes here</p>
+            <p>Long gone are the days of traditional financial advisors. Welcome to the world of Robo-Advisors!</p>
+        </div>
+    </div>
+    <div class="class2 center">
+       <p> Content goes here</p>
+    </div>
+    <div class="bg2 center">
+            <div class="about-content-container">
+                    <p>Content goes here</p>
+                    <p>Learn how you can start saving to achieve your goals today!</p>
+                </div>
+    </div>
+    <div class="class2 center">
+       <p> Content goes here</p>
+    </div>
+</div>
 {% endblock %}

@@ -13,27 +13,46 @@ from datetime import timedelta
 
 class portfolio:
     
-    def __init__(self, name, code, descrip, positions):
+    def __init__(self, name, code, descrip, positions,trend,rebal_freq,stat_dyn):
         self.assets = list(positions)
         self.name = name
         self.code = code
         self.descrip = descrip
         self.positions = positions
+        self.trend = trend
+        self.rebal = rebal_freq
+        self.wgt_method = stat_dyn
         self.firstday = positions.index[0]
         self.lastday = positions.index[-1]
         self.calculate_rets()
         self.portfolio_metrics()
         
+        
     def portfolio_metrics(self):
         self.exp_ret = ((1+self.returns.mean())**252)-1
         self.vol = self.returns.std()*np.sqrt(252)
         self.sharpe = self.exp_ret/self.vol
+        self.sortino = self.sortino_calc()
         cum_returns = (1 + self.returns).cumprod()
         self.dd = (1 - cum_returns.div(cum_returns.cummax()))*-1
         self.maxdd = self.dd.min()
         self.tot_ret = cum_returns.values[-1]-1
-        
+        self.VaR = self.Hist_VaR(1, 0.99)
+        self.CVaR = self.Hist_CVaR(1)
     
+    def sortino_calc(self):
+        neg_rets = self.returns[self.returns < 0]**2
+        denom = np.sqrt(neg_rets.sum()/len(self.returns))*np.sqrt(252)
+        return self.exp_ret/denom
+        
+        
+    def Hist_VaR(self,days,percentile):
+        return self.returns.quantile(q=(1-percentile),interpolation='lower')
+    
+    def Hist_CVaR(self,days):
+        temp_data = self.returns[self.returns<self.VaR]
+        return temp_data.mean()
+        
     def calculate_rets(self):
         '''calculate portfolio returns based on positions'''
         rets = self.positions*Returns[self.assets]
@@ -131,7 +150,7 @@ class portfolio:
         ax4.text(0.5, 2.5, 'Max Drawdown:', fontsize=9)
         ax4.text(9.5 , 2.5, '{:.2%}'.format(self.maxdd), horizontalalignment='right', fontsize=9)    
         ax4.text(0.5, 1, 'Sortino:', fontsize=9)
-        ax4.text(9.5, 1, 'N/A', horizontalalignment='right', fontsize=9)        
+        ax4.text(9.5, 1, '{:.2f}'.format(self.sortino), horizontalalignment='right', fontsize=9)        
         
         ax4.set_title('Statistics',fontsize=10)
         ax4.grid(False)
@@ -153,12 +172,12 @@ class portfolio:
         ax6.text(9.5 , 7.0, self.firstday.date(), horizontalalignment='right', fontsize=9)
         ax6.text(0.5, 5.5, 'End Date:', fontsize=9)
         ax6.text(9.5 , 5.5, self.lastday.date(), horizontalalignment='right', fontsize=9)   
-        ax6.text(0.5, 4.0, 'Placeholder:', fontsize=9)
-        ax6.text(9.5 , 4.0, 'N/A', horizontalalignment='right', fontsize=9)
-        ax6.text(0.5, 2.5, 'Placeholder:', fontsize=9)
-        ax6.text(9.5 , 2.5, 'N/A', horizontalalignment='right', fontsize=9)    
-        ax6.text(0.5, 1, 'Placeholder', fontsize=9)
-        ax6.text(9.5, 1, 'N/A', horizontalalignment='right', fontsize=9)        
+        ax6.text(0.5, 4.0, 'Rebalanced:', fontsize=9)
+        ax6.text(9.5 , 4.0, self.rebal, horizontalalignment='right', fontsize=9)
+        ax6.text(0.5, 2.5, 'Trend Following:', fontsize=9)
+        ax6.text(9.5 , 2.5, self.trend, horizontalalignment='right', fontsize=9)    
+        ax6.text(0.5, 1, 'Weighting:', fontsize=9)
+        ax6.text(9.5, 1, self.wgt_method, horizontalalignment='right', fontsize=9)              
         
         ax6.set_title('Overview',fontsize=10)
         ax6.grid(False)
@@ -174,10 +193,10 @@ class portfolio:
         
         #Table 3: Basic Info
         ax6= plt.subplot2grid((11, 3), (7, 2), rowspan=2, colspan=1)
-        ax6.text(0.5, 8.5, 'VaR:', fontsize=9)
-        ax6.text(9.5 , 8.5, 'N/A', horizontalalignment='right', fontsize=9)   
-        ax6.text(0.5, 7.0, 'CVaR:', fontsize=9)
-        ax6.text(9.5 , 7.0, 'N/A', horizontalalignment='right', fontsize=9)
+        ax6.text(0.5, 8.5, r'$VaR_{99\%}:$', fontsize=9)
+        ax6.text(9.5 , 8.5, '{:.2%}'.format(self.VaR), horizontalalignment='right', fontsize=9)   
+        ax6.text(0.5, 7.0, r'$CVaR_{99\%}:$', fontsize=9)
+        ax6.text(9.5 , 7.0, '{:.2%}'.format(self.CVaR), horizontalalignment='right', fontsize=9)
         ax6.text(0.5, 5.5, 'Placeholder:', fontsize=9)
         ax6.text(9.5 , 5.5, 'N/A', horizontalalignment='right', fontsize=9)   
         ax6.text(0.5, 4.0, 'Placeholder:', fontsize=9)
@@ -230,9 +249,9 @@ class portfolio:
         #Heatmap
         ax10 = plt.subplot2grid((11, 3), (9, 0), rowspan=2, colspan=2)
         assets_rets = self.yearly_returns(self.asset_returns_wgt)
-        sns.heatmap(assets_rets.T, linewidth=0.5, ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 7})
+        sns.heatmap(assets_rets.T, linewidth=0.5, ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 6.5})
         ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=8)
-        ax10.set_xticklabels(ax10.get_xticklabels(),fontsize=8)
+        ax10.set_xticklabels(ax10.get_xticklabels(),fontsize=8,rotation = 70)
         ax10.tick_params(axis='both',bottom=False,left=False)
         ax10.set_xlabel('')
         ax10.set_title('Performance Attribution',fontsize=10)
@@ -279,7 +298,59 @@ def load_data(fname, Prices):
     data.index = pd.to_datetime(data.index)    
     Prices = pd.concat([Prices, data], axis=1, sort=True)
     return Prices
-    
+ 
+def EW_TF_positions(Prices,rebal_freq,rolling_window):
+    '''determine postions in equal weight portfolio with trend following overlay'''
+    Prices = Prices.dropna(how='any')
+    positions = pd.DataFrame(columns = Prices.columns)
+    assets = list(Prices)
+    ew = 1/len(assets)    
+    SMA = Prices.rolling(window=rolling_window).mean()
+    SMA = SMA.iloc[200:]
+    #determine positions
+    if rebal_freq == 'D':
+        for day in SMA.index:
+            for asset in SMA.columns:
+                if Prices.loc[day,asset] >= SMA.loc[day,asset]:
+                    positions.loc[day,asset] = 1
+                else:
+                    positions.loc[day,asset] = 0
+        
+        return positions.shift(1).dropna(how='any')*ew 
+    else:
+        day = SMA.index[0]
+        new_day = day
+        while day <= SMA.index[-1]:
+            if day in SMA.index:
+                if day >= new_day:
+                    for asset in SMA.columns:
+                        if Prices.loc[day,asset] >= SMA.loc[day,asset]:
+                            positions.loc[day,asset] = 1
+                        else:
+                            positions.loc[day,asset] = 0
+                    positions.loc[day] = positions.loc[day]*ew
+                    last_pos = positions.loc[day]
+                    if rebal_freq == 'M':
+                        new_day = day + pd.DateOffset(months=1)
+                    if rebal_freq == 'Y':
+                        new_day = day + pd.DateOffset(years=1)
+                    day = day + timedelta(days=1)
+                else:
+                    temp_data = last_pos*(1+Returns[assets].loc[day])
+                    #if temp_data.sum() > 1:
+                        #positions.loc[day] = temp_data/temp_data.sum()
+                    #else:
+                        #positions.loc[day] = temp_data
+                    if temp_data.astype(bool).sum() == len(assets):
+                        positions.loc[day] = temp_data/temp_data.sum()
+                    else:
+                        positions.loc[day] = temp_data                        
+                    #positions = positions.loc[:,:].div(positions.sum(axis=1),axis=0)
+                    last_pos = positions.loc[day]                    
+                    day = day + timedelta(days=1)
+            else:
+                day = day + timedelta(days=1)            
+        return positions.shift(1).dropna(how='any')        
     
 def EW_positions(Prices,rebal_freq='D'):
     '''determine positions in equal weight portfolio'''
@@ -292,7 +363,6 @@ def EW_positions(Prices,rebal_freq='D'):
         positions = Prices
     else:
         positions = pd.DataFrame(columns = Prices.columns)
-        print('Monthly')
         day = Prices.index[0]
         new_day = day
         while day <= Prices.index[-1]:
@@ -322,6 +392,74 @@ def risk_parity_positions(Prices):
         positions[asset] = weights[asset]
     return positions
 
+def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None):
+    '''generate positions for risk parity portfolio'''
+    Prices = Prices.dropna(how='any')
+    assets = list(Prices)
+    positions = pd.DataFrame(columns = Prices.columns)
+
+    
+    #if trend following option selected
+    if TF:
+        SMA = Prices.rolling(window=rolling_window).mean()
+        SMA = SMA.iloc[rolling_window:]
+        day = SMA.index[0]
+        new_day = day
+        while day <= SMA.index[-1]:
+            if day in SMA.index:
+                if day >= new_day:
+                    weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'))
+                    for asset in SMA.columns:
+                        if Prices.loc[day,asset] >= SMA.loc[day,asset]:
+                            positions.loc[day,asset] = 1
+                        else:
+                            positions.loc[day,asset] = 0
+                    last_pos = positions.loc[day]*weights
+                    positions.loc[day] = last_pos
+                    
+                    if rebal_freq == 'M':
+                        new_day = day + pd.DateOffset(months=1)
+                    if rebal_freq == 'Y':
+                        new_day = day + pd.DateOffset(years=1)
+                    day = day + timedelta(days=1)
+                else:
+                    temp_data = last_pos*(1+Returns[assets].loc[day])
+                    if temp_data.astype(bool).sum() == len(assets):
+                        positions.loc[day] = temp_data/temp_data.sum()
+                    else:
+                        positions.loc[day] = temp_data  
+                    last_pos = positions.loc[day]                    
+                    day = day + timedelta(days=1)                    
+            else:
+                day = day + timedelta(days=1)
+                
+        return positions.shift(1).dropna(how='any')
+    else:
+        day = Prices.index[rolling_window]
+        new_day = day
+        while day <= Prices.index[-1]:
+            if day in Prices.index:
+                if day >= new_day:
+                    weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window:].pct_change().dropna(how='any'))
+                    positions.loc[day] = weights
+                    last_pos = weights
+                    if rebal_freq == 'M':
+                        new_day = day + pd.DateOffset(months=1)
+                    if rebal_freq == 'Y':
+                        new_day = day + pd.DateOffset(years=1)
+                    day = day + timedelta(days=1)
+                else:
+                    temp_data = last_pos*(1+Returns[assets].loc[day])
+                    if temp_data.astype(bool).sum() == len(assets):
+                        positions.loc[day] = temp_data/temp_data.sum()
+                    else:
+                        positions.loc[day] = temp_data  
+                    last_pos = positions.loc[day]                    
+                    day = day + timedelta(days=1)                    
+            else:
+                day = day + timedelta(days=1)
+                
+        return positions.shift(1).dropna(how='any')        
 
 def risk_parity_generator(Prices,freq,TF=None, rolling_window=None):
     '''generate positions for risk parity portfolio'''
@@ -397,7 +535,7 @@ def realloc(positions):
     positions = positions.loc[:,:].div(positions.sum(axis=1),axis=0)
     return positions
 
-def EW_TF_positions(Prices):
+def EW_TF_positions_old(Prices):
     '''determine postions in equal weight portfolio with trend following overlay'''
     Prices = Prices.dropna(how='any')
     ew = 1/len((Prices.columns))
@@ -444,6 +582,7 @@ if __name__ == "__main__":
     #plt.style.use('ggplot')
     plt.rcParams["figure.figsize"] = (12,7)    
     plt.rcParams.update({'font.size': 9})
+    plt.rcParams.update({'mathtext.default':  'regular' })
     plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#aec7e8','#ffbb78','#98df8a','#ff9896','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'])
     
     #load prices and calculate returns
@@ -507,15 +646,15 @@ if __name__ == "__main__":
     #SP500_Port = portfolio("S&P500","SP500","Just S&P500",SP500_pos)
         
     #equal weight positions
-    EW_pos = EW_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']])
-    EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
+    #EW_pos = EW_positions(Prices[['SPY','VNQ','BND','EEM','EFA','TIP','GLD']])
+    #EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
     
     #equal weight positions rebalanced every 30 days
-    EW_M_pos = EW_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M')
-    EW_M_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_M_pos)
+    #EW_pos = EW_positions(Prices[['SPY','VNQ','AGG','EEM','EFA','TIP','GLD']],'M')
+    #EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
     
     #equal weight with trend following overlay
-    #EW_TF_pos = EW_TF_positions(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']])
+    #EW_TF_pos = EW_TF_positions(Prices[['SPY','VNQ','AGG','EEM','EFA','TIP','GLD']],'M',200)
     #EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos)
     
     #risk parity weights
@@ -530,16 +669,14 @@ if __name__ == "__main__":
     #RP_TF_RA_pos = risk_parity_tf_positions_realloc(Prices[['SPY','TIP','VNQ','BND']])
     #RP_TF_RA_Port = portfolio("Static Risk Parity with TF Realloc","RP_TF_RA","Risk parity portfolio with static weigths and trend following overlay that ensures full investment at all times",RP_TF_RA_pos)
     
-    test = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
-    test_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",test)
+    #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
+    #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     
-    #initialize a portfolio
+    #RP_pos = risk_parity_generator_V2(Prices[['SPY','VNQ','AGG','EEM','EFA','TIP','GLD']],'M',TF=False, rolling_window=200)
+    #RP_Port = portfolio("Dynamic Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, 'N/A','Monthly','RP 200')
     
-
-    
-    
-    
-    
+    RP_TF_pos = risk_parity_generator_V2(Prices[['SPY','VNQ','AGG','EEM','EFA','TIP','GLD']],'M',TF=True, rolling_window=200)
+    RP_TF_Port = portfolio("Dynamic Risk Parity TF","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",RP_TF_pos, '200 SMA','Monthly','RP 200')     
 
     #compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     

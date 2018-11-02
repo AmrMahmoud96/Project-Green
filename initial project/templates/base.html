@@ -39,6 +39,12 @@
           background-color: #F37649 !important;
           color:white !important;
         }
+        .advisorLink{
+          color:#F37649 !important;
+        }
+        .advisorLink:hover{
+          color:#f04f0f !important;
+        }
       .joinbtn{
         width:80px;
         height:40px;
@@ -85,7 +91,7 @@
             {% else %}
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
-                  <a class="nav-item navbar-text nav-link active" href="#">Functions<span class="sr-only">(current)</span></a>
+                  <a class="nav-item navbar-text nav-link active advisorLink" href="#">Advisor</a>
                   <a class="nav-item navbar-text  nav-link active" href="{{url_for('about')}}">About</a>
                   <a class="nav-item navbar-text  nav-link active" href="{{url_for('contactus')}}">Contact Us</a>
                   <li class="nav-item dropdown">
@@ -93,7 +99,7 @@
                         {{session['name']}}
                       </a>
                       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">View Profile</a>
+                        <a class="dropdown-item" href={{url_for('profile')}}>View Profile</a>
                         <a class="dropdown-item" href={{url_for('logout')}}>Sign Out</a>
                       </div>
                   </li>
