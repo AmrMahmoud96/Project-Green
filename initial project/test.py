@@ -41,23 +41,14 @@ def about():
     form = PortfolioCalculationForm()
     if request.method == 'POST':
         if form.validate_on_submit():
-           # print(form)
             count = 0
             for d in form:
-                print(d.data)
                 if type(d.data) is int:
                     count+= d.data
             if count == 0:
                 form.equities.errors.append('Please enter at least one value.')
                 return render_template('about.html', form=form)
             return render_template('about.html', success=True)
-            # msg = Message(form.subject.data, sender='contact@alphafactory.ca', recipients=['Alphafactory.capstone@gmail.com'])
-            # msg.body = """
-            # From: %s: <%s>
-            # %s
-            # """ % (form.name.data, form.email.data, form.message.data)
-            # mail.send(msg)
-            # return render_template('about.html', success="True")
         else:
             return render_template('about.html', form=form)
     return render_template("about.html",form=form)
