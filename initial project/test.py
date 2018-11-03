@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify
-from forms import ContactForm, RegisterForm
+from forms import ContactForm, RegisterForm, PortfolioCalculationForm
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
@@ -36,9 +36,31 @@ def chart():
     values = [10, 9, 8, 7, 6, 4, 7, 8]
     return render_template('chart.html', values=values, labels=labels, legend=legend)
 
-@app.route("/about")
+@app.route("/about", methods=['GET', 'POST'])
 def about():
-    return render_template("about.html")
+    form = PortfolioCalculationForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+           # print(form)
+            count = 0
+            for d in form:
+                print(d.data)
+                if type(d.data) is int:
+                    count+= d.data
+            if count == 0:
+                form.equities.errors.append('Please enter at least one value.')
+                return render_template('about.html', form=form)
+            return render_template('about.html', success=True)
+            # msg = Message(form.subject.data, sender='contact@alphafactory.ca', recipients=['Alphafactory.capstone@gmail.com'])
+            # msg.body = """
+            # From: %s: <%s>
+            # %s
+            # """ % (form.name.data, form.email.data, form.message.data)
+            # mail.send(msg)
+            # return render_template('about.html', success="True")
+        else:
+            return render_template('about.html', form=form)
+    return render_template("about.html",form=form)
 
 @app.route('/logout')
 def logout():

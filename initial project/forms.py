@@ -1,4 +1,4 @@
-from wtforms import  TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField
+from wtforms import  TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField, IntegerField
 from wtforms.fields.html5 import DateField
 from flask_wtf import FlaskForm
 from datetime import datetime,date
@@ -10,6 +10,12 @@ class ContactForm(FlaskForm):
   subject = TextField("Subject",[validators.DataRequired("Please enter a subject line.")])
   message = TextAreaField("Message",[validators.DataRequired("Please enter a message.")])
   submit = SubmitField("Submit")
+class PortfolioCalculationForm(FlaskForm):
+  equities = IntegerField("Equities" ,[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "0"},default=0)
+  bonds = IntegerField("Bonds",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "0"},default=0)
+  oil = IntegerField("Oil",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "0"},default=0)
+  cash = IntegerField("Cash",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "0"},default=0)
+  submit = SubmitField("Try Us")
 
 class RegisterForm(FlaskForm):
   firstName = TextField("First Name",[validators.DataRequired("Please enter your name.")])
