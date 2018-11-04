@@ -15,7 +15,7 @@ class PortfolioCalculationForm(FlaskForm):
   bonds = IntegerField("Bonds",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in bonds."})
   oil = IntegerField("Oil",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in oil."})
   cash = IntegerField("Cash",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in cash."})
-  submit = SubmitField("Try Us")
+  submit = SubmitField("Enter")
 
 class RegisterForm(FlaskForm):
   firstName = TextField("First Name",[validators.DataRequired("Please enter your name.")])
