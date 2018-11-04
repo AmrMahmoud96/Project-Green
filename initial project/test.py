@@ -5,6 +5,13 @@ from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime,time
+import pandas as pd
+import numpy as np
+
+sandpfile='^GSPC (2).csv'
+vixfile= '^GSPTSE.csv'
+tableS= pd.read_csv(sandpfile)
+tableV = pd.read_csv(vixfile)
 
 riskDefnArr = ['risk averse','risky','very risky','too risky']
 app = Flask(__name__)
@@ -29,12 +36,12 @@ mail.init_app(app)
 
 @app.route("/simple_chart")
 def chart():
-    legend = 'Monthly Data'
-    d = datetime.datetime.utcnow()
-    for_js = int(time.mktime(d.timetuple())) * 1000
-    labels = [for_js-900000,for_js-100000,for_js]
-    values = [10, 9, 8, 7, 6, 4, 7, 8]
-    return render_template('chart.html', values=values, labels=labels, legend=legend)
+    labels = tableV['Date'].values.tolist()
+    a = tableS['Close'].values
+    b = tableV['Close'].values
+    ocolumn_divs = (a/a[0])*10000
+    tcolumn_divs = (b/b[0])*10000
+    return render_template('chart.html', tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
 
 @app.route("/about", methods=['GET', 'POST'])
 def about():
@@ -59,7 +66,7 @@ def logout():
     session['email']=None
     session['logged_in'] = None
     return redirect(url_for('about'))
-   
+
 @app.route('/profile')
 def profile():
     if not checkLoggedIn():
@@ -67,7 +74,7 @@ def profile():
     users = mongo.db['_Users']
     profile = users.find_one({'email' : session['email']})
     profile['risk'] = riskDefnArr[profile.get('riskTol')]
-    return render_template('profile.html',profile=profile) 
+    return render_template('profile.html',profile=profile)
 def checkLoggedIn():
     if session==None:
         return False
@@ -89,7 +96,7 @@ def contactus():
             return render_template('contactus.html', success="True")
         else:
             return render_template('contactus.html', form=form)
-           
+
     elif request.method == 'GET':
         return render_template('contactus.html', form=form)
 

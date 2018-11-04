@@ -11,10 +11,10 @@ class ContactForm(FlaskForm):
   message = TextAreaField("Message",[validators.DataRequired("Please enter a message.")])
   submit = SubmitField("Submit")
 class PortfolioCalculationForm(FlaskForm):
-  equities = IntegerField("Equities" ,[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "0"},default=0)
-  bonds = IntegerField("Bonds",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "0"},default=0)
-  oil = IntegerField("Oil",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "0"},default=0)
-  cash = IntegerField("Cash",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "0"},default=0)
+  equities = IntegerField("Equities" ,[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in equities."})
+  bonds = IntegerField("Bonds",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in bonds."})
+  oil = IntegerField("Oil",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in oil."})
+  cash = IntegerField("Cash",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in forex."})
   submit = SubmitField("Try Us")
 
 class RegisterForm(FlaskForm):

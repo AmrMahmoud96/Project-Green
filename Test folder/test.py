@@ -1,4 +1,12 @@
 from flask import Flask, render_template
+import pandas as pd
+import numpy as np
+
+sandpfile='^GSPC (2).csv'
+vixfile= '^GSPTSE.csv'
+tableS= pd.read_csv(sandpfile)
+tableV = pd.read_csv(vixfile)
+
 app = Flask(__name__)
 
 
@@ -8,10 +16,12 @@ def template_test():
  
 @app.route("/simple_chart")
 def chart():
-    legend = 'Monthly Data'
-    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
-    values = [10, 9, 8, 7, 6, 4, 7, 8]
-    return render_template('chart.html', values=values, labels=labels, legend=legend)
+    labels = tableV['Date'].values.tolist()
+    a = tableS['Close'].values
+    b = tableV['Close'].values
+    ocolumn_divs = (a/a[0])*10000
+    tcolumn_divs = (b/b[0])*10000
+    return render_template('chart.html', tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
  
 
 if __name__ == '__main__':
