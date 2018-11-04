@@ -1,10 +1,86 @@
-{% extends 'base.html' %}
 
-{% block container %}
-<html lang="en"><head>   <meta charset="utf-8" />     <!-- import plugin script -->   <script src='static/Chart.min.js'></script>   </head><body>
-<!-- bar chart canvas element -->
-<canvas id="chart" width="600px" height="400px"></canvas>
 
+{% block container %} 
+<style>
+.chart{
+    width:70%!important;
+    height:100% !important;
+    padding: 20px;
+}
+.portfolio-stats{
+    margin-left:10px;
+    padding: 20px;
+}
+.info{
+    display:flex;
+}
+.btncontainer{
+    text-align: center;
+}
+.bb{
+    margin: 5px;
+    color:#F37649;
+    border: #F37649 1px thin;
+    border-radius: 5px;
+}
+.selected{
+        background: #F37649;
+        color:white;
+}
+.trybtn{
+        width:80px;
+        height:40px;
+        background: #F37649;
+        color:white;
+        border-radius: 25px;
+      }
+
+</style>
+ <!-- import plugin script -->   <script src='static/Chart.min.js'></script> 
+<div class="btncontainer"><button class="btn1 bb">3 Year</button><button class="btn2 selected bb">5 Year</button><button class="bb btn3">10 Year</button></div>
+    <!-- bar chart canvas element -->
+    <div class="info">
+<canvas id="chart" class="chart"></canvas>
+<div class="portfolio-stats">
+    <h5>Portfolio Performance</h5>
+    <table class="table">
+        <thead class="center">
+            <tr>
+                <th scope="col">Performance</th>
+                <th scope="col">Your Portfolio</th>
+                <th scope="col">Our Portfolio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Return</td>
+                <td class="center">15%</td>
+                <td class="center">25%</td>
+            </tr>
+            <tr>
+                <td>Alpha</td>
+                <td class="center">8%</td>
+                <td class="center">18%</td>
+            </tr>
+            <tr>
+                <td>Sharpe Ratio</td>
+                <td class="center">1.13</td>
+                <td class="center">2.91</td>
+            </tr>
+            <tr>
+                <td>Volatility (Risk)</td>
+                <td class="center">25%</td>
+                <td class="center">15%</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class='center'>
+    <p style="font-weight:bold;">Like what you see?</p>
+    <p>Our portfolio can be your portfolio too.</p>
+    <a href={{url_for('joinus')}}><button class="btn btnprimary trybtn">Join Us</button></a>
+</div>
+</div>
+</div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src='./static/Chart.min.js' ></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"  ></script>
@@ -51,7 +127,7 @@ const options = {
             }],
             yAxes: [{
                 ticks: {
-                    beginAtZero: true,
+                    suggestedMin: {{tvalues[0]}}
                 },
                 display: true,
                 scaleLabel: {
@@ -63,6 +139,8 @@ const options = {
     }
 }
 const chart = new Chart(ctx, options);
+$([document.documentElement, document.body]).animate({
+        scrollTop: $(".portfolio-tester").offset().top-111
+    }, 200);
     </script>
-    </body></html>
 {% endblock %}

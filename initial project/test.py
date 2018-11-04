@@ -55,7 +55,12 @@ def about():
             if count == 0:
                 form.equities.errors.append('Please enter at least one value.')
                 return render_template('about.html', form=form)
-            return render_template('about.html', success=True)
+            labels = tableV['Date'].values.tolist()
+            a = tableS['Close'].values
+            b = tableV['Close'].values
+            ocolumn_divs = (a/a[0])*10000
+            tcolumn_divs = (b/b[0])*10000
+            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
             return render_template('about.html', form=form)
     return render_template("about.html",form=form)

@@ -96,16 +96,22 @@ text-align: justify;
         </div>
     </div>
     <div class="portfolio-tester">
-        {% if success %}
-        <p >Thank you for your message. We'll get back to you shortly.</p>
+            {% block content %}
+            {% if success %}
+            <div id="methodResults">
+                 {% include 'chart.html' %}
+            </div>
         {% else %}
-    <p class="center">Test your current portfolio performance and how it compares against our world-class robo-advisor.</p>
+        <p class="center">Test your current portfolio performance and how it compares against our world-class robo-advisor.</p>
     <div class="port-form">
         <form action={{ url_for('about') }} method="POST">
             {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
         </form>
     </div>
         {% endif %}
+        {% endblock %}
+        
+    
 </div>
     <!--<div class="class2 center">
        <p> Content goes here</p>
