@@ -95,6 +95,7 @@ text-align: justify;
             </div>
         </div>
     </div>
+    {% if session['logged_in'] == None and session['name']== None%}
     <div class="portfolio-tester">
             {% block content %}
             {% if success %}
@@ -110,6 +111,12 @@ text-align: justify;
     </div>
         {% endif %}
         {% endblock %}
+    {% else %}
+    <div class="class2 center">
+            <p> Content goes here</p>
+         </div>
+    {% endif %}
+    
         
     
 </div>
