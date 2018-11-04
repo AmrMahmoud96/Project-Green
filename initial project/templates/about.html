@@ -27,9 +27,7 @@ background: #f8f9fa!important;
         width:80px;
         height:40px;
         background: #F37649;
-        border-color: white;
         color:white;
-        margin:0 auto;
         border-radius: 25px;
       }
 .portfolio-tester{
@@ -57,18 +55,30 @@ background: #f8f9fa!important;
 }
 .about-content-container{
 padding: 20px;
+/*
 background: grey;
-color:white;
-height:400px;
+color:white;*/
+background: rgb(0, 0, 0); /* Fallback color */
+  background: rgba(0, 0, 0, 0.8);
+  color: #f1f1f1; /* Grey text */
+height:100%;
 width: 50%;
 margin: 0 auto;
 margin-top:50px;
 margin-bottom: 50px;
 opacity: .8;
 }
+.last-text{
+    display: inline-flex;
+}
 
 .justify{
 text-align: justify;
+}
+.joinlink{
+    margin-left: 5px !important;
+
+    margin-right: 5px !important;
 }
 </style>
 
@@ -79,7 +89,10 @@ text-align: justify;
             <p>Money matters – love it or hate it, money has become a cornerstone to survival and society. Money provides us with the ability to satisfy our basic survival needs (i.e. food, shelter, clothing, etc.), creates opportunities for choices/flexibility, allows you to live your dreams and/or fund the causes you care about.</p>
             <p>Fundamentally, there are only two ways to make money – by working and/or by having your assets work for you. We all know the importance of working with most of us having jobs to satisfy our monetary needs, but having your assets work for you is a concept that is often overlooked by many. We are here to change that. Alpha Factory aims to reduce the stigma around investing and make it accessible and understandable for everyone. Ultimately, Alpha Factory aims to close the world’s investment gap by making investing activities part of everyday life!</p>
 			<p>Alpha Factory aims to use our platform and proprietary portfolio generation techniques to help the average person with limited knowledge of the financial markets and/or limited time to manage their own asset portfolios/investments. Specifically, we aim to get to know you through our quick questionnaires, so we can create a personalized and diversified portfolio of assets at a risk tolerance you are comfortable with while meeting your long-term investment goals. From there, we manage your money for you – this includes automatically rebalancing your portfolio to account for any market fluctuations and reinvesting your investment proceeds (e.g. dividends) to ensure that your money doesn’t take any breaks while working for you. We understand that investment goals change overtime and we offer dynamic portfolio modifications to address your evolving user preferences and inputs. </p>
-			<p>Don’t delay – join us today!!</p>		
+           <!-- <div><p>Don't delay,</p><a href={{url_for('joinus')}}><button class="btn btnprimary trybtn">Join Us</button></a><p>today!</p></div>
+            -->
+            <div class="last-text"><p>Don't delay, </p> <a href={{url_for('joinus')}} class="basecolortext joinlink"><u>join us</u></a> <p> today!</p>
+            </div>
         </div>
     </div>
     <div class="portfolio-tester">
