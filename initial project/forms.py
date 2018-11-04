@@ -14,7 +14,7 @@ class PortfolioCalculationForm(FlaskForm):
   equities = IntegerField("Equities" ,[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in equities."})
   bonds = IntegerField("Bonds",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in bonds."})
   oil = IntegerField("Oil",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in oil."})
-  cash = IntegerField("Cash",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in forex."})
+  cash = IntegerField("Cash",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in cash."})
   submit = SubmitField("Try Us")
 
 class RegisterForm(FlaskForm):
