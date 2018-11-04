@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+
+{% import "bootstrap/wtf.html" as wtf %} 
  
 {% block container %}
 <style type="text/css">
@@ -20,6 +22,27 @@ background: #f8f9fa!important;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+.trybtn{
+        width:80px;
+        height:40px;
+        background: #F37649;
+        border-color: white;
+        color:white;
+        margin:0 auto;
+        border-radius: 25px;
+      }
+.portfolio-tester{
+    background: white!important;
+
+    margin-top: 30px!important;
+}
+.port-form{
+    max-width: 750px;
+    padding: 20px;
+    margin-bottom: 30px !important;
+    margin:0 auto;
+    border: 1px solid black;
 }
 .bg2 {
     /* The image used */
@@ -45,7 +68,7 @@ opacity: .8;
 }
 </style>
 
-<h1 class="title center">About Us</h1>
+<!--<h1 class="title center">About Us</h1>-->
 <div>
     <div  class="bg  center">
         <div class="about-content-container">
@@ -53,12 +76,24 @@ opacity: .8;
             <p>Long gone are the days of traditional financial advisors. Welcome to the world of Robo-Advisors!</p>
         </div>
     </div>
-    <div class="class2 center">
-       <p> Content goes here</p>
+    <div class="portfolio-tester">
+        {% if success %}
+        <p >Thank you for your message. We'll get back to you shortly.</p>
+        {% else %}
+    <p class="center">See how your portfolio would do against our world-class robo-advisor.</p>
+    <div class="port-form">
+        <form action={{ url_for('about') }} method="POST">
+            {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
+        </form>
     </div>
+        {% endif %}
+</div>
+    <!--<div class="class2 center">
+       <p> Content goes here</p>
+    </div>-->
     <div class="bg2 center">
             <div class="about-content-container">
-                    <p>Content goes here</p>
+                    <p>Start investing to meet your goals.</p>
                     <p>Learn how you can start saving to achieve your goals today!</p>
                 </div>
     </div>

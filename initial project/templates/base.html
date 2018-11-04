@@ -34,17 +34,20 @@
           padding: 10px;
           width: auto;
         }
+        .help-block{
+          color:red;
+        }
         .btn-primary{
           border-color:#F37649 !important;
           background-color: #F37649 !important;
           color:white !important;
         }
-        .advisorLink{
+       /* .advisorLink{
           color:#F37649 !important;
         }
         .advisorLink:hover{
           color:#f04f0f !important;
-        }
+        }*/
       .joinbtn{
         width:80px;
         height:40px;
@@ -91,9 +94,10 @@
             {% else %}
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
+                  <a class="nav-item navbar-text nav-link active " href={{url_for('home')}}>Home</a>
                   <a class="nav-item navbar-text nav-link active advisorLink" href="#">Advisor</a>
-                  <a class="nav-item navbar-text  nav-link active" href="{{url_for('about')}}">About</a>
-                  <a class="nav-item navbar-text  nav-link active" href="{{url_for('contactus')}}">Contact Us</a>
+                  <a class="nav-item navbar-text  nav-link active" href={{url_for('about')}}>About</a>
+                  <a class="nav-item navbar-text  nav-link active" href={{url_for('contactus')}}>Contact Us</a>
                   <li class="nav-item dropdown">
                       <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{session['name']}}
