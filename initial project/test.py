@@ -12,6 +12,9 @@ sandpfile='^GSPC (2).csv'
 vixfile= '^GSPTSE.csv'
 tableS= pd.read_csv(sandpfile)
 tableV = pd.read_csv(vixfile)
+spf= '^GSPC.csv'
+tableD = pd.read_csv(spf)
+
 
 riskDefnArr = ['risk averse','risky','very risky','too risky']
 app = Flask(__name__)
@@ -111,7 +114,10 @@ def home():
         return redirect(url_for('login'))
     elif session['fillQuestions']==True:
         return redirect(url_for('questions'))
-    return render_template('home.html')
+    labels = tableD['Date'].values.tolist()
+    b = tableD['Close'].values
+    tcolumn_divs = (b/b[0])*15000
+    return render_template('home.html',tvalues=tcolumn_divs.tolist(), labels=labels)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
