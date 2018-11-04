@@ -99,7 +99,7 @@ text-align: justify;
         {% if success %}
         <p >Thank you for your message. We'll get back to you shortly.</p>
         {% else %}
-    <p class="center">See how your portfolio would do against our world-class robo-advisor.</p>
+    <p class="center">Test your current portfolio performance and how it compares against our world-class robo-advisor.</p>
     <div class="port-form">
         <form action={{ url_for('about') }} method="POST">
             {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
