@@ -239,7 +239,9 @@ class portfolio:
         ax5.grid(linestyle='--',alpha=0.5,linewidth=0.7,axis='y')
         ax5.set_axisbelow(True)
         ax5.margins(x=0,y=0)
-        ax5.legend(loc=8,ncol=len(list(self.positions)),mode=None,bbox_to_anchor=(0., 1.02, 1., .102),fontsize=8,edgecolor="#FFFFFF")
+        ax5.set_ylim(0,1)
+        #ax5.legend(loc=8,ncol=len(list(self.positions)),mode=None,bbox_to_anchor=(0., 1.02, 1., .102),fontsize=8,edgecolor="#FFFFFF")
+        ax5.legend(loc=8,ncol=len(list(self.positions)),mode=None,bbox_to_anchor=(0., 1.02, 1., .102),fontsize=7,edgecolor="#FFFFFF",handlelength=0.6)
         ax5.set_ylabel('Weight (%)',fontsize=9)
         
         #format y-axis as percentage
@@ -249,8 +251,9 @@ class portfolio:
         #Heatmap
         ax10 = plt.subplot2grid((11, 3), (9, 0), rowspan=2, colspan=2)
         assets_rets = self.yearly_returns(self.asset_returns_wgt)
-        sns.heatmap(assets_rets.T, linewidth=0.5, ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 6.5})
-        ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=8)
+        sns.heatmap(assets_rets.T, linewidth=0.5, yticklabels=True,ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 6.5})
+        #ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=8)
+        ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=6)
         ax10.set_xticklabels(ax10.get_xticklabels(),fontsize=8,rotation = 70)
         ax10.tick_params(axis='both',bottom=False,left=False)
         ax10.set_xlabel('')
@@ -374,6 +377,8 @@ def EW_positions(Prices,rebal_freq='D'):
                         new_day = day + pd.DateOffset(months=1)
                     if rebal_freq == 'Y':
                         new_day = day + pd.DateOffset(years=1)
+                    if rebal_freq == 'W':
+                        new_day = day + pd.DateOffset(weeks=1)                    
                     day = day + timedelta(days=1)
                 else:
                     positions.loc[day] = last_pos*(1+Returns[assets].loc[day])
@@ -392,12 +397,12 @@ def risk_parity_positions(Prices):
         positions[asset] = weights[asset]
     return positions
 
-def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None):
+def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,static=False):
     '''generate positions for risk parity portfolio'''
     Prices = Prices.dropna(how='any')
     assets = list(Prices)
     positions = pd.DataFrame(columns = Prices.columns)
-
+    static_weights = erc_ver1.get_weights(Prices.pct_change().dropna(how='any'))
     
     #if trend following option selected
     if TF:
@@ -408,7 +413,10 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None):
         while day <= SMA.index[-1]:
             if day in SMA.index:
                 if day >= new_day:
-                    weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'))
+                    if static:
+                        weights = static_weights
+                    else:
+                        weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'))
                     for asset in SMA.columns:
                         if Prices.loc[day,asset] >= SMA.loc[day,asset]:
                             positions.loc[day,asset] = 1
@@ -440,7 +448,10 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None):
         while day <= Prices.index[-1]:
             if day in Prices.index:
                 if day >= new_day:
-                    weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window:].pct_change().dropna(how='any'))
+                    if static:
+                        weights = static_weights
+                    else:
+                        weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'))
                     positions.loc[day] = weights
                     last_pos = weights
                     if rebal_freq == 'M':
@@ -592,6 +603,9 @@ if __name__ == "__main__":
         Prices = load_data(fname,Prices)
     
     Returns = Prices.pct_change() 
+    #####Same Date Range#####
+    #Prices = Prices[(Prices.index >= datetime(2008,10,6)) & (Prices.index <= datetime(2018,10,11))]
+    
     print("Prices and returns loaded!")
     
     ############################################################################
@@ -650,12 +664,12 @@ if __name__ == "__main__":
     #EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
     
     #equal weight positions rebalanced every 30 days
-    #EW_pos = EW_positions(Prices[['SPY','VNQ','AGG','EEM','EFA','TIP','GLD']],'M')
-    #EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
+    #EW_pos = EW_positions(Prices[['SPY']],'M')
+    #EW_Port = portfolio("S&P500","SP500","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
     
     #equal weight with trend following overlay
-    #EW_TF_pos = EW_TF_positions(Prices[['SPY','VNQ','AGG','EEM','EFA','TIP','GLD']],'M',200)
-    #EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos)
+    #EW_TF_pos = EW_TF_positions(Prices,'M',150)
+    #EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos,'150 SMA', 'Monthly','EW')
     
     #risk parity weights
     #RP_pos = risk_parity_positions(Prices[['SPY','TIP','VNQ','BND']])
@@ -672,11 +686,11 @@ if __name__ == "__main__":
     #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     
-    #RP_pos = risk_parity_generator_V2(Prices[['SPY','VNQ','AGG','EEM','EFA','TIP','GLD']],'M',TF=False, rolling_window=200)
-    #RP_Port = portfolio("Dynamic Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, 'N/A','Monthly','RP 200')
+    RP_pos = risk_parity_generator_V2(Prices,'M',TF=False, rolling_window=175,static=False)
+    RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, 'N/A','Monthly','RP 175')
     
-    RP_TF_pos = risk_parity_generator_V2(Prices[['SPY','VNQ','AGG','EEM','EFA','TIP','GLD']],'M',TF=True, rolling_window=200)
-    RP_TF_Port = portfolio("Dynamic Risk Parity TF","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",RP_TF_pos, '200 SMA','Monthly','RP 200')     
+    #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
+    #RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",#RP_TF_pos, '200 SMA','Monthly','RP 200')     
 
     #compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     
