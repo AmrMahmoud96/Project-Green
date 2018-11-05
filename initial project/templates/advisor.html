@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+ 
+{% block container %}
+
+<html>
+     
+  <body>
+        <h1 class="center title">Portfolio Advisor</h1>
+    <div class="container advisor-container">
+        <h5 class='center'>Tell us what your financial goals are and we will custom tailor a portfolio to fit your needs!</h5>
+      <form action="{{ url_for('advisor') }}" method="POST">
+          {% if error %}
+          <p class="flash">{{ error }}</p>
+        {% endif %}
+            <div class="form-group">
+              <label for="initial">Initial investment</label>
+              <input type="number" name="initial" min=0 class="form-control" id="initial" placeholder="Enter initial capital">
+            </div>
+            <div class="form-group">
+                <label for="goal">Financial goal</label>
+                <input type="number" name="goal" min=0 class="form-control" id="goal" placeholder="Enter your financial goal">
+            </div>
+            <div class="form-group">
+                <label for="horizon">Time Horizon</label>
+                <input type="range" name="horizon" min=1 max=30 class="form-control" id="horizon"> <p id ="horizonoutput">5 years</p>
+            </div>
+            <div class="center">
+                <button type="submit" class="btn basecolorbtn">Generate</button>
+            </div>
+        </form>
+  
+    </div>
+    </body>
+  
+</html>
+<script>
+var slider = document.getElementById("horizon");
+var output = document.getElementById("horizonoutput");
+output.innerHTML = slider.value+' years'; // Display the default slider value
+
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function() {
+    output.innerHTML = this.value+' years';
+}
+</script>
+<style type="text/css">
+    .advisor-container{
+        border:1px solid black;
+        padding: 15px !important;
+        border-radius: 5px;
+        width: 80%;
+    }
+    </style>
+{% endblock %}

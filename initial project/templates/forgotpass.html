@@ -1,5 +1,58 @@
 {% extends 'base.html' %}
  
 {% block container %}
-<p>forgot password</p>
+
+<html>
+     
+  <body>
+       {% if existing == None  %}
+    
+    <h1 class="center title">Reset Password</h1>
+    <div class="container center forgotpass-container">
+        <p style='text-align: justify;'>Enter your email address to reset your password.</p>
+      <form action="{{ url_for('forgotpass') }}" method="POST">
+          {% if error %}
+          <p class="flash">{{ error }}</p>
+        {% endif %}
+            <div class="form-group">
+              <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+            </div>
+            <button type="submit" class="btn basecolorbtn">Reset</button>
+          </form>
+        </div>
+        {% else %}
+        <div class="reset-container container center forgotpass-container">
+                <p style='text-align: justify;'>Enter your code and new password to complete the reset.</p>
+              <form action="{{ url_for('forgotpass') }}" method="POST">
+                  {% if error %}
+                  <p class="flash">{{ error }}</p>
+                    {% endif %}
+                    <div class="form-group">
+                      <input type="text" name="code" class="form-control" id="verificationcode" aria-describedby="emailHelp" placeholder="Enter the 6 digit code sent to your email.">
+                    </div>
+                   <div class="form-group">
+                        <input type="password" name="password" class="form-control" id="password" aria-describedby="passwordHelp" placeholder="Enter your new password">
+                    </div>
+                    <div class="form-group">
+                            <input type="password" name="confirmpassword" class="form-control" id="confirmpassword" aria-describedby="confpassHelp" placeholder="Confirm your new password">
+                        </div>
+                    <button type="submit" class="btn basecolorbtn">Confirm</button>
+                  </form>
+                </div>
+        {% endif %}
+    
+    </body>
+  
+</html>
+<style type="text/css">
+    .forgotpass-container{
+        border:1px solid black;
+        padding: 15px !important;
+        border-radius: 5px;
+        width: 80%;
+    }
+    .reset-container{
+        margin-top: 20px;
+    }
+    </style>
 {% endblock %}

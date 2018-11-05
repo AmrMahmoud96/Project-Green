@@ -159,11 +159,13 @@ def joinus():
         return render_template("joinus.html",form=form)
     return render_template("joinus.html",form=form)
 
-@app.route("/forgotpass")
+@app.route("/forgotpass", methods=['GET','POST'])
 def forgotpass():
     if checkLoggedIn():
         return redirect(url_for('home'))
-    return render_template("forgotpass.html")
+    if request.method == 'POST':
+        return render_template("forgotpass.html",code='123456',existing='False')
+    return render_template("forgotpass.html",code=None,existing=None)
 
 @app.route("/questions")
 def questions():
@@ -183,6 +185,12 @@ def check():
 	    risk = request.get_json()
     updateuserrisk(risk)
     return jsonify(success=True)
+
+@app.route('/advisor', methods=['GET','POST'])
+def advisor():
+    if request.method == 'POST':
+        return redirect(url_for('home'))
+    return render_template('advisor.html')
 
 @app.route('/questions/finished')
 def finished():
