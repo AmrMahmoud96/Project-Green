@@ -111,7 +111,7 @@ def contactus():
 @app.route("/home")
 def home():
     if not checkLoggedIn():
-        return redirect(url_for('login'))
+        return redirect(url_for('about'))
     elif session['fillQuestions']==True:
         return redirect(url_for('questions'))
     labels = tableD['Date'].values.tolist()
