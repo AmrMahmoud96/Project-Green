@@ -87,6 +87,7 @@ def profile():
     profile = users.find_one({'email' : session['email']})
     profile['risk'] = riskDefnArr[profile.get('riskTol')]
     return render_template('profile.html',profile=profile)
+
 def checkLoggedIn():
     if session==None:
         return False
@@ -177,11 +178,7 @@ def forgotpass():
                 pin = ''.join(random.choice('0123456789') for _ in range(6))
                 temppin=pin
                 msg = Message('AlphaFactory Password Reset Code.', sender='contact@alphafactory.ca', recipients=[tempemail])
-                msg.body = """
-                Your password reset code is: %s.
-                Enter the code in the form to continue your reset password.
-                If you did not request a password reset, ignore this email.
-                """ % (temppin)
+                msg.html = render_template('resetpassword.html',code=temppin)
                 mail.send(msg)
                 return render_template("forgotpass.html",code=True)
             else:
