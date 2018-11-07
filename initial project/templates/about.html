@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+
+{% import "bootstrap/wtf.html" as wtf %} 
  
 {% block container %}
 <style type="text/css">
@@ -21,6 +23,25 @@ background: #f8f9fa!important;
     background-repeat: no-repeat;
     background-size: cover;
 }
+.trybtn{
+        width:80px;
+        height:40px;
+        background: #F37649;
+        color:white;
+        border-radius: 25px;
+      }
+.portfolio-tester{
+    background: white!important;
+
+    margin-top: 30px!important;
+}
+.port-form{
+    max-width: 750px;
+    padding: 20px;
+    margin-bottom: 30px !important;
+    margin:0 auto;
+    border: 1px solid black;
+}
 .bg2 {
     /* The image used */
     background-image: url('/static/images/testimg2.jpg') !important;
@@ -34,31 +55,77 @@ background: #f8f9fa!important;
 }
 .about-content-container{
 padding: 20px;
+/*
 background: grey;
-color:white;
-height:400px;
+color:white;*/
+background: rgb(0, 0, 0); /* Fallback color */
+  background: rgba(0, 0, 0, 0.8);
+  color: #f1f1f1; /* Grey text */
+height:100%;
 width: 50%;
 margin: 0 auto;
 margin-top:50px;
 margin-bottom: 50px;
 opacity: .8;
 }
+.last-text{
+    display: inline-flex;
+}
+
+.justify{
+text-align: justify;
+}
+.joinlink{
+    margin-left: 5px !important;
+
+    margin-right: 5px !important;
+}
 </style>
 
-<h1 class="title center">About Us</h1>
+<!--<h1 class="title center">About Us</h1>-->
 <div>
-    <div  class="bg  center">
-        <div class="about-content-container">
-            <p>Content goes here</p>
-            <p>Long gone are the days of traditional financial advisors. Welcome to the world of Robo-Advisors!</p>
+    <div  class="bg">
+        <div class="about-content-container justify">
+            <p>Money matters – love it or hate it, money has become a cornerstone to survival and society. Money provides us with the ability to satisfy our basic survival needs (i.e. food, shelter, clothing, etc.), creates opportunities for choices/flexibility, allows you to live your dreams and/or fund the causes you care about.</p>
+            <p>Fundamentally, there are only two ways to make money – by working and/or by having your assets work for you. We all know the importance of working with most of us having jobs to satisfy our monetary needs, but having your assets work for you is a concept that is often overlooked by many. We are here to change that. Alpha Factory aims to reduce the stigma around investing and make it accessible and understandable for everyone. Ultimately, Alpha Factory aims to close the world’s investment gap by making investing activities part of everyday life!</p>
+			<p>Alpha Factory aims to use our platform and proprietary portfolio generation techniques to help the average person with limited knowledge of the financial markets and/or limited time to manage their own asset portfolios/investments. Specifically, we aim to get to know you through our quick questionnaires, so we can create a personalized and diversified portfolio of assets at a risk tolerance you are comfortable with while meeting your long-term investment goals. From there, we manage your money for you – this includes automatically rebalancing your portfolio to account for any market fluctuations and reinvesting your investment proceeds (e.g. dividends) to ensure that your money doesn’t take any breaks while working for you. We understand that investment goals change overtime and we offer dynamic portfolio modifications to address your evolving user preferences and inputs. </p>
+           <!-- <div><p>Don't delay,</p><a href={{url_for('joinus')}}><button class="btn btnprimary trybtn">Join Us</button></a><p>today!</p></div>
+            -->
+            <div class="last-text"><p>Don't delay, </p> <a href={{url_for('joinus')}} class="basecolortext joinlink"><u>join us</u></a> <p> today!</p>
+            </div>
         </div>
     </div>
-    <div class="class2 center">
-       <p> Content goes here</p>
+    {% if session['logged_in'] == None and session['name']== None%}
+    <div class="portfolio-tester">
+            {% block content %}
+            {% if success %}
+            <div id="methodResults">
+                 {% include 'chart.html' %}
+            </div>
+        {% else %}
+        <p class="center">Test your current portfolio performance and how it compares against our world-class robo-advisor.</p>
+    <div class="port-form">
+        <form action={{ url_for('about') }} method="POST">
+            {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
+        </form>
     </div>
+        {% endif %}
+        {% endblock %}
+    {% else %}
+    <div class="class2 center">
+            <p> Content goes here</p>
+         </div>
+    {% endif %}
+    
+        
+    
+</div>
+    <!--<div class="class2 center">
+       <p> Content goes here</p>
+    </div>-->
     <div class="bg2 center">
             <div class="about-content-container">
-                    <p>Content goes here</p>
+                    <p>Start investing to meet your goals.</p>
                     <p>Learn how you can start saving to achieve your goals today!</p>
                 </div>
     </div>
