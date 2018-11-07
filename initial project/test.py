@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify
+from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify,g
 from forms import ContactForm, RegisterForm, PortfolioCalculationForm
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime,time
 import pandas as pd
 import numpy as np
+import random
 
 sandpfile='^GSPC (2).csv'
 vixfile= '^GSPTSE.csv'
@@ -14,6 +15,9 @@ tableS= pd.read_csv(sandpfile)
 tableV = pd.read_csv(vixfile)
 spf= '^GSPC.csv'
 tableD = pd.read_csv(spf)
+
+temppin = ''
+tempemail=''
 
 
 riskDefnArr = ['risk averse','risky','very risky','too risky']
@@ -162,10 +166,45 @@ def joinus():
 @app.route("/forgotpass", methods=['GET','POST'])
 def forgotpass():
     if checkLoggedIn():
-        return redirect(url_for('home'))
+        return redirect(url_for('home')) 
     if request.method == 'POST':
-        return render_template("forgotpass.html",code='123456',existing='False')
-    return render_template("forgotpass.html",code=None,existing=None)
+        global temppin,tempemail
+        if request.form.get('email')!=None:
+            users = mongo.db['_Users']
+            user = users.find_one({'email' : request.form['email']})
+            tempemail=request.form['email']
+            if user != None:
+                pin = ''.join(random.choice('0123456789') for _ in range(6))
+                temppin=pin
+                msg = Message('AlphaFactory Password Reset Code.', sender='contact@alphafactory.ca', recipients=[tempemail])
+                msg.body = """
+                Your password reset code is: %s.
+                Enter the code in the form to continue your reset password.
+                If you did not request a password reset, ignore this email.
+                """ % (temppin)
+                mail.send(msg)
+                return render_template("forgotpass.html",code=True)
+            else:
+                return render_template("forgotpass.html",code=None,error='No user with that email was found.')
+        elif request.form.get('code')!=None:
+            print(tempemail)
+            if temppin != request.form.get('code'):
+                return render_template("forgotpass.html",code =True, error='Incorrect Code')
+            elif len(request.form.get('password')) <8:
+                return render_template("forgotpass.html",code =True, error='Your password must be at least 8 characters in length.')
+            elif request.form.get('password') != request.form.get('confirmpassword'):
+                return render_template("forgotpass.html",code =True, error='Your passwords must match.')
+            else:
+                #update password and take to login page
+                updateuserpassword(request.form.get('password'),tempemail)
+                return redirect(url_for('login'))
+    return render_template("forgotpass.html",code=None)
+
+def updateuserpassword(password,email):
+    users = mongo.db['_Users']
+    user = users.find_one({'email' : email})
+    user['password']= generate_password_hash(password, method='sha256')
+    users.save(user)
 
 @app.route("/questions")
 def questions():

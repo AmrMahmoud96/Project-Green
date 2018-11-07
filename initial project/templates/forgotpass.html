@@ -5,7 +5,7 @@
 <html>
      
   <body>
-       {% if existing == None  %}
+       {% if code == None  %}
     
     <h1 class="center title">Reset Password</h1>
     <div class="container center forgotpass-container">
@@ -25,7 +25,7 @@
                 <p style='text-align: justify;'>Enter your code and new password to complete the reset.</p>
               <form action="{{ url_for('forgotpass') }}" method="POST">
                   {% if error %}
-                  <p class="flash">{{ error }}</p>
+                  <p class="flash">{{ error}}</p>
                     {% endif %}
                     <div class="form-group">
                       <input type="text" name="code" class="form-control" id="verificationcode" aria-describedby="emailHelp" placeholder="Enter the 6 digit code sent to your email.">
