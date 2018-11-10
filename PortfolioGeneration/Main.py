@@ -44,8 +44,7 @@ class portfolio:
         neg_rets = self.returns[self.returns < 0]**2
         denom = np.sqrt(neg_rets.sum()/len(self.returns))*np.sqrt(252)
         return self.exp_ret/denom
-        
-        
+            
     def Hist_VaR(self,days,percentile):
         return self.returns.quantile(q=(1-percentile),interpolation='lower')
     
@@ -290,6 +289,7 @@ def compare_portfolios(portfolios,startdate,enddate):
     ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])     
     plt.tight_layout()
     plt.show()  
+
 
 def load_data(fname, Prices):
     '''load in historical prices'''
@@ -587,6 +587,11 @@ def Trend_Strategy(Prices):
     
     return positions.shift(1).dropna(how='any')
     
+def inverse_vol(returns):
+    inv_vol = 1/returns.std()
+    weights = inv_vol/inv_vol.sum()
+    return weights
+
 if __name__ == "__main__":
     print("Started...")
     #plotting styles
@@ -686,8 +691,8 @@ if __name__ == "__main__":
     #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     
-    RP_pos = risk_parity_generator_V2(Prices,'M',TF=False, rolling_window=175,static=False)
-    RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, 'N/A','Monthly','RP 175')
+    #RP_pos = risk_parity_generator_V2(Prices,'M',TF=False, rolling_window=175,static=False)
+    #RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, 'N/A','Monthly','RP 175')
     
     #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",#RP_TF_pos, '200 SMA','Monthly','RP 200')     

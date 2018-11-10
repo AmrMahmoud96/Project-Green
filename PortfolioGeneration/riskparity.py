@@ -86,15 +86,17 @@ def _get_risk_parity_weights(covariances, assets_risk_budget, initial_weights):
     return weights
 
 
-def get_weights(returns):
+def get_weights(returns,target=None):
 
     # We calculate the covariance matrix
     covariances = returns.cov().values
 
     # The desired contribution of each asset to the portfolio risk: we want all
     # asset to contribute equally
-    assets_risk_budget = [1 / returns.shape[1]] * returns.shape[1]
-
+    if not target:
+        assets_risk_budget = [1 / returns.shape[1]] * returns.shape[1]
+    else:
+        assets_risk_budget = target
     # Initial weights: equally weighted
     init_weights = [1 / returns.shape[1]] * returns.shape[1]
 

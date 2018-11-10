@@ -37,9 +37,12 @@ def total_weight_constraint(x):
 def long_only_constraint(x):
     return x
 
-def get_weights(returns):
+def get_weights(returns,target=None):
     #x_t = [0.25, 0.25, 0.25, 0.25] # your risk budget percent of total portfolio risk (equal risk)
-    x_t = [1 / returns.shape[1]] * returns.shape[1]
+    if not target:
+        x_t = [1 / returns.shape[1]] * returns.shape[1]
+    else:
+        x_t = target
     V = returns.cov().values
     w0 = [1 / returns.shape[1]] * returns.shape[1]
     cons = ({'type': 'eq', 'fun': total_weight_constraint},
