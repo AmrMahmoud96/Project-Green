@@ -212,7 +212,7 @@ def questions():
         questions=[]
         for q in questionDB.find({}):
             questions.append(q)
-        random.shuffle(questions)
+        #random.shuffle(questions)
         return render_template('questions.html',questions=questions)
     return redirect(url_for('home'))
 
