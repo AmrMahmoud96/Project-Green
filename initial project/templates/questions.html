@@ -29,9 +29,6 @@
         cursor:pointer;
         border:2px solid transparent;
       }
-      label > div  > input:checked + figure { /* (RADIO CHECKED) IMAGE STYLES */
-        border:2px solid #f00;
-      }
       figure > div > input + img{ /* IMAGE STYLES */
         cursor:pointer;
         border:2px solid transparent;
@@ -40,6 +37,9 @@
           margin-top: 20px;
           margin-bottom:20px;
             
+      }
+      .highlight{
+        border:3px solid #F37649 !important;
       }
       .option-container{
         margin:15px; 
@@ -67,20 +67,20 @@
     <div class="question">
     <h3 class="center">{{question.question}}</h3>
     <div class="question-container">
-   <label class="option-container">
+   <label class="question{{question.qid}} option-container" >
        <div class="test">
         <input type="radio" class="option" name={{question.qid}} value="0" />
         <figure>
-            <img src={{question.imga}} width="100px" height="100px">
+            <img src={{question.imga}} width="150px" height="150px">
             <figcaption>{{question.optiona}}</figcaption>
         </figure>
         </div>
     </label>
-    <label class="option-container">
+    <label class="question{{question.qid}} option-container">
         <div class="test">
         <input type="radio" class="option" name={{question.qid}} value="1" />
         <figure>
-        <img src={{question.imgb}} width="100px" height="100px">
+        <img src={{question.imgb}} width="150px" height="150px">
         <figcaption>{{question.optionb}}</figcaption>
         </figure>
         </div>
@@ -93,6 +93,15 @@
     </div>
 </div>
 <script>
+$(document).ready(function() {
+  //change colour when radio is selected
+  $('input:radio').change(function() {
+    var qid = this.name 
+    // Only remove the class in the specific `box` that contains the radio
+    $('label.question'+qid+'.highlight').removeClass('highlight');
+    $(this).closest('.option-container').addClass('highlight');
+  });
+});
 
 //randomize order of options
 var options = $('.option-container')
