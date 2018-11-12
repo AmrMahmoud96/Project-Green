@@ -211,7 +211,8 @@ def questions():
         questionDB = mongo.db['_Questions']
         questions=[]
         for q in questionDB.find({}):
-            questions.append(q)#questions = [{'qid':'1','optiona': 'option a', 'optionb':'option b'},{'qid':'2','optiona': 'THis is a super long test option to find out how it would look', 'optionb':'option b1'},{'qid':'3','optiona': 'option a2', 'optionb':'option b2'}]
+            questions.append(q)
+        random.shuffle(questions)
         return render_template('questions.html',questions=questions)
     return redirect(url_for('home'))
 
