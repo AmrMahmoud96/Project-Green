@@ -80,11 +80,55 @@ text-align: justify;
 
     margin-right: 5px !important;
 }
-</style>
 
-<!--<h1 class="title center">About Us</h1>-->
+.logoA{
+    width: 175px;
+    height: 175px;
+}
+.logoB{
+    width:500px;
+    height: 200px;
+}
+.left{
+    width: 50%;
+}
+.right{
+    width:50%;
+}
+</style>
+<script>
+    $(document).ready(function(){
+    $("#frontpagelogo").hide(0).fadeIn(2000)
+});
+</script>
+
+<div id="frontpagelogo">
+<div class="center">
+    <img class="logoA" src="./static/images/logo"/>
+</div>
+<div class="center">
+    <img class="logoB" src="./static/images/text.png"/>
+</div>
+</div>
 <div>
-    <div  class="bg">
+    <div class="bg2">
+        <div class="about-content-container justify">
+            <h5 class ="center">Start investing towards your goals!</h5>
+            <p>Alpha Factory helps you build a diversified portfolio designed to meet your unique financial goals!</p>
+            <p>To ensure our customers get highly diversified portfolios, we invest in aggregate asset classes. 
+            To create portfolios that perform well in all financial environments, we decided to base our asset selection methodology on Bridgewater's all-weather framework.</p>
+            <div class="center"><a href="#learnmore"><button style="border-radius: 20px;" class="btn basecolorbtn">Learn More</button></a></div>
+        </div>
+</div>
+    
+</div>
+   
+<div id="learnmore" class="class2 center">
+        <p> Content goes here</p>
+    <div class="left"><p>text goes here</p></div>
+    <div class="right"><p>text goes here</p></div>
+</div>
+<div  class="bg">
         <div class="about-content-container justify">
             <p>Money matters – love it or hate it, money has become a cornerstone to survival and society. Money provides us with the ability to satisfy our basic survival needs (i.e. food, shelter, clothing, etc.), creates opportunities for choices/flexibility, allows you to live your dreams and/or fund the causes you care about.</p>
             <p>Fundamentally, there are only two ways to make money – by working and/or by having your assets work for you. We all know the importance of working with most of us having jobs to satisfy our monetary needs, but having your assets work for you is a concept that is often overlooked by many. We are here to change that. Alpha Factory aims to reduce the stigma around investing and make it accessible and understandable for everyone. Ultimately, Alpha Factory aims to close the world’s investment gap by making investing activities part of everyday life!</p>
@@ -116,23 +160,4 @@ text-align: justify;
             <p> Content goes here</p>
          </div>
     {% endif %}
-    
-        
-    
-</div>
-    <!--<div class="class2 center">
-       <p> Content goes here</p>
-    </div>-->
-    <div class="bg2">
-            <div class="about-content-container justify">
-                    <h5 class ="center">Start investing towards your goals!</h5>
-                    <p>Alpha Factory helps you build a diversified portfolio designed to meet your unique financial goals!</p>
-					<p>To ensure our customers get highly diversified portfolios, we invest in aggregate asset classes. 
-					To create portfolios that perform well in all financial environments, we decided to base our asset selection methodology on Bridgewater's all-weather framework.</p>
-                </div>
-    </div>
-    <div class="class2 center">
-       <p> Content goes here</p>
-    </div>
-</div>
 {% endblock %}
