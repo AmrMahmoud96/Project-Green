@@ -7,9 +7,7 @@
     }
     label{
         padding: 10px;
-        width: 200px;
-        height: 200px;
-        vertical-align: top;
+        vertical-align: middle;
         text-align: center;
         word-break: break-word;
         border: 1px solid black;
@@ -43,43 +41,68 @@
           margin-bottom:20px;
             
       }
+      .option-container{
+        margin:15px; 
+        flex: 1;  
+      }
+      .question{
+        text-align: center;
+      }
+      .question-container{
+          display: flex;
+          margin: 0 auto;
+          max-width: 60%;
+      }
       .progress-bar{
         background:#F37649;
       }
       </style>
 <div class="container center">
     <h2 class="title center">Questions</h2>
-    <h4 class="center">Select the option that best suits your personality.</h4>
     <div class="progress">
         <div id = "prbar" class="progress-bar" role="progressbar"  style = "width:0" aria-valuenow="0" aria-valuemin="0" aria-valuemax= "100"></div>
     </div>
     {% for question in questions%}
+    
     <div class="question">
-   <label>
+    <h3 class="center">{{question.question}}</h3>
+    <div class="question-container">
+   <label class="option-container">
        <div class="test">
         <input type="radio" class="option" name={{question.qid}} value="0" />
         <figure>
-            <img src="./static/images/coins icon.png" width="100px" height="100px">
+            <img src={{question.imga}} width="100px" height="100px">
             <figcaption>{{question.optiona}}</figcaption>
         </figure>
         </div>
     </label>
-    <label>
+    <label class="option-container">
         <div class="test">
         <input type="radio" class="option" name={{question.qid}} value="1" />
         <figure>
-        <img src="./static/images/regular money bag.png" width="100px" height="100px">
+        <img src={{question.imgb}} width="100px" height="100px">
         <figcaption>{{question.optionb}}</figcaption>
         </figure>
         </div>
     </label>
     </div>
+</div>
     {% endfor %}
     <div class="btncontainer center">
         <button class="btn basecolorbtn" id="prev">Previous</button>
     </div>
 </div>
 <script>
+
+//randomize order of options
+var options = $('.option-container')
+for(var i = 0; i < options.length; i+=2){
+    if(Math.round(Math.random())==1){
+        console.log('switch')
+        options.eq(i).before(options.eq(i+1));
+    }
+}
+
 var answers = {}
 $('.option').change(function(){
     var answer = ($(this).attr('value'))
