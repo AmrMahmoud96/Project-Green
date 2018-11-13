@@ -397,12 +397,14 @@ def risk_parity_positions(Prices):
         positions[asset] = weights[asset]
     return positions
 
-def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,static=False):
+def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,static=False,target=None,cash='SHV'):
     '''generate positions for risk parity portfolio'''
     Prices = Prices.dropna(how='any')
     assets = list(Prices)
-    positions = pd.DataFrame(columns = Prices.columns)
-    static_weights = erc_ver1.get_weights(Prices.pct_change().dropna(how='any'))
+    assets_cash = assets.copy()
+    assets_cash.remove(cash)
+    positions = pd.DataFrame(columns = assets)
+    static_weights = erc_ver1.get_weights(Prices[assets_cash].pct_change().dropna(how='any'),target)
     
     #if trend following option selected
     if TF:
@@ -416,13 +418,15 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                     if static:
                         weights = static_weights
                     else:
-                        weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'))
+                        weights = erc_ver1.get_weights(Prices[assets_cash].loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'),target)
                     for asset in SMA.columns:
                         if Prices.loc[day,asset] >= SMA.loc[day,asset]:
                             positions.loc[day,asset] = 1
                         else:
                             positions.loc[day,asset] = 0
+                    positions.loc[day,cash]=0
                     last_pos = positions.loc[day]*weights
+                    last_pos.loc[cash] = 1 - last_pos.sum()
                     positions.loc[day] = last_pos
                     
                     if rebal_freq == 'M':
@@ -432,10 +436,11 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                     day = day + timedelta(days=1)
                 else:
                     temp_data = last_pos*(1+Returns[assets].loc[day])
-                    if temp_data.astype(bool).sum() == len(assets):
-                        positions.loc[day] = temp_data/temp_data.sum()
-                    else:
-                        positions.loc[day] = temp_data  
+                    positions.loc[day] = temp_data/temp_data.sum()
+                    #if temp_data.astype(bool).sum() == len(assets):
+                    #    positions.loc[day] = temp_data/temp_data.sum()
+                    #else:
+                    #    positions.loc[day] = temp_data  
                     last_pos = positions.loc[day]                    
                     day = day + timedelta(days=1)                    
             else:
@@ -451,7 +456,7 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                     if static:
                         weights = static_weights
                     else:
-                        weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'))
+                        weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'),target)
                     positions.loc[day] = weights
                     last_pos = weights
                     if rebal_freq == 'M':
@@ -545,71 +550,39 @@ def risk_parity_tf_positions_realloc(Prices):
 def realloc(positions):
     positions = positions.loc[:,:].div(positions.sum(axis=1),axis=0)
     return positions
-
-def EW_TF_positions_old(Prices):
-    '''determine postions in equal weight portfolio with trend following overlay'''
-    Prices = Prices.dropna(how='any')
-    ew = 1/len((Prices.columns))
-    rolling_window = 200
-    positions = pd.DataFrame(columns = Prices.columns)
-    SMA = Prices.rolling(window=rolling_window).mean()
-    SMA = SMA.iloc[200:]
-    #determine positions
-    for day in SMA.index:
-        for asset in SMA.columns:
-            if Prices.loc[day,asset] >= SMA.loc[day,asset]:
-                positions.loc[day,asset] = 1
-            else:
-                positions.loc[day,asset] = 0
-    
-    return positions.shift(1).dropna(how='any')*ew
         
-    
-def Trend_Strategy(Prices):
-    '''Determine postions based on trends of assets. If price is above 200 day SMA then long else no position'''
-    rolling_window = 200
-    positions = pd.DataFrame(columns = Prices.columns)
-    
-    SMA = Prices.rolling(window=rolling_window).mean()
-    SMA.dropna(inplace=True)
-    ##plot SMA
-    #ax = Prices.plot()
-    #SMA.plot(ax=ax)
-    #plt.show()
-    
-    #determine positions
-    for day in SMA.index:
-        for asset in SMA.columns:
-            if Prices.loc[day,asset] >= SMA.loc[day,asset]:
-                positions.loc[day,asset] = 1
-            else:
-                positions.loc[day,asset] = 0
-    
-    return positions.shift(1).dropna(how='any')
-    
 def inverse_vol(returns):
     inv_vol = 1/returns.std()
     weights = inv_vol/inv_vol.sum()
     return weights
 
 if __name__ == "__main__":
+    
     print("Started...")
+    
     #plotting styles
-    #plt.style.use('ggplot')
     plt.rcParams["figure.figsize"] = (12,7)    
     plt.rcParams.update({'font.size': 9})
     plt.rcParams.update({'mathtext.default':  'regular' })
     plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#aec7e8','#ffbb78','#98df8a','#ff9896','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'])
     
-    #load prices and calculate returns
-    Prices = pd.DataFrame()
+    #set Leverage
+    ###############
+    leverage = 3
+    ###############
     
+    #load prices
+    Prices = pd.DataFrame()
     for fname in os.listdir("Data/ETF"):
         Prices = load_data(fname,Prices)
-    
+    #calculate returns
     Returns = Prices.pct_change() 
     #####Same Date Range#####
     #Prices = Prices[(Prices.index >= datetime(2008,10,6)) & (Prices.index <= datetime(2018,10,11))]
+    
+    ################LEVERAGE########################
+    if leverage:
+        Returns = Returns*leverage
     
     print("Prices and returns loaded!")
     
@@ -618,7 +591,7 @@ if __name__ == "__main__":
     ############################################################################
     
     #basic plot test
-    #Prices.plot()
+    #Prices['SHV'].plot()
     #plt.xlabel('Date')
     #plt.ylabel('Price')
     #plt.title('Price Chart')
@@ -655,14 +628,6 @@ if __name__ == "__main__":
     ############################################################################
     
     #Determine Positions
-    
-    #testing trend following strategy
-    #trend_following_pos  = Trend_Strategy(Prices[['SPY']])
-    #TF_Port = portfolio("Trend Following S&P500","TF","Trend following test porfolio",trend_following_pos)
-    
-    #S&P500
-    #SP500_pos = EW_positions(Prices[['SPY']])
-    #SP500_Port = portfolio("S&P500","SP500","Just S&P500",SP500_pos)
         
     #equal weight positions
     #EW_pos = EW_positions(Prices[['SPY','VNQ','BND','EEM','EFA','TIP','GLD']])
@@ -690,9 +655,9 @@ if __name__ == "__main__":
     
     #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
-    
-    #RP_pos = risk_parity_generator_V2(Prices,'M',TF=False, rolling_window=175,static=False)
-    #RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, 'N/A','Monthly','RP 175')
+    #target = [.15,.15,.15,.05,.15,.05,.05,.05,.05,.05,.05,.05]
+    RP_pos = risk_parity_generator_V2(Prices[['SPY','EFA','EEM','DBC','VNQ','GLD','TIP','EMB','BWX','TLT','MUB','AGG','SHV']],'M',TF=True, rolling_window=200,static=False,target=None)
+    RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
     
     #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",#RP_TF_pos, '200 SMA','Monthly','RP 200')     

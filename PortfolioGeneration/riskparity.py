@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import datetime
 from scipy.optimize import minimize
-TOLERANCE = 1e-10
+TOLERANCE = 1e-15
 
 
 def _allocation_risk(weights, covariances):
@@ -87,7 +87,6 @@ def _get_risk_parity_weights(covariances, assets_risk_budget, initial_weights):
 
 
 def get_weights(returns,target=None):
-
     # We calculate the covariance matrix
     covariances = returns.cov().values
 
