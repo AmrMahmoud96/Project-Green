@@ -20,7 +20,7 @@ temppin = ''
 tempemail=''
 
 
-riskDefnArr = ['risk averse','risky','very risky','too risky']
+riskDefnArr = ['risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky']
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'AlphaFactory'
