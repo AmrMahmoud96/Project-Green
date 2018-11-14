@@ -74,6 +74,29 @@ def about():
         else:
             return render_template('about.html', form=form,detailedForm=detailedForm)
     return render_template("about.html",form=form,detailedForm=detailedForm)
+@app.route("/detailedAbout", methods=['POST'])
+def detailedAbout():
+    form = PortfolioCalculationForm()
+    detailedForm=DetailedPortfolioCalculationForm()
+    if request.method == 'POST':
+        if detailedForm.validate_on_submit():
+            count = 0
+            for d in detailedForm:
+                if type(d.data) is type(decimal.Decimal(0)) or type(d.data)is int:
+                    count+= d.data
+            if count == 0:
+                detailedForm.SPY.errors.append('Please enter at least one value.')
+                return render_template('about.html', form=form,detailedForm=detailedForm)
+            #Call back-end function 1, get (3yr,5yr,10yr) portfolios for both
+            labels = tableV['Date'].values.tolist()
+            a = tableS['Close'].values
+            b = tableV['Close'].values
+            ocolumn_divs = (a/a[0])*10000
+            tcolumn_divs = (b/b[0])*10000
+            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+        else:
+            return render_template('about.html', form=form,detailedForm=detailedForm)
+    return render_template("about.html",form=form,detailedForm=detailedForm)
 
 @app.route('/logout')
 def logout():
