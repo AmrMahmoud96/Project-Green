@@ -30,6 +30,14 @@ background: #f8f9fa!important;
         color:white;
         border-radius: 25px;
       }
+
+      .nav-link{
+          color:#F37649!important;
+      }
+      .nav-tabs{
+          margin-bottom:20px;
+      }
+
 .portfolio-tester{
     background: white!important;
 
@@ -66,7 +74,6 @@ width: 50%;
 margin: 0 auto;
 margin-top:50px;
 margin-bottom: 50px;
-opacity: .8;
 }
 .last-text{
     display: inline-flex;
@@ -149,9 +156,25 @@ text-align: justify;
         {% else %}
         <p class="center">Test your current portfolio performance and how it compares against our world-class robo-advisor.</p>
     <div class="port-form">
-        <form action={{ url_for('about') }} method="POST">
-            {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
-        </form>
+                 <ul class="nav nav-tabs">
+                    <li class="nav-item active"><a class="nav-link active" data-toggle="tab" href="#simple">Simple</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#detailed">Detailed</a></li>
+                  </ul>
+                  <div class="tab-content">
+                    <div id="simple" class="tab-pane fade show active">
+                            <form action={{ url_for('about') }} method="POST">
+                                    {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
+                                </form>
+                    </div>
+                    <div id="detailed" class="tab-pane fade">
+                            <form action={{ url_for('about') }} method="POST">
+                                    {{wtf.quick_form(detailedForm,button_map={'submit':"primary trybtn"})}}
+                                </form>
+                    </div>
+        
+                  </div>
+
+        
     </div>
         {% endif %}
         {% endblock %}

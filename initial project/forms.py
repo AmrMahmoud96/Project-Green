@@ -1,4 +1,4 @@
-from wtforms import  TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField, IntegerField
+from wtforms import  TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField, DecimalField
 from wtforms.fields.html5 import DateField
 from flask_wtf import FlaskForm
 from datetime import datetime,date
@@ -10,11 +10,27 @@ class ContactForm(FlaskForm):
   subject = TextField("Subject",[validators.DataRequired("Please enter a subject line.")])
   message = TextAreaField("Message",[validators.DataRequired("Please enter a message.")])
   submit = SubmitField("Submit")
+class DetailedPortfolioCalculationForm(FlaskForm):
+  SPY = DecimalField("SPY" ,[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in developed equity markets."})
+  EFA = DecimalField("EFA",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in developed equity markets."})
+  EEM = DecimalField("EEM",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in emerging market equities."})
+  VNQ = DecimalField("VNQ",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in developed real estate."})
+  TLT = DecimalField("TLT",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in long duration US bonds."})
+  AGG = DecimalField("AGG",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in US intermediate bonds."})
+  BWX = DecimalField("BWX",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in international developed market bonds."})
+  EMB = DecimalField("EMB",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in emerging market bonds."})
+  TIP = DecimalField("TIP",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in inflation-protected bonds."})
+  MUB = DecimalField("MUB",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in municipal bonds."})
+  SHV = DecimalField("SHV",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in money market/short term bonds."})
+  DBC = DecimalField("DBC",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in commodities."})
+  GLD = DecimalField("GLD",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in gold."})
+  submit = SubmitField("Enter")
 class PortfolioCalculationForm(FlaskForm):
-  equities = IntegerField("Equities" ,[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in equities."})
-  bonds = IntegerField("Bonds",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in bonds."})
-  oil = IntegerField("Oil",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in oil."})
-  cash = IntegerField("Cash",[validators.NumberRange(min=0),validators.Optional()],render_kw={"placeholder": "Enter the amount of money you have in cash."})
+  equities = DecimalField("Equities" ,[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in equities."})
+  bonds = DecimalField("Bonds",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in bonds."})
+  commodities = DecimalField("Commodities",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in commoditites."})
+  re = DecimalField("Real Estate",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in real estate."})
+  cash = DecimalField("Cash",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in cash."})
   submit = SubmitField("Enter")
 
 class RegisterForm(FlaskForm):

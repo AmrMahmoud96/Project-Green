@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify,g
-from forms import ContactForm, RegisterForm, PortfolioCalculationForm
+from forms import ContactForm, RegisterForm, PortfolioCalculationForm, DetailedPortfolioCalculationForm
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
@@ -8,6 +8,7 @@ import datetime,time
 import pandas as pd
 import numpy as np
 import random
+import decimal
 
 sandpfile='^GSPC (2).csv'
 vixfile= '^GSPTSE.csv'
@@ -53,15 +54,17 @@ def chart():
 @app.route("/about", methods=['GET', 'POST'])
 def about():
     form = PortfolioCalculationForm()
+    detailedForm=DetailedPortfolioCalculationForm()
     if request.method == 'POST':
         if form.validate_on_submit():
             count = 0
             for d in form:
-                if type(d.data) is int:
+                if type(d.data) is type(decimal.Decimal(0)) or type(d.data)is int:
                     count+= d.data
             if count == 0:
                 form.equities.errors.append('Please enter at least one value.')
-                return render_template('about.html', form=form)
+                return render_template('about.html', form=form,detailedForm=detailedForm)
+            #Call back-end function 1, get (3yr,5yr,10yr) portfolios for both
             labels = tableV['Date'].values.tolist()
             a = tableS['Close'].values
             b = tableV['Close'].values
@@ -69,8 +72,8 @@ def about():
             tcolumn_divs = (b/b[0])*10000
             return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
-            return render_template('about.html', form=form)
-    return render_template("about.html",form=form)
+            return render_template('about.html', form=form,detailedForm=detailedForm)
+    return render_template("about.html",form=form,detailedForm=detailedForm)
 
 @app.route('/logout')
 def logout():
