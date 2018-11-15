@@ -16,12 +16,18 @@
 }
 .btncontainer{
     text-align: center;
+    display: flex;
+    margin: 0 auto;
 }
 .bb{
     margin: 5px;
     color:#F37649;
-    border: #F37649 1px thin;
+    border: 1px solid #F37649!important;
     border-radius: 5px;
+}
+.bb:hover{
+    background: #F37649;
+        color:white;
 }
 .selected{
         background: #F37649;
@@ -34,24 +40,44 @@
         color:white;
         border-radius: 25px;
       }
+      .c-form{
+          margin: 0 auto;
+          display: flex;
+      }
+      .f{
+          display: grid;
+      }
 
 </style>
  <!-- import plugin script -->   <script src='static/Chart.min.js'></script> 
- <form class="form-inline" action="{{ url_for('recalculateAbout') }}" method="POST">
-    {% if error %}
-    <p class="flash">{{ error }}</p>
-  {% endif %}
-      <div class="form-group">
-        <label for="SD">Start Date</label>
-        <input type="date" name="SD" class="form-control" id="SD">
-      </div>
-      <div class="form-group">
-            <label for="ED">End Date</label>
-            <input type="date" name="ED" class="form-control" id="ED">
-          </div>
-      <button type="submit" class="btn basecolorbtn">Go</button>
-    </form>
-<div class="btncontainer"><button class="btn1 bb">3 Year</button><button class="btn2 selected bb">5 Year</button><button class="bb btn3">10 Year</button></div>
+
+        <form class="center f form-inline" action={{ url_for('recalculateAbout')}} method="POST">
+                {% if error %}
+                <p class="flash">{{ error }}</p>
+              {% endif %}
+              <div style="margin-bottom:20px;" class="c-form">
+                  <div class="form-group">
+                    <label style="margin-right:10px;" for="SD">Start Date</label>
+                    <input type="date" name="SD" class="form-control" id="SD">
+                  </div>
+                  <div style="margin-left:20px;" class="form-group">
+                        <label style="margin-right:10px;" for="ED">End Date</label>
+                        <input type="date" name="ED" class="form-control" id="ED">
+                      </div>
+                  <button style="margin-left:20px;" type="submit" name="btn" class="btn basecolorbtn" value='custom'>Go</button>
+                </div>
+                  <div class="btncontainer">
+                        <button type="submit" class="btn bb {{selected[0]}}" name="btn" value="3y">3 Year</button>
+                        <button type="submit" class="btn bb {{selected[1]}}" name="btn" value="5y">5 Year</button>
+                        <button type="submit" class="btn bb {{selected[2]}}" name="btn" value="10y">10 Year</button>
+                        <button type="submit" class="btn bb {{selected[3]}}" name="btn" value="crisis">Crisis</button>
+                        <button type="submit" class="btn bb {{selected[4]}}" name="btn" value="bull">Bull</button>
+                    </div>
+                </form>
+           
+
+ 
+
     <!-- bar chart canvas element -->
     <div class="info">
 <canvas id="chart" class="chart"></canvas>
@@ -112,14 +138,14 @@ const data = {
         fill: false,
         label: 'Your Portfolio',
         data: d1,
-        borderColor: '#fe8b36',
-        backgroundColor: '#fe8b36',
+        borderColor: 'red',
+        backgroundColor: 'red',
         lineTension: 0
     },{   fill: false,
         label: 'Our Portfolio',
         data: d2,
-        borderColor: 'red',
-        backgroundColor: 'red',
+        borderColor: '#fe8b36',
+        backgroundColor: '#fe8b36',
         lineTension: 0
         }]
 }

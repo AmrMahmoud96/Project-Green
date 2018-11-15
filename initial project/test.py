@@ -70,7 +70,8 @@ def about():
             b = tableV['Close'].values
             ocolumn_divs = (a/a[0])*10000
             tcolumn_divs = (b/b[0])*10000
-            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+            selected=['','selected','','','']
+            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
             return render_template('about.html', form=form,detailedForm=detailedForm)
     return render_template("about.html",form=form,detailedForm=detailedForm)
@@ -93,7 +94,8 @@ def detailedAbout():
             b = tableV['Close'].values
             ocolumn_divs = (a/a[0])*10000
             tcolumn_divs = (b/b[0])*10000
-            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+            selected=['','selected','','','']
+            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
             return render_template('about.html', form=form,detailedForm=detailedForm)
     return render_template("about.html",form=form,detailedForm=detailedForm)
@@ -101,13 +103,23 @@ def detailedAbout():
 @app.route("/recalculateAbout", methods=['POST'])
 def recalculateAbout():
     if request.method == 'POST':
-       
+        selected=['','','','','']
+        if(request.form['btn']=='3y'):
+            selected=['selected','','','','']
+        if(request.form['btn']=='5y'):
+            selected=['','selected','','','']
+        if(request.form['btn']=='10y'):
+            selected=['','','selected','','']
+        if(request.form['btn']=='crisis'):
+            selected=['','','','selected','']
+        if(request.form['btn']=='bull'):
+            selected=['','','','','selected']
         labels = tableV['Date'].values.tolist()
         a = tableS['Close'].values
         b = tableV['Close'].values
         ocolumn_divs = (a/a[0])*10000
         tcolumn_divs = (b/b[0])*10000
-        return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+        return render_template('about.html', success = True,selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
 
 
 @app.route('/logout')
