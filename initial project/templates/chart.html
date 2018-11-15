@@ -49,21 +49,43 @@
       }
 
 </style>
+<script>
+function validateForm() {
+    var x = document.forms["plotForm"]["SD"].value;
+    var y = document.forms["plotForm"]["ED"].value;
+    if(document.forms["plotForm"]["btn"].value == 'custom'){
+        if(x == ''){
+        alert('Please enter a starting date for the time period.')
+        return false;
+    }
+    if(y == ''){
+        alert('Please enter an ending date for the time period.')
+        return false;
+    }
+    if(x >= y){
+        alert('Please enter a valid date range.')
+        return false;
+    }
+    }
+    
+}
+</script>
  <!-- import plugin script -->   <script src='static/Chart.min.js'></script> 
 
-        <form class="center f form-inline" action={{ url_for('recalculateAbout')}} method="POST">
+        <form class="center f form-inline" name="plotForm"action={{ url_for('recalculateAbout')}} onsubmit = "return validateForm()" method="POST">
                 {% if error %}
                 <p class="flash">{{ error }}</p>
               {% endif %}
+            
               <div style="margin-bottom:20px;" class="c-form">
                   <div class="form-group">
                     <label style="margin-right:10px;" for="SD">Start Date</label>
-                    <input type="date" name="SD" class="form-control" id="SD">
+                    <input type="date" name="SD" class="form-control" id="SD" max="2018-11-14" min = "1990-11-14">
                   </div>
                   <div style="margin-left:20px;" class="form-group">
-                        <label style="margin-right:10px;" for="ED">End Date</label>
-                        <input type="date" name="ED" class="form-control" id="ED">
-                      </div>
+                    <label style="margin-right:10px;" for="ED">End Date</label>
+                    <input type="date" name="ED" class="form-control" id="ED" max="2018-11-14" min = "1990-11-14">
+                </div>
                   <button style="margin-left:20px;" type="submit" name="btn" class="btn basecolorbtn" value='custom'>Go</button>
                 </div>
                   <div class="btncontainer">

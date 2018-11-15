@@ -4,7 +4,7 @@ from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
-import datetime,time
+import datetime as datetime
 import pandas as pd
 import numpy as np
 import random
@@ -103,22 +103,38 @@ def detailedAbout():
 @app.route("/recalculateAbout", methods=['POST'])
 def recalculateAbout():
     if request.method == 'POST':
-        selected=['','','','','']
-        if(request.form['btn']=='3y'):
-            selected=['selected','','','','']
-        if(request.form['btn']=='5y'):
-            selected=['','selected','','','']
-        if(request.form['btn']=='10y'):
-            selected=['','','selected','','']
-        if(request.form['btn']=='crisis'):
-            selected=['','','','selected','']
-        if(request.form['btn']=='bull'):
-            selected=['','','','','selected']
         labels = tableV['Date'].values.tolist()
         a = tableS['Close'].values
         b = tableV['Close'].values
         ocolumn_divs = (a/a[0])*10000
         tcolumn_divs = (b/b[0])*10000
+        print(request.form)
+        if(request.form['btn']=='3y'):
+            selected=['selected','','','','']
+            ED = datetime.datetime.now()
+            SD = datetime.datetime.now() - datetime.timedelta(days=3*365)
+        if(request.form['btn']=='5y'):
+            selected=['','selected','','','']
+            ED = datetime.datetime.now()
+            SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
+        if(request.form['btn']=='10y'):
+            selected=['','','selected','','']
+            ED = datetime.datetime.now()
+            SD = datetime.datetime.now() - datetime.timedelta(days=10*365)
+        if(request.form['btn']=='crisis'):
+            selected=['','','','selected','']
+        if(request.form['btn']=='bull'):
+            selected=['','','','','selected']
+        if(request.form['btn']=='custom'):
+            selected=['','','','','']
+            if(request.form['ED']=='' or request.form['SD'] ==''):
+                return render_template('about.html', error = 'Please enter the starting and ending dates for your desired time period.',selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+            SD= datetime.datetime.strptime(request.form['SD'], '%Y-%m-%d')
+            ED= datetime.datetime.strptime(request.form['ED'], '%Y-%m-%d')
+            if(ED<= SD):
+                return render_template('about.html', error = 'Please enter a valid time period.',selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+        print('SD:',SD)
+        print('ED:',ED)
         return render_template('about.html', success = True,selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
 
 
