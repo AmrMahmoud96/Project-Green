@@ -102,27 +102,19 @@ text-align: justify;
 .right{
     width:50%;
 }
-.className{
-animation:turn 1s linear;
+.footer{
+    background: black;
+    color: grey;
+    height: 100%;
+    min-height: 100px;
+    padding:30px;
+    text-align: center;
 }
-
-@keyframes turn{
-100%{transform:rotate(360deg)}
+.joinlink:hover{
+    color:#F37649;
 }
 
 </style>
-<script>
-    $(document).ready(function(){
-    $("#frontpagelogo").hide(0).fadeIn(2000)
-});
-</script>
-<!--
-<div id="frontpagelogo">
-<div class="center">
-    <img class="logoA turn" src="./static/images/logo"/>
-    <img class="logoB" src="./static/images/text.png"/>
-</div>
-</div>-->
 <div>
     <div class="bg2">
         <div class="about-content-container justify">
@@ -157,7 +149,7 @@ animation:turn 1s linear;
             {% block content %}
             {% if success %}
             <div id="methodResults">
-                 {% include 'chart.html' %}
+                    {% include 'chart.html'%}
             </div>
         {% else %}
         <p class="center">Test your current portfolio performance and how it compares against our world-class robo-advisor.</p>
@@ -189,4 +181,11 @@ animation:turn 1s linear;
             <p> Content goes here</p>
          </div>
     {% endif %}
+    <div class="footer">
+        <p>Still have questions? <a class='joinlink basecolortext' href={{url_for('contactus')}}>Contact Us</a> </p>
+        <!--
+        <p>Product of MIE 479 Capstone Project</p>
+        <p>Stefan Momic, Amr Mahmoud, Ameer Shaikh, Daniel Kecman</p>
+        -->
+    </div>
 {% endblock %}

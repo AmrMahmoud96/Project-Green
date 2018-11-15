@@ -98,6 +98,18 @@ def detailedAbout():
             return render_template('about.html', form=form,detailedForm=detailedForm)
     return render_template("about.html",form=form,detailedForm=detailedForm)
 
+@app.route("/recalculateAbout", methods=['POST'])
+def recalculateAbout():
+    if request.method == 'POST':
+       
+        labels = tableV['Date'].values.tolist()
+        a = tableS['Close'].values
+        b = tableV['Close'].values
+        ocolumn_divs = (a/a[0])*10000
+        tcolumn_divs = (b/b[0])*10000
+        return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+
+
 @app.route('/logout')
 def logout():
     session['name'] = None
