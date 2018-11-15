@@ -31,7 +31,7 @@ background: #f8f9fa!important;
         border-radius: 25px;
       }
 
-      .nav-link{
+      .nav-link-tab{
           color:#F37649!important;
       }
       .nav-tabs{
@@ -102,21 +102,27 @@ text-align: justify;
 .right{
     width:50%;
 }
+.className{
+animation:turn 1s linear;
+}
+
+@keyframes turn{
+100%{transform:rotate(360deg)}
+}
+
 </style>
 <script>
     $(document).ready(function(){
     $("#frontpagelogo").hide(0).fadeIn(2000)
 });
 </script>
-
+<!--
 <div id="frontpagelogo">
 <div class="center">
-    <img class="logoA" src="./static/images/logo"/>
-</div>
-<div class="center">
+    <img class="logoA turn" src="./static/images/logo"/>
     <img class="logoB" src="./static/images/text.png"/>
 </div>
-</div>
+</div>-->
 <div>
     <div class="bg2">
         <div class="about-content-container justify">
@@ -157,8 +163,8 @@ text-align: justify;
         <p class="center">Test your current portfolio performance and how it compares against our world-class robo-advisor.</p>
     <div class="port-form">
         <ul class="nav nav-tabs">
-        <li class="nav-item active"><a class="nav-link active" data-toggle="tab" href="#simple">Simple</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#detailed">Detailed</a></li>
+        <li class="nav-item active"><a class="nav-link nav-link-tab active" data-toggle="tab" href="#simple">Simple</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-tab" data-toggle="tab" href="#detailed">Detailed</a></li>
         </ul>
         <div class="tab-content">
         <div id="simple" class="tab-pane fade show active">
