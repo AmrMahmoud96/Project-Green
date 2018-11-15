@@ -5,6 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as datetime
+import time as time
 import pandas as pd
 import numpy as np
 import random
@@ -136,8 +137,14 @@ def recalculateAbout():
         print('SD:',SD)
         print('ED:',ED)
         return render_template('about.html', success = True,selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+    data = calculateSomething()
+    return render_template('test.html', data=data)
 
-
+def calculateSomething():
+    time.sleep(10)
+    return 'This is some elaborate test'
 @app.route('/logout')
 def logout():
     session['name'] = None
