@@ -118,7 +118,10 @@ def fetch_data(Prices,ETF):
 
 
 if __name__ == "__main__":
-      
+    
+    #Note: for actual use, add following line to file 
+    #from function_one import portfolio_one
+    
     #test cases to demonstrate example implentation
     
     #test 1:
