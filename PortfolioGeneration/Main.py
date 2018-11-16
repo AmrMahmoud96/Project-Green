@@ -568,7 +568,7 @@ if __name__ == "__main__":
     
     #set Leverage
     ###############
-    leverage = 3
+    leverage = None
     ###############
     
     #load prices
