@@ -59,6 +59,17 @@ background: #f8f9fa!important;
     background-repeat: no-repeat;
     background-size: cover;
 }
+.bg3 {
+    /* The image used */
+    background-image: url('/static/images/testimg3.jpg') !important;
+    color: white;
+    width:100%;
+    display:inline-block;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 .about-content-container{
 padding: 20px;
 /*
@@ -122,6 +133,10 @@ text-align: justify;
 #assetTable th{
     border: 1px solid #32383e !important;
 }
+.col{
+    margin:10px;
+    padding:10px;
+}
 </style>
 <div>
     <div class="bg2">
@@ -134,8 +149,35 @@ text-align: justify;
         </div>
 </div>
     
+<div class="class2 center" style="margin-top:20px;">
+        <div class="row" style="margin:0 auto; width: 80%;">
+            <div class="col">
+                <img src='./static/images/transparent.png' width="100" height='100'>
+                <h2>Transparent</h2>
+                <p>We understand the worry people have about investing their money into something they don't understand. That is why here at Alpha Factory, we aim to be fully transparent in our holdings and performance.</p>
+            </div>
+            <div class="col">
+                <img src='./static/images/question_images/Q6b.png' width="100" height='100'>
+                <h2>Reliable</h2>
+                <p>It's tough to see a portfolio in the red, for anyone. In bad times or good, we have commited to being a safe haven from the choatic markets.</p>
+            </div>
+            <div class="col">
+                <img src='./static/images/question_images/Q12a.png' width="100" height='100'>
+                <h2>Available</h2>
+                <p>Our Robo-Advising platform offers you 24 hour support and updates on your information so that you can be in the know.</p>
+            </div>
+        </div>
 </div>
-   
+<div>
+    <div class="bg3">
+        <div class="about-content-container justify">
+            <h4 class ="center">We believe in educating the investor</h4>
+            <p>Alpha Factory helps you build a diversified portfolio designed to meet your unique financial goals!</p>
+            <p>To ensure our customers get highly diversified portfolios, we invest in aggregate asset classes. 
+            To create portfolios that perform well in all financial environments, we decided to base our asset selection methodology on Bridgewater's all-weather framework.</p>
+            <div class="center"><a href="#learnmore"><button style="border-radius: 20px;" class="btn basecolorbtn">Learn More</button></a></div>
+        </div>
+</div>
 <div id="learnmore" class="class2 center">
     <div class="section justify">
 	<h4 class ="center">Asset Universe</h4>
