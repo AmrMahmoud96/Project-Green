@@ -11,6 +11,8 @@
   <body>
     <div>{{data}}</div>
     <div style="width:500px;height:500px;" id = 'divbody'></div>
+    <iframe src="./static/html/loading.html" name="targetframe" allowTransparency="true" scrolling="no" frameborder="0" >
+      </iframe>
     <form action={{ url_for('test')}} method="POST" onsubmit = "return validateForm()">
     <button type="submit" class="btn btn-primary" id="ss">try</button>
     </form>
@@ -19,9 +21,9 @@
   </body>
   <script>
      
-function validateForm() {
-       // alert('stat')
-        $('body').load("./static/html/tester.html");
-}
+    function validateForm() {
+          // alert('stat')
+        $('html').load("./static/html/loading.html");
+    }
     </script>
 </html>

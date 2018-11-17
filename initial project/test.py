@@ -321,7 +321,7 @@ def landingpage():
     if session.get('logged_in') == None:
         session['name'] = None
         session['logged_in'] = None
-        return render_template('about.html')
+        return redirect(url_for('about'))
     else:
         return redirect(url_for('home'))
 

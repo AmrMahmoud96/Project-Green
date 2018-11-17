@@ -1,7 +1,31 @@
-<html>
-    <body>
-        <div>
-            
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" href="./css/normalize.css">
+	<link rel="stylesheet" href="./css/main.css">
+	<script src="./js/modernizr-2.6.2.min.js"></script>
+	<style type="text/css">
+	#demo-content {
+		padding-top: 100px;
+	}
+	</style>
+</head>
+<body class="demo">
+	<div id="demo-content">
+        <h1>hello</h1>
+
+		<div id="loader-wrapper">
+			<div id="loader"></div>
+			<div class="loader-section section-left"></div>
+            <div class="loader-section section-right"></div>
         </div>
-    </body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+	<script>
+	setTimeout(function(){
+		$('body').addClass('loaded');
+		$('h1').css('color','#222222');
+	}, 15000);
+	
+</script>
+
+</body>
 </html>
