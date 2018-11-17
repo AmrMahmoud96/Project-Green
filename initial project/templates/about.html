@@ -70,6 +70,17 @@ background: #f8f9fa!important;
     background-repeat: no-repeat;
     background-size: cover;
 }
+.bg4 {
+    /* The image used */
+    background-image: url('/static/images/testimg4.jpg') !important;
+    color: white;
+    width:100%;
+    display:inline-block;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 .about-content-container{
 padding: 20px;
 /*
@@ -129,6 +140,7 @@ text-align: justify;
 
 #assetTable td{
     border: 1px solid #32383e !important;
+	background-color:orange;
 }
 #assetTable th{
     border: 1px solid #32383e !important;
@@ -154,35 +166,41 @@ text-align: justify;
             <div class="col">
                 <img src='./static/images/transparent.png' width="100" height='100'>
                 <h2>Transparent</h2>
-                <p>We understand the worry people have about investing their money into something they don't understand. That is why here at Alpha Factory, we aim to be fully transparent in our holdings and performance.</p>
+                <p>We understand the worry people have about investing. This is why we aim to reduce the stigma around investing by making it accessible and understandable for everyone. To do so, Alpha Factory is fully transparent with our holdings and performance.</p>
             </div>
             <div class="col">
                 <img src='./static/images/question_images/Q6b.png' width="100" height='100'>
                 <h2>Reliable</h2>
-                <p>It's tough to see a portfolio in the red, for anyone. In bad times or good, we have commited to being a safe haven from the choatic markets.</p>
+                <p>We understand the difficulty in coping with the loss of principal during any time period. As such, Alpha Factory is committed to building reliable portfolios that perform well in all financial environments.</p>
             </div>
             <div class="col">
                 <img src='./static/images/question_images/Q12a.png' width="100" height='100'>
-                <h2>Available</h2>
-                <p>Our Robo-Advising platform offers you 24 hour support and updates on your information so that you can be in the know.</p>
+                <h2>Accessible</h2>
+                <p>We understand the importance of money and the sensitivity of your financial goals. As such, Alpha Factory offers friendly 24-hour support and provides updates on your portfolio performance in real time.</p>
             </div>
         </div>
 </div>
 <div>
     <div class="bg3">
         <div class="about-content-container justify">
-            <h4 class ="center">We believe in educating the investor</h4>
-            <p>Alpha Factory helps you build a diversified portfolio designed to meet your unique financial goals!</p>
-            <p>To ensure our customers get highly diversified portfolios, we invest in aggregate asset classes. 
-            To create portfolios that perform well in all financial environments, we decided to base our asset selection methodology on Bridgewater's all-weather framework.</p>
-            <div class="center"><a href="#learnmore"><button style="border-radius: 20px;" class="btn basecolorbtn">Learn More</button></a></div>
+            <h4 class ="center">Portfolios as Unique as You!</h4>
+            <p>To create a tailored portfolio for each investor, Alpha Factory considers the return goals and risk-tolerance of each of our investors.</p>
+            <p>Everyone is different and has different investment goals. Often times investors do not even know what their investment goals are, and if they do, it’s hard to put them in numbers/words. Alpha Factory tries to help with that. Specifically, we try to match return goals to life goals by considering what our clients are saving for. As such our return goals are largely catered to the following broad categories of life goals:</p>
+            <ul>
+				<li><b>Short-term (~5 to 10 years):</b> saving to purchase a car/home</li>
+				<li><b>Medium- term (~10 to 20 years):</b> creating an education fund for your children</li>
+				<li><b>Long-term (20+ years):</b> saving for retirement </li>
+			</ul>
+			<p>Finally, our unique portfolio generation techniques depend on the risk-tolerance level of our investors. Rather than overfitting with a continuous spectrum of return goals and risk constraints, Alpha Factory created five distinct portfolios to accommodate the different risk-tolerance levels of our customers. We find this strategy better fits our mission as it helps lower fees.</p>
+			<p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
+			<div class="center"><a href={{url_for('joinus')}}><button style="border-radius: 20px;" class="btn basecolorbtn">Join Us</button></a></div>
         </div>
 </div>
 <div id="learnmore" class="class2 center">
     <div class="section justify">
 	<h4 class ="center">Asset Universe</h4>
-	<p>To gain exposure to various asset classes, Alpha Factory invests in Exchange Traded Funds (ETFs). A fully diversified portfolio is crucial for building wealth and limiting risk and investing in ETFs allows us to gain this diversification at the lowest cost. Below are the ETFs we selected to represent each asset class.</p>
-	<table class="center table-dark" id='assetTable'style="width:80%; margin: 0 auto;">
+	<p>To ensure our portfolios perform well in all financial environments, we decided to invest in the asset classes identified by Bridgewater Associates’ All-Weather Fund. To gain exposure to various asset classes, Alpha Factory invests in Exchange Traded Funds (ETFs). A fully diversified portfolio is crucial for building wealth and limiting risk and investing in ETFs allows us to gain this diversification at the lowest cost. Below are the ETFs we selected to represent each asset class.</p>
+	<table class="left table-dark" id='assetTable'style="width:100%; margin: 0 auto;">
   <tr>
     <th>Asset Class</th>
     <th>ETF(s)</th> 
