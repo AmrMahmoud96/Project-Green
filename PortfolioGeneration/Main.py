@@ -656,7 +656,7 @@ if __name__ == "__main__":
     #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     #target = [.15,.15,.15,.05,.15,.05,.05,.05,.05,.05,.05,.05]
-    RP_pos = risk_parity_generator_V2(Prices[['SPY','EFA','EEM','DBC','VNQ','GLD','TIP','EMB','BWX','TLT','MUB','AGG','SHV']],'M',TF=True, rolling_window=200,static=False,target=None)
+    RP_pos = risk_parity_generator_V2(Prices[['SPY','EFA','EEM','DBC','VNQ','GLD','TIP','EMB','BWX','TLT','AGG','SHV']],'M',TF=True, rolling_window=200,static=False,target=None)
     RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
     
     #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)

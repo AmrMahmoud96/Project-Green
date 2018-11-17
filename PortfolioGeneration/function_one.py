@@ -103,7 +103,7 @@ class portfolio_one:
     
 def fetch_data(Prices,ETF):
     #get data from mongodb
-    temp_df = pd.DataFrame(list(db[ETF+'_Prices'].find({},{"Date":1,"Close":1,'_id': 0})))
+    temp_df = pd.DataFrame(list(db[ETF+'_Prices'].find({},{"Date":1,"Adj Close":1,'_id': 0})))
     
     #set index to date
     temp_df.set_index('Date',inplace=True)
