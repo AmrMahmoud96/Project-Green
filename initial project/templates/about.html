@@ -116,11 +116,12 @@ text-align: justify;
     color:#F37649;
 }
 
-table, th, td {
-    border: 1px solid black;
-	border-collapse: collapse;
+#assetTable td{
+    border: 1px solid #32383e !important;
 }
-
+#assetTable th{
+    border: 1px solid #32383e !important;
+}
 </style>
 <div>
     <div class="bg2">
@@ -139,7 +140,7 @@ table, th, td {
     <div class="section justify">
 	<h4 class ="center">Asset Universe</h4>
 	<p>To gain exposure to various asset classes, Alpha Factory invests in Exchange Traded Funds (ETFs). A fully diversified portfolio is crucial for building wealth and limiting risk and investing in ETFs allows us to gain this diversification at the lowest cost. Below are the ETFs we selected to represent each asset class.</p>
-	<table class="center table-dark" style="width:80%; margin: 0 auto;">
+	<table class="center table-dark" id='assetTable'style="width:80%; margin: 0 auto;">
   <tr>
     <th>Asset Class</th>
     <th>ETF(s)</th> 

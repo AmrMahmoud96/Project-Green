@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify,g
 from forms import ContactForm, RegisterForm, PortfolioCalculationForm, DetailedPortfolioCalculationForm
+from function_one import portfolio_one
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
@@ -20,6 +21,8 @@ tableD = pd.read_csv(spf)
 
 temppin = ''
 tempemail=''
+input_portfolio=None
+output_portfolio=None
 
 
 riskDefnArr = ['risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky']
@@ -43,14 +46,14 @@ app.config["MAIL_PASSWORD"] = 'amamdast123'
 mail = Mail()
 mail.init_app(app)
 
-@app.route("/simple_chart")
-def chart():
-    labels = tableV['Date'].values.tolist()
-    a = tableS['Close'].values
-    b = tableV['Close'].values
-    ocolumn_divs = (a/a[0])*10000
-    tcolumn_divs = (b/b[0])*10000
-    return render_template('chart.html', tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+# @app.route("/simple_chart")
+# def chart():
+#     labels = tableV['Date'].values.tolist()
+#     a = tableS['Close'].values
+#     b = tableV['Close'].values
+#     ocolumn_divs = (a/a[0])*10000
+#     tcolumn_divs = (b/b[0])*10000
+#     return render_template('chart.html', tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
 
 @app.route("/about", methods=['GET', 'POST'])
 def about():
@@ -59,20 +62,32 @@ def about():
     if request.method == 'POST':
         if form.validate_on_submit():
             count = 0
-            for d in form:
-                if type(d.data) is type(decimal.Decimal(0)) or type(d.data)is int:
-                    count+= d.data
+            assets=[]
+            values=[]
+            for fieldname, value in form.data.items():
+                if type(value) is type(decimal.Decimal(0)) or type(value)is int:
+                    assets.append(fieldname)
+                    values.append(float(value))
+                    count+=value
+                elif value == None:
+                    assets.append(fieldname)
+                    values.append(0)
             if count == 0:
                 form.equities.errors.append('Please enter at least one value.')
                 return render_template('about.html', form=form,detailedForm=detailedForm)
-            #Call back-end function 1, get (3yr,5yr,10yr) portfolios for both
-            labels = tableV['Date'].values.tolist()
-            a = tableS['Close'].values
-            b = tableV['Close'].values
-            ocolumn_divs = (a/a[0])*10000
-            tcolumn_divs = (b/b[0])*10000
+            global input_portfolio, output_portfolio
+            input_portfolio = portfolio_one(assets,values)
+            output_portfolio = portfolio_one(['SPY'],[float(count)])
+            ED = datetime.datetime.now()
+            SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
+            tcolumn_divs = input_portfolio.portfolio_value_ts(SD,ED)
+            ocolumn_divs = output_portfolio.portfolio_value_ts(SD,ED)
+            tstats = input_portfolio.portfolio_stats(SD,ED)
+            ostats = output_portfolio.portfolio_stats(SD,ED)
+            stats = pd.concat([tstats,ostats],axis=1)
+            labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
             selected=['','selected','','','']
-            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
+            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected,stats=stats, ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
             return render_template('about.html', form=form,detailedForm=detailedForm)
     return render_template("about.html",form=form,detailedForm=detailedForm)
@@ -83,20 +98,32 @@ def detailedAbout():
     if request.method == 'POST':
         if detailedForm.validate_on_submit():
             count = 0
-            for d in detailedForm:
-                if type(d.data) is type(decimal.Decimal(0)) or type(d.data)is int:
-                    count+= d.data
+            assets=[]
+            values=[]
+            for fieldname, value in detailedForm.data.items():
+                if type(value) is type(decimal.Decimal(0)) or type(value)is int:
+                    assets.append(fieldname)
+                    values.append(float(value))
+                    count+=value
+                elif value == None:
+                    assets.append(fieldname)
+                    values.append(0)
             if count == 0:
                 detailedForm.SPY.errors.append('Please enter at least one value.')
                 return render_template('about.html', form=form,detailedForm=detailedForm)
-            #Call back-end function 1, get (3yr,5yr,10yr) portfolios for both
-            labels = tableV['Date'].values.tolist()
-            a = tableS['Close'].values
-            b = tableV['Close'].values
-            ocolumn_divs = (a/a[0])*10000
-            tcolumn_divs = (b/b[0])*10000
+            global input_portfolio, output_portfolio
+            input_portfolio = portfolio_one(assets,values)
+            output_portfolio = portfolio_one(['SPY'],[float(count)])
+            ED = datetime.datetime.now()
+            SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
+            tcolumn_divs = input_portfolio.portfolio_value_ts(SD,ED)
+            ocolumn_divs = output_portfolio.portfolio_value_ts(SD,ED)
+            tstats = input_portfolio.portfolio_stats(SD,ED)
+            ostats = output_portfolio.portfolio_stats(SD,ED)
+            stats = pd.concat([tstats,ostats],axis=1)
+            labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
             selected=['','selected','','','']
-            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
+            return render_template('about.html', success = True, tvalues=tcolumn_divs, stats=stats,selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
             return render_template('about.html', form=form,detailedForm=detailedForm)
     return render_template("about.html",form=form,detailedForm=detailedForm)
@@ -104,12 +131,6 @@ def detailedAbout():
 @app.route("/recalculateAbout", methods=['POST'])
 def recalculateAbout():
     if request.method == 'POST':
-        labels = tableV['Date'].values.tolist()
-        a = tableS['Close'].values
-        b = tableV['Close'].values
-        ocolumn_divs = (a/a[0])*10000
-        tcolumn_divs = (b/b[0])*10000
-        print(request.form)
         if(request.form['btn']=='3y'):
             selected=['selected','','','','']
             ED = datetime.datetime.now()
@@ -123,8 +144,12 @@ def recalculateAbout():
             ED = datetime.datetime.now()
             SD = datetime.datetime.now() - datetime.timedelta(days=10*365)
         if(request.form['btn']=='crisis'):
+            ED=datetime.datetime(2010,1,1)
+            SD=datetime.datetime(2008,1,1)
             selected=['','','','selected','']
         if(request.form['btn']=='bull'):
+            ED=datetime.datetime(2018,1,1)
+            SD=datetime.datetime(2015,1,1)
             selected=['','','','','selected']
         if(request.form['btn']=='custom'):
             selected=['','','','','']
@@ -134,13 +159,28 @@ def recalculateAbout():
             ED= datetime.datetime.strptime(request.form['ED'], '%Y-%m-%d')
             if(ED<= SD):
                 return render_template('about.html', error = 'Please enter a valid time period.',selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
-        print('SD:',SD)
-        print('ED:',ED)
-        return render_template('about.html', success = True,selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+        global input_portfolio, output_portfolio
+        tcolumn_divs = input_portfolio.portfolio_value_ts(SD,ED)
+        ocolumn_divs = output_portfolio.portfolio_value_ts(SD,ED)
+        tstats = input_portfolio.portfolio_stats(SD,ED)
+        ostats = output_portfolio.portfolio_stats(SD,ED)
+        stats = pd.concat([tstats,ostats],axis=1)
+        labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
+        return render_template('about.html', success = True,selected=selected, stats=stats,tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+
+
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    data = calculateSomething()
-    return render_template('test.html', data=data)
+    test_portfolio = portfolio_one(['AGG', 'VNQ', 'TLT', 'BWX', 'SHV', 'EMB', 'SPY', 'TIP', 'GLD', 'EEM', 'EFA', 'MUB', 'DBC'],[0, 0, 0, 0, 0, 0, 112, 0, 0, 23, 0, 0, 0])
+    
+    #get time series for specific date range
+    ts_value_2 = test_portfolio.portfolio_value_ts(datetime.datetime(2011,1,1),datetime.datetime(2013,1,1))
+    print(ts_value_2)
+    #get portfolio stats for a specific date range
+    port_stats_2 = test_portfolio.portfolio_stats(datetime.datetime(2011,1,1),datetime.datetime(2013,1,1))
+    print(port_stats_2)
+    # data = calculateSomething()
+    return render_template('test.html')
 
 def calculateSomething():
     time.sleep(10)
