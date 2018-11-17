@@ -5,10 +5,8 @@
 {% block container %}
 <style type="text/css">
 .class1{
-height:500px;
 background: #f8f9fa!important;
 }.class2{
-    height: 500px;
     background: white!important;
 }
 .bg {
@@ -87,6 +85,9 @@ text-align: justify;
 
     margin-right: 5px !important;
 }
+#learnmore{
+    display:flex;
+}
 
 .logoA{
     width: 175px;
@@ -96,11 +97,12 @@ text-align: justify;
     width:500px;
     height: 200px;
 }
-.left{
+.section{
     width: 50%;
-}
-.right{
-    width:50%;
+    padding: 20px;
+    border: 1px solid black;
+    box-shadow: 5px 10px #6c757d9e;
+    margin: 20px;
 }
 .footer{
     background: black;
@@ -134,10 +136,10 @@ table, th, td {
 </div>
    
 <div id="learnmore" class="class2 center">
-    <div class="left justify">
+    <div class="section justify">
 	<h4 class ="center">Asset Universe</h4>
 	<p>To gain exposure to various asset classes, Alpha Factory invests in Exchange Traded Funds (ETFs). A fully diversified portfolio is crucial for building wealth and limiting risk and investing in ETFs allows us to gain this diversification at the lowest cost. Below are the ETFs we selected to represent each asset class.</p>
-	<table style="width:80% center">
+	<table class="center table-dark" style="width:80%; margin: 0 auto;">
   <tr>
     <th>Asset Class</th>
     <th>ETF(s)</th> 
@@ -196,7 +198,7 @@ table, th, td {
 </table>
 	</div>
 
-    <div class="right justify">
+    <div class="section justify">
 	<h4 class ="center">Investment Strategy</h4>
 	<p>To generate customized portfolios, Alpha Factory uses a Robust Risk Parity technique….</p>
 	</div>
