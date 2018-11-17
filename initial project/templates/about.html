@@ -254,7 +254,9 @@ text-align: justify;
             <p>Alpha Factory aims to use our platform and proprietary portfolio generation techniques to help the average person manage their own investments. Specifically, we aim to get to know you through our quick questionnaire, so we can create a personalized and diversified portfolio of assets at a risk tolerance you are comfortable with while meeting your long-term investment goals. From there, we manage your money for you – this includes automatically rebalancing your portfolio to account for any market fluctuations and reinvesting your investment proceeds to ensure that your money doesn’t take any breaks while working for you. We also understand that investment goals change over time and we offer dynamic portfolio modifications to address your evolving user preferences and inputs.</p>
 			<!-- <div><p>Don't delay,</p><a href={{url_for('joinus')}}><button class="btn btnprimary trybtn">Join Us</button></a><p>today!</p></div>
             -->
+            {% if session['logged_in'] == None and session['name']== None%}
             <div class="last-text"><p>Don't delay, </p> <a href={{url_for('joinus')}} class="basecolortext joinlink"><u>join us</u></a> <p> today!</p>
+                {%endif%}
             </div>
         </div>
     </div>
@@ -290,10 +292,6 @@ text-align: justify;
     </div>
         {% endif %}
         {% endblock %}
-    {% else %}
-    <div class="class2 center">
-            <p> Content goes here</p>
-         </div>
     {% endif %}
     <div class="footer">
         <p>Still have questions? <a class='joinlink basecolortext' href={{url_for('contactus')}}>Contact Us</a> </p>
