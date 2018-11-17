@@ -10,8 +10,9 @@ def plot(index, etfs):
 
 def load_data(fname, Prices):
     '''load in historical prices'''
+    print(fname)
     ticker = fname[0:-4]
-    data = pd.read_csv("Data/ETF/" + fname)
+    data = pd.read_csv("Data/ETF_adjusted/" + fname)
     data.set_index('Date', inplace=True)
     data = data[["Adj Close"]]
     data.columns = [ticker]
@@ -31,9 +32,11 @@ if __name__ == "__main__":
     #load prices and calculate returns
     Prices = pd.DataFrame()
     Info = pd.DataFrame()
-    for fname in os.listdir("Data/ETF"):
+    for fname in os.listdir("Data/ETF_adjusted"):
         Prices = load_data(fname,Prices)
     
+    #Prices = load_data('EMGF_A.csv',Prices)
+    #Prices = load_data('GLD_A.csv',Prices)
     Returns = Prices.pct_change() 
     print("Prices and returns loaded!")    
     
