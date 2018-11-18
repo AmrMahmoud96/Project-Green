@@ -9,26 +9,27 @@ from datetime import datetime
 client = MongoClient("mongodb://Daniel_Kecman:M$FCapstone2018@alphafactory-shard-00-00-y7wfo.gcp.mongodb.net:27017,alphafactory-shard-00-01-y7wfo.gcp.mongodb.net:27017,alphafactory-shard-00-02-y7wfo.gcp.mongodb.net:27017/AlphaFactory?ssl=true&replicaSet=AlphaFactory-shard-0&authSource=admin&retryWrites=true")
 db = client['AlphaFactory']  
 
-class portfolio_one:
+class portfolio_one_b:
     
-    def __init__(self,etfs,values):
-        '''etfs should be a list of ETFs ie. ["SPY","VAB","EEM"] and values should be a list of same length with dollar values in each ETF'''
-        #initizliaze main components
-        Dollars = pd.Series(values,index=etfs)
-        self.init_value = Dollars.sum()
-        Weights = Dollars/Dollars.sum()
-        Prices = pd.DataFrame()
-       
-        #get price data for relevant ETFs from mongoDB
-        for etf in etfs:
-            Prices = fetch_data(Prices,etf)        
+    def __init__(self,initial_value,portflio=None):
+        '''portfolio should indicate which of alpha factory portfolios, initial value is dollar value'''
         
-        #clean and calculate returns
-        Prices.dropna(inplace=True,how='any')
-        Returns = Prices.pct_change()
+        self.init_value = initial_value
+        
+        #get retrun series from mongoDB
+        #currently only works for one portfolio
+
+        rets = pd.DataFrame(list(db['Portfolio_One_Returns'].find({},{"Date":1,"Return":1,'_id': 0})))
+       
+        #set index to date
+        rets.set_index('Date',inplace=True)
+        rets.columns = ['Portfolio1']
+        
+        #convert the index as date
+        rets.index = pd.to_datetime(rets.index)            
         
         #return series of the portfolio
-        self.returns = (Returns*Weights).sum(axis=1)          
+        self.returns = rets['Portfolio1']         
     
     def portfolio_value_ts(self,startdate=None,enddate=None):
         '''calculate and return time series of portfolio value start to enddate'''
@@ -65,7 +66,10 @@ class portfolio_one:
         else:
             #trim data based on dates
             rets = self.returns[(self.returns.index >= startdate) & (self.returns.index <= enddate)]        
-        
+    
+        #assume no return on first day, time series represents EOD value
+        rets.iloc[0] = 0        
+    
         #calculate cumulative returns (used for calculating some statistics)
         cumul_rets = (1 + rets).cumprod()        
         
@@ -98,38 +102,8 @@ class portfolio_one:
     
     def sortino_helper(self,rets):
         neg_rets = rets[rets < 0]**2
-        denom = np.sqrt(neg_rets.sum()/len(rets)*np.sqrt(252))
-        return denom
-    
-def fetch_data(Prices,ETF):
-    #get data from mongodb
-    temp_df = pd.DataFrame(list(db[ETF+'_Prices'].find({},{"Date":1,"Adj Close":1,'_id': 0})))
-    
-    #set index to date
-    temp_df.set_index('Date',inplace=True)
-    temp_df.columns = [ETF]
-    
-    #convert the index as date
-    temp_df.index = pd.to_datetime(temp_df.index)    
-    
-    #update main DF
-    Prices = pd.concat([Prices, temp_df], axis=1, sort=True)
-    return Prices
-
-def portfolio_ts_value_stats(portfolio,initial_value,startdate=None,enddate=None):
-    '''returns timeseries of portfolio value and stats'''
-    
-    #fetch returns from mongo db
-    
-    #caclculate time series of portfolio value
-    
-    #assume no return on first day, time series represents EOD value
-    rets.iloc[0] = 0
-    
-    #calculate cumulative returns of portfolio
-    cumul_rets = (1 + rets).cumprod()    
-    
-    
+        denom = np.sqrt(neg_rets.sum()/len(rets))*np.sqrt(252)
+        return denom   
     
 if __name__ == "__main__":
     
@@ -139,8 +113,8 @@ if __name__ == "__main__":
     #test cases to demonstrate example implentation
     
     #test 1:
-    #initialize portfolio (Equity,Bonds,Real Estate, Commodities)
-    test_portfolio = portfolio_one(['SPY','BND','VNQ','DBC'],[100,100,100,100])
+    #initialize portfolio
+    test_portfolio = portfolio_one_b(100)
     
     #get time series of portfolio value
     ts_value_1 = test_portfolio.portfolio_value_ts(None,None)
