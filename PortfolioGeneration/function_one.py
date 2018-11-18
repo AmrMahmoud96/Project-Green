@@ -98,12 +98,12 @@ class portfolio_one:
     
     def sortino_helper(self,rets):
         neg_rets = rets[rets < 0]**2
-        denom = np.sqrt(neg_rets.sum()/len(rets)*np.sqrt(252))
+        denom = np.sqrt(neg_rets.sum()/len(rets))*np.sqrt(252)
         return denom
     
 def fetch_data(Prices,ETF):
     #get data from mongodb
-    temp_df = pd.DataFrame(list(db[ETF+'_Prices'].find({},{"Date":1,"Adj Close":1,'_id': 0})))
+    temp_df = pd.DataFrame(list(db[ETF].find({},{"Date":1,"Adj Close":1,'_id': 0})))
     
     #set index to date
     temp_df.set_index('Date',inplace=True)
@@ -124,27 +124,28 @@ if __name__ == "__main__":
     
     #test cases to demonstrate example implentation
     
+    #temp_df = pd.DataFrame(list(db['SPY'].find({},{"Date":1,"Adj Close":1,'_id': 0})))
     #test 1:
     #initialize portfolio (Equity,Bonds,Real Estate, Commodities)
-    test_portfolio = portfolio_one(['SPY','BND','VNQ','DBC'],[100,100,100,100])
+    test_portfolio = portfolio_one(['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
-    #get time series of portfolio value
+    ##get time series of portfolio value
     ts_value_1 = test_portfolio.portfolio_value_ts(None,None)
     
-    #plot data
+    ##plot data
     ts_value_1.plot()
     plt.show()
     
-    #get time series for specific date range
+    ##get time series for specific date range
     ts_value_2 = test_portfolio.portfolio_value_ts(datetime(2011,1,1),datetime(2013,1,1))
     
-    #plot data
+    ##plot data
     ts_value_2.plot()
     plt.show()
     
-    #get portfolio stats using all data
+    ##get portfolio stats using all data
     port_stats_1 = test_portfolio.portfolio_stats(None,None)
     
-    #get portfolio stats for a specific date range
+    ##get portfolio stats for a specific date range
     port_stats_2 = test_portfolio.portfolio_stats(datetime(2011,1,1),datetime(2013,1,1))
     
