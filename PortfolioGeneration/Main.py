@@ -239,8 +239,8 @@ class portfolio:
         ax5.set_axisbelow(True)
         ax5.margins(x=0,y=0)
         ax5.set_ylim(0,1)
-        #ax5.legend(loc=8,ncol=len(list(self.positions)),mode=None,bbox_to_anchor=(0., 1.02, 1., .102),fontsize=8,edgecolor="#FFFFFF")
-        ax5.legend(loc=8,ncol=len(list(self.positions)),mode=None,bbox_to_anchor=(0., 1.02, 1., .102),fontsize=7,edgecolor="#FFFFFF",handlelength=0.6)
+        ax5.legend(loc=8,ncol=10,mode=None,bbox_to_anchor=(0., 1.02, 1., .102),fontsize=7,edgecolor="#FFFFFF",handlelength=0.6)
+        #ax5.legend(loc=8,ncol=len(list(self.positions)),mode=None,bbox_to_anchor=(0., 1.02, 1., .102),fontsize=7,edgecolor="#FFFFFF",handlelength=0.6)
         ax5.set_ylabel('Weight (%)',fontsize=9)
         
         #format y-axis as percentage
@@ -250,7 +250,7 @@ class portfolio:
         #Heatmap
         ax10 = plt.subplot2grid((11, 3), (9, 0), rowspan=2, colspan=2)
         assets_rets = self.yearly_returns(self.asset_returns_wgt)
-        sns.heatmap(assets_rets.T, linewidth=0.5, yticklabels=True,ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=True, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 6.5})
+        sns.heatmap(assets_rets.T, linewidth=0.5, yticklabels=True,ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=False, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 6.5})
         #ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=8)
         ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=6)
         ax10.set_xticklabels(ax10.get_xticklabels(),fontsize=8,rotation = 70)
@@ -286,15 +286,15 @@ def compare_portfolios(portfolios,startdate,enddate):
     plt.title('Portfolio Compairison')  
     #format y-axis as percentage
     vals = ax.get_yticks()
-    ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])     
+    ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])                    
     plt.tight_layout()
     plt.show()  
 
 
 def load_data(fname, Prices):
     '''load in historical prices'''
-    ticker = fname[0:-4]
-    data = pd.read_csv("Data/ETF/" + fname)
+    ticker = fname[0:-6]
+    data = pd.read_csv("Data/ETF_adjusted/" + fname)
     data.set_index('Date', inplace=True)
     data = data[["Adj Close"]]
     data.columns = [ticker]
@@ -568,12 +568,12 @@ if __name__ == "__main__":
     
     #set Leverage
     ###############
-    leverage = None
+    leverage = 2
     ###############
     
     #load prices
     Prices = pd.DataFrame()
-    for fname in os.listdir("Data/ETF"):
+    for fname in os.listdir("Data/ETF_adjusted"):
         Prices = load_data(fname,Prices)
     #calculate returns
     Returns = Prices.pct_change() 
@@ -634,12 +634,13 @@ if __name__ == "__main__":
     #EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
     
     #equal weight positions rebalanced every 30 days
+    assets = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV']
     #EW_pos = EW_positions(Prices[['SPY']],'M')
-    #EW_Port = portfolio("S&P500","SP500","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
+    #EW_Port = portfolio("EW All","EW","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
     
     #equal weight with trend following overlay
-    #EW_TF_pos = EW_TF_positions(Prices,'M',150)
-    #EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos,'150 SMA', 'Monthly','EW')
+    #EW_TF_pos = EW_TF_positions(Prices[assets],'M',200)
+    #EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos,'200 SMA', 'Monthly','EW')
     
     #risk parity weights
     #RP_pos = risk_parity_positions(Prices[['SPY','TIP','VNQ','BND']])
@@ -656,11 +657,11 @@ if __name__ == "__main__":
     #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     #target = [.15,.15,.15,.05,.15,.05,.05,.05,.05,.05,.05,.05]
-    RP_pos = risk_parity_generator_V2(Prices[['SPY','EFA','EEM','DBC','VNQ','GLD','TIP','EMB','BWX','TLT','AGG','SHV']],'M',TF=True, rolling_window=200,static=False,target=None)
-    RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
+    #RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=None)
+    #RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
     
-    #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
-    #RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",#RP_TF_pos, '200 SMA','Monthly','RP 200')     
+    RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
+    RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",RP_TF_pos, '200 SMA','Monthly','RP 200')     
 
     #compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     
