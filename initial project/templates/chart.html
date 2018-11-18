@@ -115,11 +115,20 @@ function validateForm() {
         </thead>
         <tbody>
                 {%for index, row in stats.iterrows() %}
+                    {%if index != 'Sharpe' and index != 'Sortino' %}
+                        {% set val = row[0]*100 %}
+                        {% set val2 = row[1]*100 %}
+                        {% set unit = '%' %}
+                    {%else%}
+                    {% set val = row[0]*1 %}
+                    {% set val2 = row[1]*1 %}
+                        {% set unit = '' %}
+                    {%endif%}   
                 <tr>
-                <td class="justify">{{index}}</td>
-                <td>{{row[0]|round(3)}}</td>
-                <td class="basecolortext">{{row[1]|round(3)}}</td>
-            </tr>
+                    <td class="justify">{{index}}</td>
+                    <td>{{(val|round(2)) ~ unit}}</td>
+                    <td class="basecolortext">{{(val2|round(2))~ unit}}</td>
+                </tr>
                 {% endfor %}
         </tbody>
     </table>

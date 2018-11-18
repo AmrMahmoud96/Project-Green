@@ -123,7 +123,7 @@ def detailedAbout():
             stats = pd.concat([tstats,ostats],axis=1)
             labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
             selected=['','selected','','','']
-            return render_template('about.html', success = True, tvalues=tcolumn_divs, stats=stats,selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
+            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), stats=stats,selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
             return render_template('about.html', form=form,detailedForm=detailedForm)
     return render_template("about.html",form=form,detailedForm=detailedForm)
