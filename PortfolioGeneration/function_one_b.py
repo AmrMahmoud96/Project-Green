@@ -108,7 +108,7 @@ class portfolio_one_b:
 if __name__ == "__main__":
     
     #Note: for actual use, add following line to file 
-    #from function_one import portfolio_one
+    #from function_one import portfolio_one_b
     
     #test cases to demonstrate example implentation
     
