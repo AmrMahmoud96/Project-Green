@@ -27,10 +27,10 @@ class DetailedPortfolioCalculationForm(FlaskForm):
   submit = SubmitField("Enter")
 class PortfolioCalculationForm(FlaskForm):
   SPY = DecimalField("Equities" ,[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in equities."})
-  TLT = DecimalField("Bonds",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in bonds."})
+  AGG = DecimalField("Bonds",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in bonds."})
   DBC = DecimalField("Commodities",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in commoditites."})
-  VNQ = DecimalField("Real Estate",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in real estate."})
-  MUB = DecimalField("Cash",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in cash."})
+  SCHH = DecimalField("Real Estate",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in real estate."})
+  SHV = DecimalField("Cash",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in cash."})
   GLD = DecimalField("Gold",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in gold."})
   submit = SubmitField("Enter")
 

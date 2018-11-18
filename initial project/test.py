@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify,g
 from forms import ContactForm, RegisterForm, PortfolioCalculationForm, DetailedPortfolioCalculationForm
-from function_one import portfolio_one
+from function1 import portfolio_one,portfolio_one_b,portfolio_value_ts,portfolio_stats
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
@@ -77,13 +77,13 @@ def about():
                 return render_template('about.html', form=form,detailedForm=detailedForm)
             global input_portfolio, output_portfolio
             input_portfolio = portfolio_one(assets,values)
-            output_portfolio = portfolio_one(['SPY'],[float(count)])
+            output_portfolio = portfolio_one_b()
             ED = datetime.datetime.now()
             SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
-            tcolumn_divs = input_portfolio.portfolio_value_ts(SD,ED)
-            ocolumn_divs = output_portfolio.portfolio_value_ts(SD,ED)
-            tstats = input_portfolio.portfolio_stats(SD,ED)
-            ostats = output_portfolio.portfolio_stats(SD,ED)
+            tcolumn_divs = portfolio_value_ts(input_portfolio.returns,input_portfolio.initial_value,SD,ED)
+            ocolumn_divs = portfolio_value_ts(output_portfolio.returns,input_portfolio.initial_value,SD,ED)
+            tstats = portfolio_stats(input_portfolio.returns,SD,ED)
+            ostats = portfolio_stats(output_portfolio.returns,SD,ED)
             stats = pd.concat([tstats,ostats],axis=1)
             labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
             selected=['','selected','','','']
@@ -113,13 +113,13 @@ def detailedAbout():
                 return render_template('about.html', form=form,detailedForm=detailedForm)
             global input_portfolio, output_portfolio
             input_portfolio = portfolio_one(assets,values)
-            output_portfolio = portfolio_one(['SPY'],[float(count)])
+            output_portfolio = portfolio_one_b()
             ED = datetime.datetime.now()
             SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
-            tcolumn_divs = input_portfolio.portfolio_value_ts(SD,ED)
-            ocolumn_divs = output_portfolio.portfolio_value_ts(SD,ED)
-            tstats = input_portfolio.portfolio_stats(SD,ED)
-            ostats = output_portfolio.portfolio_stats(SD,ED)
+            tcolumn_divs = portfolio_value_ts(input_portfolio.returns,input_portfolio.initial_value,SD,ED)
+            ocolumn_divs = portfolio_value_ts(output_portfolio.returns,input_portfolio.initial_value,SD,ED)
+            tstats = portfolio_stats(input_portfolio.returns,SD,ED)
+            ostats = portfolio_stats(output_portfolio.returns,SD,ED)
             stats = pd.concat([tstats,ostats],axis=1)
             labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
             selected=['','selected','','','']
@@ -160,10 +160,10 @@ def recalculateAbout():
             if(ED<= SD):
                 return render_template('about.html', error = 'Please enter a valid time period.',selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
         global input_portfolio, output_portfolio
-        tcolumn_divs = input_portfolio.portfolio_value_ts(SD,ED)
-        ocolumn_divs = output_portfolio.portfolio_value_ts(SD,ED)
-        tstats = input_portfolio.portfolio_stats(SD,ED)
-        ostats = output_portfolio.portfolio_stats(SD,ED)
+        tcolumn_divs = portfolio_value_ts(input_portfolio.returns,input_portfolio.initial_value,SD,ED)
+        ocolumn_divs = portfolio_value_ts(output_portfolio.returns,input_portfolio.initial_value,SD,ED)
+        tstats = portfolio_stats(input_portfolio.returns,SD,ED)
+        ostats = portfolio_stats(output_portfolio.returns,SD,ED)
         stats = pd.concat([tstats,ostats],axis=1)
         labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
         return render_template('about.html', success = True,selected=selected, stats=stats,tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
@@ -171,15 +171,6 @@ def recalculateAbout():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    test_portfolio = portfolio_one(['AGG', 'VNQ', 'TLT', 'BWX', 'SHV', 'EMB', 'SPY', 'TIP', 'GLD', 'EEM', 'EFA', 'MUB', 'DBC'],[0, 0, 0, 0, 0, 0, 112, 0, 0, 23, 0, 0, 0])
-    
-    #get time series for specific date range
-    ts_value_2 = test_portfolio.portfolio_value_ts(datetime.datetime(2011,1,1),datetime.datetime(2013,1,1))
-    print(ts_value_2)
-    #get portfolio stats for a specific date range
-    port_stats_2 = test_portfolio.portfolio_stats(datetime.datetime(2011,1,1),datetime.datetime(2013,1,1))
-    print(port_stats_2)
-    # data = calculateSomething()
     return render_template('test.html')
 
 def calculateSomething():
