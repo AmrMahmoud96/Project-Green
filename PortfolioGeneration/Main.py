@@ -568,7 +568,7 @@ if __name__ == "__main__":
     
     #set Leverage
     ###############
-    leverage = 2
+    leverage = 1
     ###############
     
     #load prices
@@ -635,7 +635,7 @@ if __name__ == "__main__":
     
     #equal weight positions rebalanced every 30 days
     assets = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV']
-    target = [0.08,0.06,0.06,0.06,0.12,0.06,0.06,0.04,0.04,0.04,0.04,0.04,0.06,0.04,0.06,0.06,0.04,0.04]
+    target = [0.09,0.03,0.08,0.03,0.12,0.06,0.03,0.05,0.05,0.05,0.05,0.05,0.1,0.05,0.03,0.03,0.05,0.05]
     #EW_pos = EW_positions(Prices[['SPY']],'M')
     #EW_Port = portfolio("EW All","EW","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
     
