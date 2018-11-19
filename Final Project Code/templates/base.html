@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Alpha Factory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link rel="icon" 
+      type="image/png" 
+      href="./static/images/logo"/>
+    <style type="text/css">
+      .container {
+        max-width: 500px;
+        padding: 15px;
+      }
+      .samplebtn{
+          margin-left:250px;
+      }
+      .basecolorbtn{
+        background:#F37649;
+        color: white;
+      }
+      .basecolortext{
+        color:#F37649;
+      }
+      .welcome-msg{
+        margin-top:50px !important;
+        font-size: 3rem !important;
+      }
+      /* Message flashing */
+      .flash {
+          background-color: #FBB0B0;
+          padding: 10px;
+          width: auto;
+        }
+        .help-block{
+          color:red;
+        }
+        .btn-primary{
+          border-color:#F37649 !important;
+          background-color: #F37649 !important;
+          color:white !important;
+        }
+       /* .advisorLink{
+          color:#F37649 !important;
+        }
+        .advisorLink:hover{
+          color:#f04f0f !important;
+        }*/
+      .joinbtn{
+        width:80px;
+        height:40px;
+        background: transparent;
+        border-color: #F37649;
+        color:#F37649;
+        margin:0 auto;
+        border-radius: 25px;
+      }
+      .logo-text{
+        margin-top:5px;
+      }
+      .title{
+        margin-top:20px;
+      }
+      .joinbtn:hover{
+        background: #F37649;
+        color:white;
+      }
+      .center{
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href={{url_for('home')}}>
+            <img src="./static/images/logo" width="50" height="50" class="d-inline-block align-top" alt="">
+            <img src="./static/images/logo2" width="200" height="50" class="d-inline-block logo-text" alt="">
+        
+          </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+            {% if session['logged_in'] == None and session['name']== None%}
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ml-auto center">
+                  <a class="nav-item navbar-text nav-link active" href={{url_for('about')}}>About<span class="sr-only">(current)</span></a>
+                  <a class="nav-item navbar-text  nav-link active" href={{url_for('contactus')}}>Contact Us</a>
+                  <a class="nav-item navbar-text  nav-link active" href={{url_for('login')}}>Log In</a>
+                  <a href={{url_for('joinus')}}><button type="button" class="btn joinbtn">Join Us</button></a>
+                </div>
+              </div>
+            {% else %}
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ml-auto center">
+                  <a class="nav-item navbar-text nav-link active " href={{url_for('home')}}>Home</a>
+                  <a class="nav-item navbar-text nav-link active advisorLink" href={{url_for('advisor')}}>Advisor</a>
+                  <a class="nav-item navbar-text  nav-link active" href={{url_for('about')}}>About</a>
+                  <a class="nav-item navbar-text  nav-link active" href={{url_for('contactus')}}>Contact Us</a>
+                  <li class="nav-item dropdown">
+                      <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{session['name']}}
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href={{url_for('profile')}}>View Profile</a>
+                        <a class="dropdown-item" href={{url_for('logout')}}>Sign Out</a>
+                      </div>
+                  </li>
+                </div>
+              </div>
+            {% endif %}
+        
+      </nav>
+      {% block container %}{% endblock %}
+  </body>
+</html>

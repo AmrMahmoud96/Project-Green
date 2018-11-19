@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% import "bootstrap/wtf.html" as wtf %} 
+
+
+{% block container %}
+<div class="container">
+<div class="center">      
+<h2>Contact Us</h2>
+</div>
+{% if success %}
+<p>Thank you for your message. We'll get back to you shortly.</p>
+{% else %}
+  <form action="{{ url_for('contactus') }}" method="POST">
+    {{wtf.quick_form(form,button_map={'submit':"primary"})}}
+  </form>
+  </div>
+  {% endif %}
+{% endblock %}

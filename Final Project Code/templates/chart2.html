@@ -1,0 +1,131 @@
+
+
+{% block container %} 
+<style>
+.chart{
+    height:100% !important;
+    padding: 20px;
+}
+.portfolio-stats{
+    margin-left:10px;
+    padding: 20px;
+}
+.middle{
+    width:80%!important;
+    text-align: center;
+    margin: 0 auto !important;
+}
+</style>
+ <!-- import plugin script -->   <script src='static/Chart.min.js'></script> 
+<div class="middle">
+ <canvas id="donutChart" class="chart"></canvas>  
+<canvas id="lineChart" class="chart"></canvas>
+<div class="portfolio-stats">
+    <h5 class="center">Portfolio Performance</h5>
+    <table class="table center">
+        <thead class="center">
+            <tr>
+                <th scope="col">Metric</th>
+                <th scope="col">Performance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Annual Return</td>
+                <td class="center">12%</td>
+            </tr>
+            <tr>
+                <td>Alpha</td>
+                <td class="center">7%</td>
+            </tr>
+            <tr>
+                <td>Sharpe Ratio</td>
+                <td class="center">1.59</td>
+            </tr>
+            <tr>
+                <td>Volatility (Risk)</td>
+                <td class="center">10%</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src='./static/Chart.min.js' ></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"  ></script>
+
+ <script defer>
+     const ctx = document.getElementById('lineChart').getContext('2d');
+     var d1 = {{tvalues | tojson}}
+const data = {
+    labels : {{labels | tojson}},
+    datasets: [{
+        fill: false,
+        label: 'Your Portfolio',
+        data: d1,
+        borderColor: '#fe8b36',
+        backgroundColor: '#fe8b36',
+        lineTension: 0
+    }]
+}
+const options = {
+    type: 'line',
+    data: data,
+    options: {
+        elements: { point: { radius: 0 } },
+        fill: false,
+        responsive: true,
+        scales: {
+            xAxes: [{
+                type: 'time',
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: "Date",
+                }
+            }],
+            yAxes: [{
+                ticks: {
+                    suggestedMin: {{tvalues[0]}}
+                },
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: "Value",
+                }
+            }]
+        }
+    }
+}
+const chart = new Chart(ctx, options);
+
+     const dtx = document.getElementById('donutChart').getContext('2d');
+     var d2 = [800,480,160,160]   
+const ddata = {
+    labels : ['Equities','Bonds','Oil','Cash'],
+    datasets: [{
+        data: d2,
+        backgroundColor:['#ff4500','#87cefa','#d2691e','#00fa9a']
+    }]
+}
+const doptions={
+    type: 'doughnut',
+    data:ddata,
+    options:{
+		segmentShowStroke : true,
+		segmentStrokeColor : "#fff",
+		segmentStrokeWidth : 2,
+		percentageInnerCutout : 50,
+		animationSteps : 100,
+		animationEasing : "easeOutBounce",
+		animateRotate : true,
+		animateScale : false,
+		responsive: true,
+		maintainAspectRatio: true,
+		showScale: true,
+		animateScale: true
+	}}
+const doughnutChart = new Chart(dtx,doptions);
+    </script>
+    
+{% endblock %}

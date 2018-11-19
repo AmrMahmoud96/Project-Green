@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+ 
+{% block container %}
+<style>
+.allocation-images{
+    display: flex;
+}
+.aicon{
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 auto;
+}
+.atitle{
+    margin-top:5px;
+    font-weight: bold;
+}
+.figicon{
+    padding:5px;
+}
+</style>
+<h1 class="title center welcome-msg">Welcome, {{session['name']}}.</h1>
+
+<h2 class="center" style="margin-bottom:50px;">Here is your balanced portfolio allocation.</h2>
+<div class="allocation-images" style="margin-bottom:30px;">
+    <div class="aicon">
+        <figure clas="figicon">
+            <img src="./static/images/stockimg.jpeg" width="100px" height="100px">
+            <figcaption class="atitle">Equities</figcaption>
+            <figcaption>50%</figcaption>
+        </figure>
+    </div>
+    <div class="aicon">
+            <figure clas="figicon">
+            <img src="./static/images/coinsicon2.jpeg" width="100px" height="100px">
+            <figcaption class="atitle">Bonds</figcaption>
+            <figcaption>30%</figcaption>
+        </figure>
+    </div>
+    <div class="aicon">
+            <figure clas="figicon">
+            <img src="./static/images/oilicon.png" width="100px" height="100px">
+            <figcaption class="atitle">Oil</figcaption>
+            <figcaption>10%</figcaption>
+        </figure>
+    </div>
+    <div class="aicon">
+            <figure clas="figicon">
+            <img src="./static/images/cashicon.png" width="100px" height="100px">
+            <figcaption class="atitle">Cash</figcaption>
+            <figcaption>10%</figcaption>
+        </figure>
+        </div>
+
+</div>
+
+{% include 'chart2.html' %}
+
+{% endblock %}
