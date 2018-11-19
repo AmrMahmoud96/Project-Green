@@ -3,6 +3,10 @@
 
 ### Install the required packages
 
-pip install requirements.txt
+~$ pip install requirements.txt
 
+### Run project
 
+Navigate to Final Project Code folder
+
+Run: ~$ python app.py
