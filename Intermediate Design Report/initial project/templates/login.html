@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+ 
+{% block container %}
+
+<html>
+     
+  <body>
+        <h1 class="center title">Sign in to continue</h1>
+    <div class="container login-container">
+      <br>
+      <form action="{{ url_for('login') }}" method="POST">
+          {% if error %}
+          <p class="flash">{{ error }}</p>
+        {% endif %}
+            <div class="form-group">
+              <label for="email">Email address</label>
+              <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+              <a href={{url_for('forgotpass')}}><small id="forgotPassword" class="form-text text-muted">
+                  <u>Forgot Password?</u>
+              </small></a>
+            </div>
+            <button type="submit" class="btn basecolorbtn">Log In</button>
+          </form>
+  
+    </div>
+    <div class="center join-link">
+    <a href={{url_for('joinus')}}><u class="basecolortext">Not a member? Join today!</u></a>
+  </div>
+    </body>
+  
+</html>
+<style type="text/css">
+    .login-container{
+        border:1px solid black;
+        padding: 15px !important;
+        border-radius: 5px;
+        width: 80%;
+    }
+    .join-link{
+        margin-top: 10px;
+    }
+    </style>
+{% endblock %}

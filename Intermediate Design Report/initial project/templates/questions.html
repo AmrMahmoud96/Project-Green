@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+ 
+{% block container %}
+<style>
+    .container{
+        max-width: 90%;
+    }
+    label{
+        padding: 10px;
+        vertical-align: middle;
+        text-align: center;
+        word-break: break-word;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+    figcaption{
+        width: 90%;
+        margin-left: 5%;
+    }
+    /*
+    .test{
+        background: red;
+    }*/
+    label > div > input{ /* HIDE RADIO */
+        visibility: hidden; /* Makes input not-clickable */
+        position: absolute; /* Remove input from document flow */
+      }
+      label > div > input + img{ /* IMAGE STYLES */
+        cursor:pointer;
+        border:2px solid transparent;
+      }
+      figure > div > input + img{ /* IMAGE STYLES */
+        cursor:pointer;
+        border:2px solid transparent;
+      }
+      .progress{
+          margin-top: 20px;
+          margin-bottom:20px;
+            
+      }
+      .highlight{
+        border:3px solid #F37649 !important;
+      }
+      .option-container{
+        margin:15px; 
+        flex: 1;  
+      }
+      .question{
+        text-align: center;
+      }
+      .question-container{
+          display: flex;
+          margin: 0 auto;
+          max-width: 60%;
+      }
+      .progress-bar{
+        background:#F37649;
+      }
+      </style>
+<div class="container center">
+    <h2 class="title center">Questions</h2>
+    <h3 class="center">Help us get to know you better by filling in a small questionnaire.</h3>
+    <div class="progress">
+        <div id = "prbar" class="progress-bar" role="progressbar"  style = "width:0" aria-valuenow="0" aria-valuemin="0" aria-valuemax= "100"></div>
+    </div>
+    {% for question in questions%}
+    
+    <div class="question">
+    <h3 class="center">{{question.question}}</h3>
+    <div class="question-container">
+   <label class="question{{question.qid}} option-container" >
+       <div class="test">
+        <input type="radio" class="option" name={{question.qid}} value="0" />
+        <figure>
+            <img src={{question.imga}} width="150px" height="150px">
+            <figcaption>{{question.optiona}}</figcaption>
+        </figure>
+        </div>
+    </label>
+    <label class="question{{question.qid}} option-container">
+        <div class="test">
+        <input type="radio" class="option" name={{question.qid}} value="1" />
+        <figure>
+        <img src={{question.imgb}} width="150px" height="150px">
+        <figcaption>{{question.optionb}}</figcaption>
+        </figure>
+        </div>
+    </label>
+    </div>
+</div>
+    {% endfor %}
+    <div class="btncontainer center">
+        <button class="btn basecolorbtn" id="prev">Previous</button>
+    </div>
+</div>
+<script>
+$(document).ready(function() {
+  //change colour when radio is selected
+  $('input:radio').change(function() {
+    var qid = this.name 
+    // Only remove the class in the specific `box` that contains the radio
+    $('label.question'+qid+'.highlight').removeClass('highlight');
+    $(this).closest('.option-container').addClass('highlight');
+  });
+});
+
+//randomize order of options
+var options = $('.option-container')
+for(var i = 0; i < options.length; i+=2){
+    if(Math.round(Math.random())==1){
+        console.log('switch')
+        options.eq(i).before(options.eq(i+1));
+    }
+}
+
+var answers = {}
+$('.option').change(function(){
+    var answer = ($(this).attr('value'))
+    var question = ($(this).attr('name'))
+    answers[question] = answer
+})
+
+function sum_values(){
+var sum = 0;
+for (question in answers){
+    sum += parseInt(answers[question])
+}
+return sum
+}
+    //Store the total number of questions
+var totalQuestions = $('.question').size();
+
+//Set the current question to display to 1
+var currentQuestion = 0;
+
+//Store the selector in a variable.
+//It is good practice to prefix jQuery selector variables with a $
+$questions = $('.question');
+
+//Hide all the questions
+$questions.hide();
+
+//Show the first question
+$($questions.get(currentQuestion)).fadeIn();
+
+//attach a click listener to the HTML element with the id of 'next'
+$('.option').click(function () {
+    if(currentQuestion<totalQuestions){
+     $($questions.get(currentQuestion)).fadeOut(function () {
+
+        //increment the current question by one
+        currentQuestion = currentQuestion + 1;
+        valeur = (currentQuestion/totalQuestions )*100;
+        $('#prbar').css('width', valeur+'%').attr('aria-valuenow', valeur);
+
+        //if there are no more questions do stuff
+        if (currentQuestion == totalQuestions) {
+        console.log(answers)
+        var risk = sum_values()
+        $.ajax({
+          type: "POST",
+          contentType: "application/json;charset=utf-8",
+          url: "/check_questions",
+          traditional: "true",
+          data: JSON.stringify({risk}),
+          dataType: "json",
+          success: function(result){
+                //console.log(result)
+                window.location.href +="/finished";
+             }
+          });
+          
+        } else {
+            $($questions.get(currentQuestion)).fadeIn();
+        }
+    });
+    }
+   
+
+});
+$('#prev').click(function () {
+if(currentQuestion>0){
+$($questions.get(currentQuestion)).fadeOut(function () {
+
+   currentQuestion = currentQuestion - 1;
+
+        valeur = (currentQuestion/totalQuestions )*100;
+        $('#prbar').css('width', valeur+'%').attr('aria-valuenow', valeur);
+    $($questions.get(currentQuestion)).fadeIn();
+
+});
+}
+
+});
+</script>
+{% endblock %}

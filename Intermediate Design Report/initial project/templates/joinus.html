@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %} 
+{% block container %}
+<html>
+     
+        <body>
+              <h1 class="center title">Join Us</h1>
+          <div class="container login-container">
+              {%if existing %}<p class="flash">That user already exists.</p>{% endif %}
+            {{wtf.quick_form(form,button_map={'submit':"primary"})}}          
+        </div>
+          <div class="center join-link">
+          <a href={{url_for('login')}}><u class="basecolortext">Already a member? Log in now.</u></a>
+        </div>
+          </body>
+        
+      </html>
+      <style type="text/css">
+          .login-container{
+              border:1px solid black;
+              padding: 15px !important;
+              border-radius: 5px;
+              width: 80%;
+          }
+          .join-link{
+              margin-top: 10px;
+          }
+          </style>
+
+{% endblock %}

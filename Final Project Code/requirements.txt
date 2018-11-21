@@ -1,0 +1,8 @@
+flask
+flask-wtf
+wtforms
+flask-mail
+flask-bootstrap
+flask-pymongo
+pandas
+numpy
