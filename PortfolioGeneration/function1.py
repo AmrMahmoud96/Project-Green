@@ -139,60 +139,100 @@ def fetch_data(Prices,ETF):
     Prices = pd.concat([Prices, temp_df], axis=1, sort=True)
     return Prices    
 
+def compare_portfolios(startdate,enddate,etfs,values):
+    ''''''
+    #better portfolio
+    dom_port = None
     
+    #initialize user inputed portfolio
+    user_port = portfolio_one(etfs,values)
+    
+    #calculate stats for portfolio
+    user_port_stats = portfolio_stats(user_port.returns,startdate,enddate)
+    
+    #initialize all of our portfolios
+    our_port_ids = ['Port1']
+    our_ports = {}
+    our_ports_stats = {}
+    for pid in our_port_ids:
+        our_ports[pid] = portfolio_one_b()
+        #calculate stats for all portfolios
+        our_ports_stats[pid] = portfolio_stats(our_ports[pid].returns,None,None)
+        if our_ports_stats[pid]['Sharpe'] >= user_port_stats['Sharpe']:
+            dom_port = our_ports[pid]
+    
+    if not dom_port:
+        #do MVO to determine better allocation
+        return_target = user_port_stats['CAGR']
+        dom_MVO()
+    
+    return dom_port
+
+
+def dom_MVO(return_target):
+    
+    #load all price data 
+    
+    #calculate returns
+    
+    return
+
+
 if __name__ == "__main__":
     
     #Note: for actual use, add following line to file 
     #import function1
     
-    #test cases to demonstrate example implentation
+    ##test cases to demonstrate example implentation
     
-    #test 1(Their Portfolio):
-    #initialize portfolio
-    test_portfolio = portfolio_one(['SPY','AGG','SCHH','DBC'],[100,100,100,100])
+    ##test 1(Their Portfolio):
+    ##initialize portfolio
+    #test_portfolio = portfolio_one(['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
-    #get time series of portfolio value
-    ts_value_1 = portfolio_value_ts(test_portfolio.returns,test_portfolio.initial_value,None,None)
+    ##get time series of portfolio value
+    #ts_value_1 = portfolio_value_ts(test_portfolio.returns,test_portfolio.initial_value,None,None)
     
-    #plot data
-    ts_value_1.plot()
-    plt.show()
+    ##plot data
+    #ts_value_1.plot()
+    #plt.show()
     
-    #get time series for specific date range
-    ts_value_2 = portfolio_value_ts(test_portfolio.returns,test_portfolio.initial_value,datetime(2011,1,1),datetime(2013,1,1))
+    ##get time series for specific date range
+    #ts_value_2 = portfolio_value_ts(test_portfolio.returns,test_portfolio.initial_value,datetime(2011,1,1),datetime(2013,1,1))
     
-    #plot data
-    ts_value_2.plot()
-    plt.show()
+    ##plot data
+    #ts_value_2.plot()
+    #plt.show()
     
-    #get portfolio stats using all data
-    port_stats_1 = portfolio_stats(test_portfolio.returns,None,None)
+    ##get portfolio stats using all data
+    #port_stats_1 = portfolio_stats(test_portfolio.returns,None,None)
     
-    #get portfolio stats for a specific date range
-    port_stats_2 = portfolio_stats(test_portfolio.returns,datetime(2011,1,1),datetime(2013,1,1))
+    ##get portfolio stats for a specific date range
+    #port_stats_2 = portfolio_stats(test_portfolio.returns,datetime(2011,1,1),datetime(2013,1,1))
     
     
-    #test 2 (Our Portfolio):
-    #initialize portfolio
-    test_portfolio = portfolio_one_b()
+    ##test 2 (Our Portfolio):
+    ##initialize portfolio
+    #test_portfolio = portfolio_one_b()
     
-    #get time series of portfolio value
-    ts_value_1 = portfolio_value_ts(test_portfolio.returns,100,None,None)
+    ##get time series of portfolio value
+    #ts_value_1 = portfolio_value_ts(test_portfolio.returns,100,None,None)
     
-    #plot data
-    ts_value_1.plot()
-    plt.show()
+    ##plot data
+    #ts_value_1.plot()
+    #plt.show()
     
-    #get time series for specific date range
-    ts_value_2 = portfolio_value_ts(test_portfolio.returns,100,datetime(2011,1,1),datetime(2013,1,1))
+    ##get time series for specific date range
+    #ts_value_2 = portfolio_value_ts(test_portfolio.returns,100,datetime(2011,1,1),datetime(2013,1,1))
     
-    #plot data
-    ts_value_2.plot()
-    plt.show()
+    ##plot data
+    #ts_value_2.plot()
+    #plt.show()
     
-    #get portfolio stats using all data
-    port_stats_1 = portfolio_stats(test_portfolio.returns,None,None)
+    ##get portfolio stats using all data
+    #port_stats_1 = portfolio_stats(test_portfolio.returns,None,None)
     
-    #get portfolio stats for a specific date range
-    port_stats_2 = portfolio_stats(test_portfolio.returns,datetime(2011,1,1),datetime(2013,1,1))
-        
+    ##get portfolio stats for a specific date range
+    #port_stats_2 = portfolio_stats(test_portfolio.returns,datetime(2011,1,1),datetime(2013,1,1))
+    
+    
+    test = compare_portfolios(None,None,['SPY','AGG','SCHH','DBC'],[100,100,100,100])

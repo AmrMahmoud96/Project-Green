@@ -116,6 +116,17 @@ def fetch_data(Prices,ETF):
     Prices = pd.concat([Prices, temp_df], axis=1, sort=True)
     return Prices
 
+def compare_portfolios(startdate,enddate,etfs,values):
+    ''''''
+    #initialize user inputed portfolio
+    user_port = portfolio_one(etfs,values)
+    #calculate stats for portfolio
+    
+    #initialize all of our portfolios
+    
+    #calculate stats for all portfolios
+    
+    return
 
 if __name__ == "__main__":
     
@@ -130,22 +141,25 @@ if __name__ == "__main__":
     test_portfolio = portfolio_one(['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
     ##get time series of portfolio value
-    ts_value_1 = test_portfolio.portfolio_value_ts(None,None)
+    #ts_value_1 = test_portfolio.portfolio_value_ts(None,None)
     
-    ##plot data
-    ts_value_1.plot()
-    plt.show()
+    ###plot data
+    #ts_value_1.plot()
+    #plt.show()
     
-    ##get time series for specific date range
-    ts_value_2 = test_portfolio.portfolio_value_ts(datetime(2011,1,1),datetime(2013,1,1))
+    ###get time series for specific date range
+    #ts_value_2 = test_portfolio.portfolio_value_ts(datetime(2011,1,1),datetime(2013,1,1))
     
-    ##plot data
-    ts_value_2.plot()
-    plt.show()
+    ###plot data
+    #ts_value_2.plot()
+    #plt.show()
     
-    ##get portfolio stats using all data
-    port_stats_1 = test_portfolio.portfolio_stats(None,None)
+    ###get portfolio stats using all data
+    #port_stats_1 = test_portfolio.portfolio_stats(None,None)
     
-    ##get portfolio stats for a specific date range
-    port_stats_2 = test_portfolio.portfolio_stats(datetime(2011,1,1),datetime(2013,1,1))
+    ###get portfolio stats for a specific date range
+    #port_stats_2 = test_portfolio.portfolio_stats(datetime(2011,1,1),datetime(2013,1,1))
+    
+    #function 2 test
+    compare_portfolios(None,None,['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
