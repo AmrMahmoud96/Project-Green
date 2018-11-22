@@ -183,14 +183,35 @@ def logout():
     session['logged_in'] = None
     return redirect(url_for('about'))
 
-@app.route('/profile')
-def profile():
+@app.route('/profile/<change>', methods=['GET', 'POST'])
+def profile(change):
     if not checkLoggedIn():
         return redirect(url_for('login'))
     users = mongo.db['_Users']
     profile = users.find_one({'email' : session['email']})
     profile['risk'] = riskDefnArr[profile.get('riskTol')]
-    return render_template('profile.html',profile=profile)
+    return render_template('profile.html',profile=profile,change=change)
+
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    if not checkLoggedIn():
+        return redirect(url_for('forgotpass'))
+    users = mongo.db['_Users']
+    profile = users.find_one({'email' : session['email']})
+    if request.method == 'POST':
+        if check_password_hash(profile['password'], request.form['password']):
+            if(request.form['newpassword'] == request.form['confirmpassword']):
+                if(len(request.form['newpassword'])>=8):
+                    profile['password']= generate_password_hash(request.form['newpassword'], method='sha256')
+                    users.save(profile)
+                    return redirect(url_for('home'))
+                return render_template('changepassword.html',error="New Password needs to be at least 8 characters.")
+            else:
+                return render_template('changepassword.html',error="New passwords need to match.")
+        else:
+            return render_template('changepassword.html',error="Invalid password.")
+    return render_template('changepassword.html')
+
 
 def checkLoggedIn():
     if session==None:
@@ -269,9 +290,7 @@ def joinus():
     return render_template("joinus.html",form=form)
 
 @app.route("/forgotpass", methods=['GET','POST'])
-def forgotpass():
-    if checkLoggedIn():
-        return redirect(url_for('home')) 
+def forgotpass(): 
     if request.method == 'POST':
         global temppin,tempemail
         if request.form.get('email')!=None:

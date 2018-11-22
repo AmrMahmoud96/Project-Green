@@ -93,6 +93,6 @@
         </div>-->
     </div>
    </div>
-   <div class="profBtnContainer center"><button class="btn basecolorbtn" style="margin-right:10px;">Change Password</button> <button class="btn btn-primary">Edit Info</button></div>
+   <div class="profBtnContainer center"><a href = {{url_for('change_password')}}><button class="btn basecolorbtn" style="margin-right:10px;">Change Password</button></a> <a href={{url_for('profile',change=True)}}><button class="btn btn-primary">Edit Info</button></a></div>
 
 {% endblock %}

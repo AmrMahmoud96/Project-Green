@@ -3,9 +3,9 @@
   <head>
     <title>Alpha Factory</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-  <script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="https://netdna.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <link rel="icon" 
       type="image/png" 
       href="./static/images/logo"/>
@@ -98,14 +98,15 @@
                   <a class="nav-item navbar-text nav-link active advisorLink" href={{url_for('advisor')}}>Advisor</a>
                   <a class="nav-item navbar-text  nav-link active" href={{url_for('about')}}>About</a>
                   <a class="nav-item navbar-text  nav-link active" href={{url_for('contactus')}}>Contact Us</a>
-                  <li class="nav-item dropdown">
+                  <li class="nav-item">
                       <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{session['name']}}
                       </a>
-                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href={{url_for('profile')}}>View Profile</a>
-                        <a class="dropdown-item" href={{url_for('logout')}}>Sign Out</a>
-                      </div>
+                      <ul class="dropdown-menu pull-right" aria-labelledby="navbarDropdownMenuLink">
+                        <li class="dropdown-item"><a href={{url_for('profile',change=False)}}>View Profile</a></li>
+                  
+                        <li class="dropdown-item"><a href={{url_for('logout')}}>Sign Out</a></ul>
+                        </ul>
                   </li>
                 </div>
               </div>
