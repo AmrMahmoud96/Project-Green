@@ -48,6 +48,7 @@
         .advisorLink:hover{
           color:#f04f0f !important;
         }*/
+        
       .joinbtn{
         width:80px;
         height:40px;
@@ -98,15 +99,14 @@
                   <a class="nav-item navbar-text nav-link active advisorLink" href={{url_for('advisor')}}>Advisor</a>
                   <a class="nav-item navbar-text  nav-link active" href={{url_for('about')}}>About</a>
                   <a class="nav-item navbar-text  nav-link active" href={{url_for('contactus')}}>Contact Us</a>
-                  <li class="nav-item">
+                  <li class="nav-item dropdown">
                       <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{session['name']}}
                       </a>
-                      <ul class="dropdown-menu pull-right" aria-labelledby="navbarDropdownMenuLink">
-                        <li class="dropdown-item"><a href={{url_for('profile',change=False)}}>View Profile</a></li>
-                  
-                        <li class="dropdown-item"><a href={{url_for('logout')}}>Sign Out</a></ul>
-                        </ul>
+                      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href={{url_for('profile',change=False)}}>View Profile</a>
+                        <a class="dropdown-item" href={{url_for('logout')}}>Sign Out</a>
+                      </div>
                   </li>
                 </div>
               </div>
