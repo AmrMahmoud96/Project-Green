@@ -293,14 +293,14 @@ if __name__ == "__main__":
     
     ##test 2 (Our Portfolio):
     ##initialize portfolio
-    #test_portfolio = portfolio_one_b()
+    test_portfolio = portfolio_one_b()
     
     ##get time series of portfolio value
-    #ts_value_1 = portfolio_value_ts(test_portfolio.returns,100,None,None)
+    ts_value_1 = portfolio_value_ts(test_portfolio.returns,100,datetime(2017,1,1),datetime(2018,1,1))
     
     ##plot data
-    #ts_value_1.plot()
-    #plt.show()
+    ts_value_1.plot()
+    plt.show()
     
     ##get time series for specific date range
     #ts_value_2 = portfolio_value_ts(test_portfolio.returns,100,datetime(2011,1,1),datetime(2013,1,1))
@@ -326,4 +326,4 @@ if __name__ == "__main__":
     #test1 = compare_portfolios(datetime(2010,1,1),datetime(2013,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
     #test2 should select the MVO portfolio (based on below inputs)
-    test2 = compare_portfolios(datetime(2015,1,1),datetime(2017,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
+    #test2 = compare_portfolios(datetime(2015,1,1),datetime(2017,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])

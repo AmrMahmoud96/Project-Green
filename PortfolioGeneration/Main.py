@@ -9,6 +9,7 @@ import seaborn as sns
 from matplotlib.ticker import FuncFormatter
 from pandas.tseries.offsets import MonthEnd
 from datetime import timedelta
+import statsmodels.api as sm
 
 
 class portfolio:
@@ -39,6 +40,38 @@ class portfolio:
         self.tot_ret = cum_returns.values[-1]-1
         self.VaR = self.Hist_VaR(1, 0.99)
         self.CVaR = self.Hist_CVaR(1)
+        self.beta, self.alpha, self.R2 = self.beta_calc()
+        #annualize alpha
+        self.alpha = ((1+self.alpha)**252)-1
+        self.treynor = self.exp_ret/self.beta
+        
+        
+        
+    def beta_calc(self,ref='SPX'):
+        
+        temp_df = pd.concat([self.returns,Returns[ref]], axis=1,sort=True)
+        temp_df.dropna(how='any',inplace=True)
+        self.index_rets = temp_df[ref]
+        #print(temp_df)
+        
+        #run regression
+        
+        # split dependent and independent variable
+        X = temp_df[ref]
+        y = temp_df[self.code]
+        
+        # Add a constant to the independent value
+        X1 = sm.add_constant(X)
+        
+        # make regression model 
+        model = sm.OLS(y, X1)
+        
+        # fit model and print results
+        results = model.fit()
+        print(results.params)        
+        
+        return results.params[ref],results.params['const'],results.rsquared
+        
     
     def sortino_calc(self):
         neg_rets = self.returns[self.returns < 0]**2
@@ -107,19 +140,27 @@ class portfolio:
         #Chart 1: Cumulative Return
         cum_returns = (1 + self.returns).cumprod()-1
         
+        ind_cum_returns  = (1+self.index_rets).cumprod()-1
+        
         ax1 = plt.subplot2grid((11, 3), (0, 0), colspan=3,rowspan=3)
-        ax1.plot(cum_returns)
+        ax1.plot(cum_returns,label='Portfolio')
+        
+        ax1.plot(ind_cum_returns,linestyle='-',label='S&P 500',color='#000000',linewidth=0.8,alpha=0.7)
         
         ax1.set_ylabel('Return (%)',fontsize=9)
         ax1.set_title("Portfolio Tearsheet: " + self.name,y=1.1)  
         ax1.margins(x=0,y=0)
-        y_range_add = (cum_returns.max()-cum_returns.min())/20
-        ax1.set_ylim(cum_returns.min()-y_range_add,cum_returns.max()+y_range_add)
+        
+        y_range_add1 = (cum_returns.max()-cum_returns.min())/20
+        y_range_add2 = (ind_cum_returns.max()-ind_cum_returns.min())/20
+        y_range_add = max(y_range_add1,y_range_add2)
+        
+        ax1.set_ylim(min(ind_cum_returns.min(),cum_returns.min())-y_range_add,max(ind_cum_returns.max(),cum_returns.max())+y_range_add)
         ax1.grid(linestyle='--',alpha=0.5,linewidth=0.7)
         ax1.set_axisbelow(True)
         #format y-axis as percentage
         ax1.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y))) 
-        
+        ax1.legend(loc='upper left',fontsize=8,handlelength=0.8)
         ax1.set_facecolor('#FFFFFF')
         
         
@@ -196,14 +237,14 @@ class portfolio:
         ax6.text(9.5 , 8.5, '{:.2%}'.format(self.VaR), horizontalalignment='right', fontsize=9)   
         ax6.text(0.5, 7.0, r'$CVaR_{99\%}:$', fontsize=9)
         ax6.text(9.5 , 7.0, '{:.2%}'.format(self.CVaR), horizontalalignment='right', fontsize=9)
-        ax6.text(0.5, 5.5, 'Placeholder:', fontsize=9)
-        ax6.text(9.5 , 5.5, 'N/A', horizontalalignment='right', fontsize=9)   
-        ax6.text(0.5, 4.0, 'Placeholder:', fontsize=9)
-        ax6.text(9.5 , 4.0, 'N/A', horizontalalignment='right', fontsize=9)
-        ax6.text(0.5, 2.5, 'Placeholder:', fontsize=9)
-        ax6.text(9.5 , 2.5, 'N/A', horizontalalignment='right', fontsize=9)    
-        ax6.text(0.5, 1, 'Placeholder', fontsize=9)
-        ax6.text(9.5, 1, 'N/A', horizontalalignment='right', fontsize=9)        
+        ax6.text(0.5, 5.5, 'Beta:', fontsize=9)
+        ax6.text(9.5 , 5.5, '{:.2f}'.format(self.beta), horizontalalignment='right', fontsize=9)   
+        ax6.text(0.5, 4.0, 'Alpha:', fontsize=9)
+        ax6.text(9.5 , 4.0, '{:.2%}'.format(self.alpha), horizontalalignment='right', fontsize=9)
+        ax6.text(0.5, 2.5, 'R-Squared:', fontsize=9)
+        ax6.text(9.5 , 2.5, '{:.2%}'.format(self.R2), horizontalalignment='right', fontsize=9)    
+        ax6.text(0.5, 1, 'Treynor:', fontsize=9)
+        ax6.text(9.5, 1, '{:.2f}'.format(self.treynor), horizontalalignment='right', fontsize=9)        
         
         ax6.set_title('Statistics #2',fontsize=10)
         ax6.grid(False)
@@ -636,8 +677,8 @@ if __name__ == "__main__":
     #equal weight positions rebalanced every 30 days
     assets = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV']
     target = [0.09,0.03,0.08,0.03,0.12,0.06,0.03,0.05,0.05,0.05,0.05,0.05,0.1,0.05,0.03,0.03,0.05,0.05]
-    #EW_pos = EW_positions(Prices[['SPY']],'M')
-    #EW_Port = portfolio("EW All","EW","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
+    EW_pos = EW_positions(Prices[assets],'M')
+    EW_Port = portfolio("EW All","EW","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
     
     #equal weight with trend following overlay
     #EW_TF_pos = EW_TF_positions(Prices[assets],'M',200)
@@ -658,8 +699,8 @@ if __name__ == "__main__":
     #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     #target = [.15,.15,.15,.05,.15,.05,.05,.05,.05,.05,.05,.05]
-    RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
-    RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
+    #RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
+    #RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
     
     #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",RP_TF_pos, '200 SMA','Monthly','RP 200')     
