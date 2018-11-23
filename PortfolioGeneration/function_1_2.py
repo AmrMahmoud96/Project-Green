@@ -14,24 +14,24 @@ db = client['AlphaFactory']
 
 class portfolio_one:
     
-    def __init__(self,etfs,values):
+    def __init__(self,etfs,values,Returns):
         '''etfs should be a list of ETFs ie. ["SPY","VAB","EEM"] and values should be a list of same length with dollar values in each ETF'''
         #initizliaze main components
         Dollars = pd.Series(values,index=etfs)
         self.initial_value = Dollars.sum()
         Weights = Dollars/Dollars.sum()
-        Prices = pd.DataFrame()
+        #Prices = pd.DataFrame()
        
         #get price data for relevant ETFs from mongoDB
-        for etf in etfs:
-            Prices = fetch_data(Prices,etf)        
+        #for etf in etfs:
+        #    Prices = fetch_data(Prices,etf)        
         
         #clean and calculate returns
-        Prices.dropna(inplace=True,how='any')
-        Returns = Prices.pct_change()
+        #Prices.dropna(inplace=True,how='any')
+        #Returns = Prices.pct_change()
         
         #return series of the portfolio
-        self.returns = (Returns*Weights).sum(axis=1) 
+        self.returns = (Returns[etfs]*Weights).sum(axis=1) 
 
 class portfolio_one_b:
     
@@ -42,13 +42,15 @@ class portfolio_one_b:
         #currently only works for one portfolio
 
         rets = pd.DataFrame(list(db['Portfolio_One_Returns'].find({},{"Date":1,"Return":1,'_id': 0})))
-       
+        
         #set index to date
         rets.set_index('Date',inplace=True)
+        
         rets.columns = ['Portfolio1']
         
         #convert the index as date
         rets.index = pd.to_datetime(rets.index)            
+        rets.sort_index(inplace=True)
         
         #return series of the portfolio
         self.returns = rets['Portfolio1']         
@@ -100,7 +102,7 @@ def portfolio_stats(returns,startdate=None,enddate=None):
         rets = returns[(returns.index >= startdate) & (returns.index <= enddate)]        
 
     #assume no return on first day, time series represents EOD value
-    rets.iloc[0] = 0        
+    rets = rets.iloc[1::]    
 
     #calculate cumulative returns (used for calculating some statistics)
     cumul_rets = (1 + rets).cumprod()        
@@ -154,17 +156,48 @@ def fetch_data(Prices,ETF):
 
 def compare_portfolios(startdate,enddate,etfs,values):
     ''''''
+    
+    #load all price data 
+            
+    Prices = pd.DataFrame()
+    
+    #assets to include
+    etf_uni = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV','SPY']
+    
+    #get price data for relevant ETFs from mongoDB
+    for etf in etf_uni:
+        Prices = fetch_data(Prices,etf)        
+    
+    #clean and calculate returns
+    Prices.dropna(inplace=True,how='any')
+    returns = Prices.pct_change()   
+        
+    
+    #if no startdate and endate will default to all data
+    if not startdate and not enddate:
+        rets = returns
+    elif not startdate and enddate:
+        rets = returns[(returns.index >= startdate)]
+    elif startdate and not enddate:
+        rets = returns[(returns.index <= enddate)]
+    else:
+        #trim data based on dates
+        rets = returns[(returns.index >= startdate) & (returns.index <= enddate)]          
+    
     #define dominating portfolio
     dom_port = None
     
     #initialize user inputed portfolio
-    user_port = portfolio_one(etfs,values)
+    user_port = portfolio_one(etfs,values,rets)
     
     #calculate time series for user portfolio
-    user_port_ts = portfolio_value_ts(user_port.returns,user_port.initial_value,startdate,enddate)
+    user_port_ts = portfolio_value_ts(user_port.returns,user_port.initial_value,None, None)
     
     #calculate stats for user portfolio
-    user_port_stats = portfolio_stats(user_port.returns,startdate,enddate)
+    user_port_stats = portfolio_stats(user_port.returns,None, None)
+    
+    #convert return back to average
+    return_target = ((user_port_stats['CAGR']+1)**(1/252))-1        
     
     #initialize all of our portfolios
     our_port_ids = ['Port1']
@@ -187,44 +220,15 @@ def compare_portfolios(startdate,enddate,etfs,values):
     
     if not dom_port:
         #do MVO to determine better allocation
-        print("Selected MVO portfolio!")
-        
-        #convert return back to average
-        return_target = ((user_port_stats['CAGR']+1)**(1/252))-1
-        
-        #load all price data 
-                
-        Prices = pd.DataFrame()
-        
-        #assets to include
-        etfs = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV','SPY']
-        
-        #get price data for relevant ETFs from mongoDB
-        for etf in etfs:
-            Prices = fetch_data(Prices,etf)        
-        
-        #clean and calculate returns
-        Prices.dropna(inplace=True,how='any')
-        returns = Prices.pct_change()            
-        
-        #if no startdate and endate will default to all data
-        if not startdate and not enddate:
-            rets = returns
-        elif not startdate and enddate:
-            rets = returns[(returns.index >= startdate)]
-        elif startdate and not enddate:
-            rets = returns[(returns.index <= enddate)]
-        else:
-            #trim data based on dates
-            rets = returns[(returns.index >= startdate) & (returns.index <= enddate)]              
+        print("Selected MVO portfolio!")        
         
         #run mvo optmization
         MVO_wgts = MVO(return_target, rets.iloc[1::])
         
         #calculate characteristics of mvo portfolio
-        dom_port = portfolio_mvo(etfs,MVO_wgts,rets)
-        dom_port_stats = portfolio_stats(dom_port.returns,startdate,enddate)
-        dom_port_ts = portfolio_value_ts(dom_port.returns,user_port.initial_value,startdate,enddate)        
+        dom_port = portfolio_mvo(etf_uni,MVO_wgts,rets)
+        dom_port_stats = portfolio_stats(dom_port.returns,None,None)
+        dom_port_ts = portfolio_value_ts(dom_port.returns,user_port.initial_value,None,None)        
         
     return user_port, user_port_ts, user_port_stats, dom_port, dom_port_ts, dom_port_stats
 
