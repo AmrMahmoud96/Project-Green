@@ -1,7 +1,6 @@
 from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify,g
 from forms import ContactForm, RegisterForm, PortfolioCalculationForm
-from function1 import portfolio_one,portfolio_one_b,portfolio_value_ts,portfolio_stats
-from function_1_2 import portfolio_stats, portfolio_value_ts, compare_portfolios
+from function_1_2 import portfolio_stats, portfolio_value_ts, compare_portfolios, portfolio_one_b
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
@@ -107,7 +106,7 @@ def detailedAbout():
                     values.append(float(request.form[x]))
                     count+=float(request.form[x])
             except ValueError:
-                print('not a float')
+                pass
         if count == 0:
             return render_template('about.html', form=form,error='Please enter at least one value.')
         print(assets)
@@ -259,10 +258,13 @@ def home():
         return redirect(url_for('advisor'))
     elif session['fillQuestions']==True:
         return redirect(url_for('questions'))
-    labels = tableD['Date'].values.tolist()
-    b = tableD['Close'].values
-    tcolumn_divs = (b/b[0])*15000
-    return render_template('home.html',tvalues=tcolumn_divs.tolist(), labels=labels)
+    p = portfolio_one_b()
+    SD= datetime.datetime.now() - datetime.timedelta(days=2*365)
+    ED= datetime.datetime.now()
+    tcolumn_divs = portfolio_value_ts(p.returns,session['portfolio']['initial'], SD,ED)
+    stats = portfolio_stats(p.returns,SD,ED).to_frame()
+    labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
+    return render_template('home.html',tvalues=tcolumn_divs.tolist(), labels=labels,stats=stats)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -279,7 +281,7 @@ def login():
                 session['logged_in']= True
                 session['fillQuestions'] = login_user['fillQuestions']
                 session['riskTol'] = login_user.get('riskTol')
-                session['portfolio'] = None
+                session['portfolio'] = login_user.get('portfolio')
                 return redirect(url_for('home'))
         return render_template("login.html", error="Invalid Email/Password.")
     return render_template("login.html")
@@ -300,7 +302,7 @@ def joinus():
                 session['email'] = request.form['email']
                 session['logged_in'] = True
                 session['fillQuestions']=True
-                return redirect(url_for('questions'))
+                return redirect(url_for('advisor'))
             return render_template("joinus.html",form=form,existing=True)
         return render_template("joinus.html",form=form)
     return render_template("joinus.html",form=form)
@@ -346,7 +348,9 @@ def updateuserpassword(password,email):
 def questions():
     if not checkLoggedIn():
         return redirect(url_for('login'))
-    if session['fillQuestions'] == True:
+    if session.get('portfolio')==None:
+        return redirect(url_for('advisor'))
+    if session.get('fillQuestions') == True:
         questionDB = mongo.db['_Questions']
         questions=[]
         for q in questionDB.find({}):
@@ -368,7 +372,12 @@ def advisor():
         return redirect(url_for('login'))
     if session.get('fillQuestions')==False or session.get('portfolio')==None:
         if request.method == 'POST':
-            session['portfolio']=True
+            users = mongo.db['_Users']
+            profile = users.find_one({'email' : session['email']})
+            portfolio = {'initial':float(request.form['initial']), 'goal':float(request.form['goal']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}
+            profile['portfolio']=portfolio
+            session['portfolio']=portfolio
+            users.save(profile)
             return redirect(url_for('home'))
         return render_template('advisor.html')
     return redirect(url_for('home'))

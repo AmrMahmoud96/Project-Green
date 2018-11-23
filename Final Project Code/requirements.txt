@@ -10,3 +10,4 @@ flask
 gunicorn
 matplotlib
 cvxopt
+wtforms_components
