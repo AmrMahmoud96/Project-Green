@@ -402,6 +402,7 @@ def updateuserrisk(risk):
         tolerance = riskDefnArr1[risk]
     print(tolerance)
     login_user['riskTol'] = tolerance
+    login_user['riskTolNum'] = risk
     session['riskTol'] = tolerance
     login_user['fillQuestions']= False
     session['fillQuestions']=False
