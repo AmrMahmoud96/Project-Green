@@ -74,7 +74,7 @@ def about():
                     values.append(0)
             if count == 0:
                 form.equities.errors.append('Please enter at least one value.')
-                return render_template('about.html', form=form,detailedForm=detailedForm)
+                return render_template('about.html', form=form)
             global input_portfolio, output_portfolio
             input_portfolio = portfolio_one(assets,values)
             output_portfolio = portfolio_one_b()
@@ -89,44 +89,38 @@ def about():
             selected=['','selected','','','']
             return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected,stats=stats, ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
-            return render_template('about.html', form=form,detailedForm=detailedForm)
-    return render_template("about.html",form=form,detailedForm=detailedForm)
+            return render_template('about.html', form=form)
+    return render_template("about.html",form=form)
 @app.route("/detailedAbout", methods=['POST'])
 def detailedAbout():
     form = PortfolioCalculationForm()
-    detailedForm=DetailedPortfolioCalculationForm()
     if request.method == 'POST':
-        if detailedForm.validate_on_submit():
-            count = 0
-            assets=[]
-            values=[]
-            for fieldname, value in detailedForm.data.items():
-                if type(value) is type(decimal.Decimal(0)) or type(value)is int:
-                    assets.append(fieldname)
-                    values.append(float(value))
-                    count+=value
-                elif value == None:
-                    assets.append(fieldname)
-                    values.append(0)
-            if count == 0:
-                detailedForm.SPY.errors.append('Please enter at least one value.')
-                return render_template('about.html', form=form,detailedForm=detailedForm)
-            global input_portfolio, output_portfolio
-            input_portfolio = portfolio_one(assets,values)
-            output_portfolio = portfolio_one_b()
-            ED = datetime.datetime.now()
-            SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
-            tcolumn_divs = portfolio_value_ts(input_portfolio.returns,input_portfolio.initial_value,SD,ED)
-            ocolumn_divs = portfolio_value_ts(output_portfolio.returns,input_portfolio.initial_value,SD,ED)
-            tstats = portfolio_stats(input_portfolio.returns,SD,ED)
-            ostats = portfolio_stats(output_portfolio.returns,SD,ED)
-            stats = pd.concat([tstats,ostats],axis=1)
-            labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
-            selected=['','selected','','','']
-            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), stats=stats,selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
-        else:
-            return render_template('about.html', form=form,detailedForm=detailedForm)
-    return render_template("about.html",form=form,detailedForm=detailedForm)
+        count = 0
+        assets=[]
+        values=[]
+        for x in request.form:
+            assets.append(x)
+            try:
+                values.append(float(request.form[x]))
+                count+=float(request.form[x])
+            except ValueError:
+                values.append(0)
+        if count == 0:
+            return render_template('about.html', form=form,error='Please enter at least one value.')
+        global input_portfolio, output_portfolio
+        input_portfolio = portfolio_one(assets,values)
+        output_portfolio = portfolio_one_b()
+        ED = datetime.datetime.now()
+        SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
+        tcolumn_divs = portfolio_value_ts(input_portfolio.returns,input_portfolio.initial_value,SD,ED)
+        ocolumn_divs = portfolio_value_ts(output_portfolio.returns,input_portfolio.initial_value,SD,ED)
+        tstats = portfolio_stats(input_portfolio.returns,SD,ED)
+        ostats = portfolio_stats(output_portfolio.returns,SD,ED)
+        stats = pd.concat([tstats,ostats],axis=1)
+        labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
+        selected=['','selected','','','']
+        return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), stats=stats,selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
+    return render_template("about.html",form=form)
 
 @app.route("/recalculateAbout", methods=['POST'])
 def recalculateAbout():
