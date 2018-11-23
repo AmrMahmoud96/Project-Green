@@ -3,6 +3,7 @@
 {% import "bootstrap/wtf.html" as wtf %} 
  
 {% block container %}
+
 <style type="text/css">
 .class1{
 background: #f8f9fa!important;
@@ -305,9 +306,9 @@ text-align: justify;
         </ul>
         <div class="tab-content">
         <div id="simple" class="tab-pane fade show active">
-                <form action={{ url_for('about') }} method="POST">
-                        {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
-                    </form>
+            <form action={{ url_for('about') }} method="POST">
+                {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
+            </form>
         </div>
         <div id="detailed" class="tab-pane fade">
                 <form action={{ url_for('detailedAbout') }} method="POST">
@@ -408,4 +409,20 @@ text-align: justify;
         <p>Stefan Momic, Amr Mahmoud, Ameer Shaikh, Daniel Kecman</p>
         -->
     </div>
+    {%if error_occured or error%}
+<script>
+    $([document.documentElement, document.body]).animate({
+        scrollTop: $(".port-form").offset().top-91
+    }, 200);
+
+{%if error%}
+$(document).ready(function(){
+    activateTab('detailed');
+  });
+  function activateTab(tab){
+    $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+  };
+{%endif%}
+</script>
+{%endif%}
 {% endblock %}

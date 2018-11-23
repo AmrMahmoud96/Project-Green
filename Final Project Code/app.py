@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify,g
-from forms import ContactForm, RegisterForm, PortfolioCalculationForm, DetailedPortfolioCalculationForm
+from forms import ContactForm, RegisterForm, PortfolioCalculationForm
 from function1 import portfolio_one,portfolio_one_b,portfolio_value_ts,portfolio_stats
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
@@ -58,7 +58,6 @@ mail.init_app(app)
 @app.route("/about", methods=['GET', 'POST'])
 def about():
     form = PortfolioCalculationForm()
-    detailedForm=DetailedPortfolioCalculationForm()
     if request.method == 'POST':
         if form.validate_on_submit():
             count = 0
@@ -73,8 +72,8 @@ def about():
                     assets.append(fieldname)
                     values.append(0)
             if count == 0:
-                form.equities.errors.append('Please enter at least one value.')
-                return render_template('about.html', form=form)
+                form.SPY.errors.append('Please enter at least one value.')
+                return render_template('about.html', form=form,error_occured=True)
             global input_portfolio, output_portfolio
             input_portfolio = portfolio_one(assets,values)
             output_portfolio = portfolio_one_b()
