@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for,request, flash, session,redirect,jsonify,g
 from forms import ContactForm, RegisterForm, PortfolioCalculationForm
 from function1 import portfolio_one,portfolio_one_b,portfolio_value_ts,portfolio_stats
+from function_1_2 import portfolio_stats, portfolio_value_ts, compare_portfolios
 from flask_mail import Mail,Message
 from flask_bootstrap import Bootstrap
 from flask_pymongo import PyMongo
@@ -12,6 +13,7 @@ import numpy as np
 import random
 import decimal
 
+#test vars
 sandpfile='^GSPC (2).csv'
 vixfile= '^GSPTSE.csv'
 tableS= pd.read_csv(sandpfile)
@@ -19,13 +21,15 @@ tableV = pd.read_csv(vixfile)
 spf= '^GSPC.csv'
 tableD = pd.read_csv(spf)
 
+#variables for multi-page functions
 temppin = ''
 tempemail=''
-input_portfolio=None
-output_portfolio=None
+assets =[]
+values=[]
 
-
+#define risk tolerance by number
 riskDefnArr = ['risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky']
+
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'AlphaFactory'
@@ -60,29 +64,27 @@ def about():
     form = PortfolioCalculationForm()
     if request.method == 'POST':
         if form.validate_on_submit():
+            global assets,values
             count = 0
             assets=[]
             values=[]
             for fieldname, value in form.data.items():
-                if type(value) is type(decimal.Decimal(0)) or type(value)is int:
+                if (type(value) is type(decimal.Decimal(0)) or type(value)is int) and value>0:
                     assets.append(fieldname)
                     values.append(float(value))
                     count+=value
-                elif value == None:
-                    assets.append(fieldname)
-                    values.append(0)
             if count == 0:
                 form.SPY.errors.append('Please enter at least one value.')
                 return render_template('about.html', form=form,error_occured=True)
-            global input_portfolio, output_portfolio
-            input_portfolio = portfolio_one(assets,values)
-            output_portfolio = portfolio_one_b()
+            print(assets)
+            print(values)
             ED = datetime.datetime.now()
             SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
-            tcolumn_divs = portfolio_value_ts(input_portfolio.returns,input_portfolio.initial_value,SD,ED)
-            ocolumn_divs = portfolio_value_ts(output_portfolio.returns,input_portfolio.initial_value,SD,ED)
-            tstats = portfolio_stats(input_portfolio.returns,SD,ED)
-            ostats = portfolio_stats(output_portfolio.returns,SD,ED)
+            comp_portfolio = compare_portfolios(SD,ED,assets,values)
+            tcolumn_divs = comp_portfolio[1]
+            ocolumn_divs = comp_portfolio[4]
+            tstats = comp_portfolio[2]
+            ostats = comp_portfolio[5]
             stats = pd.concat([tstats,ostats],axis=1)
             labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
             selected=['','selected','','','']
@@ -94,27 +96,29 @@ def about():
 def detailedAbout():
     form = PortfolioCalculationForm()
     if request.method == 'POST':
+        global assets,values
         count = 0
         assets=[]
         values=[]
         for x in request.form:
-            assets.append(x)
             try:
-                values.append(float(request.form[x]))
-                count+=float(request.form[x])
+                if float(request.form[x])>0:
+                    assets.append(x)
+                    values.append(float(request.form[x]))
+                    count+=float(request.form[x])
             except ValueError:
-                values.append(0)
+                print('not a float')
         if count == 0:
             return render_template('about.html', form=form,error='Please enter at least one value.')
-        global input_portfolio, output_portfolio
-        input_portfolio = portfolio_one(assets,values)
-        output_portfolio = portfolio_one_b()
+        print(assets)
+        print(values)
         ED = datetime.datetime.now()
         SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
-        tcolumn_divs = portfolio_value_ts(input_portfolio.returns,input_portfolio.initial_value,SD,ED)
-        ocolumn_divs = portfolio_value_ts(output_portfolio.returns,input_portfolio.initial_value,SD,ED)
-        tstats = portfolio_stats(input_portfolio.returns,SD,ED)
-        ostats = portfolio_stats(output_portfolio.returns,SD,ED)
+        comp_portfolio = compare_portfolios(SD,ED,assets,values)
+        tcolumn_divs = comp_portfolio[1]
+        ocolumn_divs = comp_portfolio[4]
+        tstats = comp_portfolio[2]
+        ostats = comp_portfolio[5]
         stats = pd.concat([tstats,ostats],axis=1)
         labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
         selected=['','selected','','','']
@@ -124,6 +128,7 @@ def detailedAbout():
 @app.route("/recalculateAbout", methods=['POST'])
 def recalculateAbout():
     if request.method == 'POST':
+        global assets,values
         if(request.form['btn']=='3y'):
             selected=['selected','','','','']
             ED = datetime.datetime.now()
@@ -152,11 +157,11 @@ def recalculateAbout():
             ED= datetime.datetime.strptime(request.form['ED'], '%Y-%m-%d')
             if(ED<= SD):
                 return render_template('about.html', error = 'Please enter a valid time period.',selected=selected, tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
-        global input_portfolio, output_portfolio
-        tcolumn_divs = portfolio_value_ts(input_portfolio.returns,input_portfolio.initial_value,SD,ED)
-        ocolumn_divs = portfolio_value_ts(output_portfolio.returns,input_portfolio.initial_value,SD,ED)
-        tstats = portfolio_stats(input_portfolio.returns,SD,ED)
-        ostats = portfolio_stats(output_portfolio.returns,SD,ED)
+        comp_portfolio = compare_portfolios(SD,ED,assets,values)
+        tcolumn_divs = comp_portfolio[1]
+        ocolumn_divs = comp_portfolio[4]
+        tstats = comp_portfolio[2]
+        ostats = comp_portfolio[5]
         stats = pd.concat([tstats,ostats],axis=1)
         labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
         return render_template('about.html', success = True,selected=selected, stats=stats,tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
