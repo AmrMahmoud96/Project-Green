@@ -27,7 +27,10 @@ assets =[]
 values=[]
 
 #define risk tolerance by number
-riskDefnArr = ['risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky','risk averse','risky','very risky','too risky']
+#'Preservation','Conservative','Balanced','Adventurous','Aggressive'
+riskDefnArr1 = ['Aggressive','Aggressive','Adventurous','Adventurous','Adventurous','Balanced','Balanced','Balanced','Balanced','Conservative','Conservative','Conservative','Preservation','Preservation','Preservation','Preservation']
+riskDefnArr2 = ['Aggressive','Aggressive','Aggressive','Adventurous','Adventurous','Adventurous','Balanced','Balanced','Balanced','Balanced','Conservative','Conservative','Conservative','Preservation','Preservation','Preservation']
+riskDefnArr3 = ['Aggressive','Aggressive','Aggressive','Aggressive','Adventurous','Adventurous','Adventurous','Adventurous','Balanced','Balanced','Balanced','Conservative','Conservative','Conservative','Preservation','Preservation']
 
 app = Flask(__name__)
 
@@ -190,7 +193,7 @@ def profile():
         return redirect(url_for('questions'))
     users = mongo.db['_Users']
     profile = users.find_one({'email' : session['email']})
-    profile['risk'] = riskDefnArr[profile.get('riskTol')]
+    profile['risk'] = profile.get('riskTol')
     return render_template('profile.html',profile=profile)
 
 @app.route('/change_password', methods=['GET', 'POST'])
@@ -363,7 +366,7 @@ def questions():
 def check():
     if request.method == 'POST':
 	    risk = request.get_json()
-    updateuserrisk(risk)
+    updateuserrisk(risk['risk'])
     return jsonify(success=True)
 
 @app.route('/advisor', methods=['GET','POST'])
@@ -390,8 +393,16 @@ def finished():
 def updateuserrisk(risk):
     users = mongo.db['_Users']
     login_user = users.find_one({'email' : session['email']})
-    login_user['riskTol'] =int(risk['risk'])
-    session['riskTol'] = int(risk['risk'])
+    horizon = login_user['portfolio']['horizon']
+    if horizon>=15:
+        tolerance = riskDefnArr3[risk]
+    elif horizon>=5:
+        tolerance = riskDefnArr2[risk]
+    else:
+        tolerance = riskDefnArr1[risk]
+    print(tolerance)
+    login_user['riskTol'] = tolerance
+    session['riskTol'] = tolerance
     login_user['fillQuestions']= False
     session['fillQuestions']=False
     users.save(login_user)
