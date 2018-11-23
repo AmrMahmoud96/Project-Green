@@ -11,14 +11,6 @@ from cvxopt import *
 client = MongoClient("mongodb://Daniel_Kecman:M$FCapstone2018@alphafactory-shard-00-00-y7wfo.gcp.mongodb.net:27017,alphafactory-shard-00-01-y7wfo.gcp.mongodb.net:27017,alphafactory-shard-00-02-y7wfo.gcp.mongodb.net:27017/AlphaFactory?ssl=true&replicaSet=AlphaFactory-shard-0&authSource=admin&retryWrites=true")
 db = client['AlphaFactory']  
 
-class portfolio_mvo:
-    
-    def __init__(self,etfs,weights,returns):
-        
-        Weights = pd.Series(weights,index=etfs)
-        
-        #returns series of the portfolio
-        self.returns = (returns*Weights).sum(axis=1)
 
 class portfolio_one:
     
@@ -60,6 +52,16 @@ class portfolio_one_b:
         
         #return series of the portfolio
         self.returns = rets['Portfolio1']         
+
+class portfolio_mvo:
+    
+    def __init__(self,etfs,weights,returns):
+        
+        Weights = pd.Series(weights,index=etfs)
+        
+        #returns series of the portfolio
+        self.returns = (returns*Weights).sum(axis=1)
+
     
 def portfolio_value_ts(returns,initial_value,startdate=None,enddate=None):
     '''calculate and return time series of portfolio value start to enddate'''
@@ -320,4 +322,4 @@ if __name__ == "__main__":
     #test1 = compare_portfolios(datetime(2010,1,1),datetime(2013,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
     #test2 should select the MVO portfolio (based on below inputs)
-    #test2 = compare_portfolios(datetime(2015,1,1),datetime(2017,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
+    test2 = compare_portfolios(datetime(2015,1,1),datetime(2017,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
