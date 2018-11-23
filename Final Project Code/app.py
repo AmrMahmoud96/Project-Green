@@ -183,14 +183,18 @@ def logout():
     session['logged_in'] = None
     return redirect(url_for('about'))
 
-@app.route('/profile/<change>', methods=['GET', 'POST'])
-def profile(change):
+@app.route('/profile')
+def profile():
     if not checkLoggedIn():
         return redirect(url_for('login'))
+    if session.get('portfolio')==None:
+        return redirect(url_for('advisor'))
+    if session.get('fillQuestions')==True:
+        return redirect(url_for('questions'))
     users = mongo.db['_Users']
     profile = users.find_one({'email' : session['email']})
     profile['risk'] = riskDefnArr[profile.get('riskTol')]
-    return render_template('profile.html',profile=profile,change=change)
+    return render_template('profile.html',profile=profile)
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -212,6 +216,17 @@ def change_password():
             return render_template('changepassword.html',error="Invalid password.")
     return render_template('changepassword.html')
 
+
+@app.route('/change_risk')
+def change_risk():
+    if not checkLoggedIn():
+        return redirect(url_for('login'))
+    users = mongo.db['_Users']
+    profile = users.find_one({'email' : session['email']})
+    profile['fillQuestions'] = True
+    session['fillQuestions'] = True
+    users.save(profile)
+    return redirect(url_for('questions'))
 
 def checkLoggedIn():
     if session==None:
@@ -242,6 +257,8 @@ def contactus():
 def home():
     if not checkLoggedIn():
         return redirect(url_for('about'))
+    elif session.get('portfolio') == None:
+        return redirect(url_for('advisor'))
     elif session['fillQuestions']==True:
         return redirect(url_for('questions'))
     labels = tableD['Date'].values.tolist()
@@ -264,6 +281,7 @@ def login():
                 session['logged_in']= True
                 session['fillQuestions'] = login_user['fillQuestions']
                 session['riskTol'] = login_user.get('riskTol')
+                session['portfolio'] = None
                 return redirect(url_for('home'))
         return render_template("login.html", error="Invalid Email/Password.")
     return render_template("login.html")
@@ -348,9 +366,14 @@ def check():
 
 @app.route('/advisor', methods=['GET','POST'])
 def advisor():
-    if request.method == 'POST':
-        return redirect(url_for('home'))
-    return render_template('advisor.html')
+    if not checkLoggedIn():
+        return redirect(url_for('login'))
+    if session.get('fillQuestions')==False or session.get('portfolio')==None:
+        if request.method == 'POST':
+            session['portfolio']=True
+            return redirect(url_for('home'))
+        return render_template('advisor.html')
+    return redirect(url_for('home'))
 
 @app.route('/questions/finished')
 def finished():

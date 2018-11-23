@@ -12,9 +12,9 @@ class ContactForm(FlaskForm):
   submit = SubmitField("Submit")
 class DetailedPortfolioCalculationForm(FlaskForm):
   #['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV','SPY]
-  ACWV = DecimalField("ACVW",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in global equities."})
-  AGG = DecimalField("AGG",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in US intermediate bonds."})
-  DBC = DecimalField("DBC",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in commodities."})
+  ACWV = DecimalField("ACVW",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in global equities.","class":"form-inline"})
+  AGG = DecimalField("AGG",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in US intermediate bonds.","class":"form-inline"})
+  DBC = DecimalField("DBC",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in commodities.","class":"form-inline"})
   EMB = DecimalField("EMB",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in emerging market bonds."})
   EMGF = DecimalField("EMGF",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in emerging markets."})
   GLD = DecimalField("GLD",[validators.NumberRange(min=0),validators.Optional()],places=2,render_kw={"placeholder": "Enter the amount of money you have in gold."})

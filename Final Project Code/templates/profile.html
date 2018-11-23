@@ -47,6 +47,13 @@
     });
 });
     </script>-->
+    <script>
+    function myFunc(){
+        if(confirm("Are you sure you want to do this? You will have to fill in the risk-assessment questionnaire again.")){
+            window.location.href =' {{url_for('change_risk')}}'
+        }
+    }
+    </script>
   </head>
 
 <div class="profile-container">
@@ -60,39 +67,9 @@
                 <p>Risk Tolerance: {{profile.risk}}</p>
             </div>
         </div>
-       <!-- <div class="user-history-table">
-            <h5>History</h5>
-                <table class="table table-hover table-sm">
-                        <thead>
-                          <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Action</th>
-                            <th scope="col">Result</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                                {% if history|length == 0 %}
-                                <tr class="noinfo">
-                                        <td></td>
-                                        <td>No history to display</td>
-                                        <td></td>
-                                </tr>
-                                {% endif %}
-                                {% for i in range(5) %}
-                                {% if history|length > i %}
-                                <tr>
-                                        <td>{{history[i].date}}</td>
-                                        <td><a href="#">{{history[i].action}}</a></td>
-                                        <td>{{history[i].result}}</td>
-                                </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                      </table>
-
-        </div>-->
     </div>
+
    </div>
-   <div class="profBtnContainer center"><a href = {{url_for('change_password')}}><button class="btn basecolorbtn" style="margin-right:10px;">Change Password</button></a> <a href={{url_for('profile',change=True)}}><button class="btn btn-primary">Edit Info</button></a></div>
+   <div class="profBtnContainer center"><a href = {{url_for('change_password')}}><button class="btn basecolorbtn"  style="margin-right:10px;">Change Password</button></a><button onclick="myFunc()" class="btn basecolorbtn" style="margin-right:10px;">Change Risk Tolerance</button><!-- <a ><button class="btn btn-primary">Change Risk Tolerance</button></a>--></div>
 
 {% endblock %}

@@ -311,8 +311,86 @@ text-align: justify;
         </div>
         <div id="detailed" class="tab-pane fade">
                 <form action={{ url_for('detailedAbout') }} method="POST">
-                        {{wtf.quick_form(detailedForm,button_map={'submit':"primary trybtn"})}}
-                    </form>
+                        {% if error %}
+                        <p class="flash">{{ error }}</p>
+                      {% endif %}
+                      <label >Equtities</label>
+                      <div class="row">
+                        <div class="col">
+                            <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                        </div>
+                        <div class="col">
+                            <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                        </div>
+                        <div class="col">
+                            <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                        </div>
+                        <div class="col">
+                            <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                        </div>
+                        <div class="col">
+                            <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col">
+                                <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                            </div>
+                            <div class="col">
+                                <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                            </div>
+                            <div class="col">
+                                <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                            </div>
+                            <div class="col">
+                                <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                            </div>
+                            <div class="col">
+                                <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                            </div>
+                        </div>
+                        <label >Fixed Income</label>
+                        <div class="row">
+                                <div class="col">
+                                    <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                </div>
+                                <div class="col">
+                                    <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                </div>
+                                <div class="col">
+                                    <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                </div>
+                                <div class="col">
+                                    <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                </div>
+                                <div class="col">
+                                    <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                </div>
+                                <div class="col">
+                                        <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                    </div>
+                            </div>
+                        <label >Real Estate</label>
+                        <div class="row">
+                                <div class="col">
+                                    <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                </div>
+                            </div>
+                        <label >Commodities</label>
+                        <div class="row">
+                                <div class="col">
+                                    <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                </div>
+                            </div>
+                        <label >Gold</label>
+                        <div class="row">
+                                <div class="col">
+                                    <input type="number" name="SPY" class="form-control" min="0" max ="1000000" step="0.01" placeholder="SPY">
+                                </div>
+                            </div>
+                    
+                          <button type="submit" class="btn basecolorbtn">Enter</button>
+                </form>
         </div>
 
     </div>
