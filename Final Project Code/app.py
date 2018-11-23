@@ -400,7 +400,6 @@ def updateuserrisk(risk):
         tolerance = riskDefnArr2[risk]
     else:
         tolerance = riskDefnArr1[risk]
-    print(tolerance)
     login_user['riskTol'] = tolerance
     login_user['riskTolNum'] = risk
     session['riskTol'] = tolerance
