@@ -26,11 +26,14 @@ tempemail=''
 assets =[]
 values=[]
 
-#define risk tolerance by number
-#'Preservation','Conservative','Balanced','Adventurous','Aggressive'
+#define risk tolerance by number and time horizon
 riskDefnArr1 = ['Aggressive','Aggressive','Adventurous','Adventurous','Adventurous','Balanced','Balanced','Balanced','Balanced','Conservative','Conservative','Conservative','Preservation','Preservation','Preservation','Preservation']
 riskDefnArr2 = ['Aggressive','Aggressive','Aggressive','Adventurous','Adventurous','Adventurous','Balanced','Balanced','Balanced','Balanced','Conservative','Conservative','Conservative','Preservation','Preservation','Preservation']
 riskDefnArr3 = ['Aggressive','Aggressive','Aggressive','Aggressive','Adventurous','Adventurous','Adventurous','Adventurous','Balanced','Balanced','Balanced','Conservative','Conservative','Conservative','Preservation','Preservation']
+riskArr1 = ['Extremely Risk-Seeking','Extremely Risk-Seeking','Risk-Seeking','Risk-Seeking','Risk-Seeking','','Neutral','Neutral','Neutral','Risk-Averse','Risk-Averse','Risk-Averse','Extremely Risk-Averse','Extremely Risk-Averse','Extremely Risk-Averse','Extremely Risk-Averse']
+riskArr2 = ['Extremely Risk-Seeking','Extremely Risk-Seeking','Extremely Risk-Seeking','Risk-Seeking','Risk-Seeking','Risk-Seeking','Neutral','Neutral','Neutral','Neutral','Risk-Averse','Risk-Averse','Risk-Averse','Extremely Risk-Averse','Extremely Risk-Averse','Extremely Risk-Averse']
+riskArr3 = ['Extremely Risk-Seeking','Extremely Risk-Seeking','Extremely Risk-Seeking','Extremely Risk-Seeking','Risk-Seeking','Risk-Seeking','Risk-Seeking','Risk-Seeking','Neutral','Neutral','Neutral','Risk-Averse','Risk-Averse','Risk-Averse','Extremely Risk-Averse','Extremely Risk-Averse']
+
 
 app = Flask(__name__)
 
@@ -194,6 +197,8 @@ def profile():
     users = mongo.db['_Users']
     profile = users.find_one({'email' : session['email']})
     profile['risk'] = profile.get('riskTol')
+    profile['riskPortfolio'] = profile.get('portfolio').get('risk')
+    profile['riskProfile'] = profile.get('riskProfile')
     return render_template('profile.html',profile=profile)
 
 @app.route('/change_password', methods=['GET', 'POST'])
@@ -304,6 +309,7 @@ def joinus():
                 session['name'] = request.form['firstName'] + ' '+ request.form['lastName']
                 session['email'] = request.form['email']
                 session['logged_in'] = True
+                session['portfolio']=None
                 session['fillQuestions']=True
                 return redirect(url_for('advisor'))
             return render_template("joinus.html",form=form,existing=True)
@@ -366,7 +372,7 @@ def questions():
 def check():
     if request.method == 'POST':
 	    risk = request.get_json()
-    updateuserrisk(risk['risk'])
+    updateuserrisk(risk['risk'],'Balanced')
     return jsonify(success=True)
 
 @app.route('/advisor', methods=['GET','POST'])
@@ -390,18 +396,23 @@ def finished():
     #print(finished)
     return redirect(url_for('home'))
 
-def updateuserrisk(risk):
+def updateuserrisk(risk,selected):
     users = mongo.db['_Users']
     login_user = users.find_one({'email' : session['email']})
     horizon = login_user['portfolio']['horizon']
     if horizon>=15:
-        tolerance = riskDefnArr3[risk]
+        riskProfile = riskDefnArr3[risk]
+        tolerance = riskArr3[risk]
     elif horizon>=5:
-        tolerance = riskDefnArr2[risk]
+        riskProfile = riskDefnArr2[risk]
+        tolerance = riskArr2[risk]
     else:
-        tolerance = riskDefnArr1[risk]
+        riskProfile = riskDefnArr1[risk]
+        tolerance = riskArr1[risk]
+    login_user['riskProfile'] = riskProfile
+    login_user['riskTolNum']= risk
     login_user['riskTol'] = tolerance
-    login_user['riskTolNum'] = risk
+    login_user['portfolio']['risk']= selected
     session['riskTol'] = tolerance
     login_user['fillQuestions']= False
     session['fillQuestions']=False
