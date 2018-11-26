@@ -26,14 +26,16 @@ class portfolio:
         self.firstday = positions.index[0]
         self.lastday = positions.index[-1]
         self.calculate_rets()
+        self.excess_rets = (self.returns - risk_free).dropna()
         self.portfolio_metrics()
         
         
     def portfolio_metrics(self):
         self.exp_ret = ((1+self.returns.mean())**252)-1
         self.vol = self.returns.std()*np.sqrt(252)
-        self.sharpe = self.exp_ret/self.vol
-        self.sortino = self.sortino_calc()
+        #self.sharpe = self.exp_ret/self.vol
+        self.sharpe = (((1+self.excess_rets.mean())**252)-1)/self.vol
+        self.sortino = (((1+self.excess_rets.mean())**252)-1)/self.sortino_calc()
         cum_returns = (1 + self.returns).cumprod()
         self.dd = (1 - cum_returns.div(cum_returns.cummax()))*-1
         self.maxdd = self.dd.min()
@@ -43,11 +45,12 @@ class portfolio:
         self.beta, self.alpha, self.R2 = self.beta_calc()
         #annualize alpha
         self.alpha = ((1+self.alpha)**252)-1
-        self.treynor = self.exp_ret/self.beta
+        #self.treynor = self.exp_ret/self.beta
+        self.treynor = (((1+self.excess_rets.mean())**252)-1)/self.beta
         
         
         
-    def beta_calc(self,ref='SPX'):
+    def beta_calc(self,ref='SPY'):
         
         temp_df = pd.concat([self.returns,Returns[ref]], axis=1,sort=True)
         temp_df.dropna(how='any',inplace=True)
@@ -76,7 +79,7 @@ class portfolio:
     def sortino_calc(self):
         neg_rets = self.returns[self.returns < 0]**2
         denom = np.sqrt(neg_rets.sum()/len(self.returns))*np.sqrt(252)
-        return self.exp_ret/denom
+        return denom
             
     def Hist_VaR(self,days,percentile):
         return self.returns.quantile(q=(1-percentile),interpolation='lower')
@@ -607,9 +610,9 @@ if __name__ == "__main__":
     plt.rcParams.update({'mathtext.default':  'regular' })
     plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#aec7e8','#ffbb78','#98df8a','#ff9896','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'])
     
-    #set Leverage
+    #set Leverage (1 means no leverage)
     ###############
-    leverage = 1
+    leverage = 3
     ###############
     
     #load prices
@@ -621,10 +624,22 @@ if __name__ == "__main__":
     #####Same Date Range#####
     #Prices = Prices[(Prices.index >= datetime(2008,10,6)) & (Prices.index <= datetime(2018,10,11))]
     
-    ################LEVERAGE########################
-    if leverage:
-        Returns = Returns*leverage
+    ######RISK FREE RATE###############
     
+    #load in risk free rate
+    risk_free = pd.read_csv("Data/RF.csv")
+    risk_free.set_index('Date', inplace=True)
+    risk_free.index = pd.to_datetime(risk_free.index)   
+    risk_free = risk_free['Rate']
+    
+    ################LEVERAGE########################
+    fee_adj = ((1.005)**(1/252))-1
+    if leverage:
+        for i in list(Returns):
+            if i not in ['SPX','SPY']:
+                Returns[i] = Returns[i]*leverage - (leverage-1)*(risk_free + fee_adj)
+                
+
     print("Prices and returns loaded!")
     
     ############################################################################
@@ -676,9 +691,9 @@ if __name__ == "__main__":
     
     #equal weight positions rebalanced every 30 days
     assets = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV']
-    target = [0.09,0.03,0.08,0.03,0.12,0.06,0.03,0.05,0.05,0.05,0.05,0.05,0.1,0.05,0.03,0.03,0.05,0.05]
-    EW_pos = EW_positions(Prices[assets],'M')
-    EW_Port = portfolio("EW All","EW","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
+    target = [0.08,0.06,0.06,0.06,0.12,0.06,0.06,0.04,0.04,0.04,0.04,0.04,0.06,0.04,0.06,0.06,0.04,0.04]
+    #EW_pos = EW_positions(Prices[assets],'M')
+    #EW_Port = portfolio("EW All","EW","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
     
     #equal weight with trend following overlay
     #EW_TF_pos = EW_TF_positions(Prices[assets],'M',200)
@@ -699,8 +714,8 @@ if __name__ == "__main__":
     #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     #target = [.15,.15,.15,.05,.15,.05,.05,.05,.05,.05,.05,.05]
-    #RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
-    #RP_Port = portfolio("Risk Parity","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
+    RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
+    RP_Port = portfolio("Aggressive","RP 3.0x","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
     
     #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",RP_TF_pos, '200 SMA','Monthly','RP 200')     
