@@ -612,7 +612,7 @@ if __name__ == "__main__":
     
     #set Leverage (1 means no leverage)
     ###############
-    leverage = 3
+    leverage = 3.5
     ###############
     
     #load prices
@@ -633,7 +633,7 @@ if __name__ == "__main__":
     risk_free = risk_free['Rate']
     
     ################LEVERAGE########################
-    fee_adj = ((1.005)**(1/252))-1
+    fee_adj = ((1.01)**(1/252))-1
     if leverage:
         for i in list(Returns):
             if i not in ['SPX','SPY']:
@@ -715,7 +715,7 @@ if __name__ == "__main__":
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     #target = [.15,.15,.15,.05,.15,.05,.05,.05,.05,.05,.05,.05]
     RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
-    RP_Port = portfolio("Aggressive","RP 3.0x","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
+    RP_Port = portfolio("Aggressive","RP 3.5x","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
     
     #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",RP_TF_pos, '200 SMA','Monthly','RP 200')     

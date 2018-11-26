@@ -37,11 +37,11 @@ if __name__ == "__main__":
     
     #Prices = load_data('EMGF_A.csv',Prices)
     #Prices = load_data('GLD_A.csv',Prices)
-    Returns = Prices.pct_change() 
+    #Returns = Prices.pct_change() 
     print("Prices and returns loaded!")    
     
     #save output
-    Info.to_csv('Info.csv')
+    Prices.to_csv('Prices.csv')
     
     
     print("Done!")
