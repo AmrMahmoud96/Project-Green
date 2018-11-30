@@ -27,7 +27,11 @@ class portfolio:
         self.lastday = positions.index[-1]
         self.calculate_rets()
         self.excess_rets = (self.returns - risk_free).dropna()
+        self.stats = pd.Series()
+        self.stats.name = name
         self.portfolio_metrics()
+        
+
         
         
     def portfolio_metrics(self):
@@ -46,8 +50,24 @@ class portfolio:
         #annualize alpha
         self.alpha = ((1+self.alpha)**252)-1
         #self.treynor = self.exp_ret/self.beta
-        self.treynor = (((1+self.excess_rets.mean())**252)-1)/self.beta
+        self.treynor= (((1+self.excess_rets.mean())**252)-1)/self.beta
         
+        #store in stats series
+        self.stats.loc['CAGR'] = self.exp_ret
+        self.stats.loc['Vol'] = self.vol
+        self.stats.loc['Sharpe'] = self.sharpe
+        self.stats.loc['Sortino'] = self.sortino
+        self.stats.loc['Total Return'] = self.tot_ret
+        self.stats.loc['Max DD'] = self.maxdd
+        self.stats.loc['VaR'] = self.VaR
+        self.stats.loc['CVaR'] = self.CVaR
+        self.stats.loc['Beta'] = self.beta
+        self.stats.loc['Alpha'] = self.alpha
+        self.stats.loc['R2'] = self.R2
+        self.stats.loc['Treynor'] = self.treynor
+        self.stats.loc['Leverage'] = leverage-1
+        
+
         
         
     def beta_calc(self,ref='SPY'):
@@ -613,7 +633,7 @@ if __name__ == "__main__":
     #plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabebe', '#469990', '#e6beff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9'])
     #set Leverage (1 means no leverage)
     ###############
-    leverage = 1.0
+    leverage = 3.5
     ###############
     
     #load prices
