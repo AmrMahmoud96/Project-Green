@@ -268,7 +268,7 @@ class portfolio:
         ax7.bar(yearly_rets.index.strftime("%Y"),yearly_rets.values,width=0.8,alpha=1)
         #format y-axis as percentage
         ax7.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y))) 
-        ax7.set_xticklabels(yearly_rets.index.strftime("%Y"),rotation = '70',horizontalalignment='center',fontsize=8)
+        ax7.set_xticklabels(yearly_rets.index.strftime("%Y"),rotation = '70',horizontalalignment='center',fontsize=7)
         #ax7.xaxis_date()
         ax7.set_facecolor('#FFFFFF')
         ax7.set_axisbelow(True)
@@ -296,7 +296,7 @@ class portfolio:
         assets_rets = self.yearly_returns(self.asset_returns_wgt)
         sns.heatmap(assets_rets.T, linewidth=0.5, yticklabels=True,ax=ax10,xticklabels=assets_rets.index.strftime("%Y"), center=0, annot=False, cbar=False, fmt='.1%', cmap='RdYlGn',annot_kws={"size": 6.5})
         #ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=8)
-        ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=6)
+        ax10.set_yticklabels(ax10.get_yticklabels(),rotation=0,fontsize=5)
         ax10.set_xticklabels(ax10.get_xticklabels(),fontsize=8,rotation = 70)
         ax10.tick_params(axis='both',bottom=False,left=False)
         ax10.set_xlabel('')
@@ -492,7 +492,8 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                 
         return positions.shift(1).dropna(how='any')
     else:
-        day = Prices.index[rolling_window]
+        positions = pd.DataFrame(columns = assets_cash)
+        day = Prices[assets_cash].index[rolling_window]
         new_day = day
         while day <= Prices.index[-1]:
             if day in Prices.index:
@@ -500,7 +501,7 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                     if static:
                         weights = static_weights
                     else:
-                        weights = erc_ver1.get_weights(Prices.loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'),target)
+                        weights = erc_ver1.get_weights(Prices[assets_cash].loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'),target)
                     positions.loc[day] = weights
                     last_pos = weights
                     if rebal_freq == 'M':
@@ -509,8 +510,8 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                         new_day = day + pd.DateOffset(years=1)
                     day = day + timedelta(days=1)
                 else:
-                    temp_data = last_pos*(1+Returns[assets].loc[day])
-                    if temp_data.astype(bool).sum() == len(assets):
+                    temp_data = last_pos*(1+Returns[assets_cash].loc[day])
+                    if temp_data.astype(bool).sum() == len(assets_cash):
                         positions.loc[day] = temp_data/temp_data.sum()
                     else:
                         positions.loc[day] = temp_data  
@@ -608,8 +609,8 @@ if __name__ == "__main__":
     plt.rcParams["figure.figsize"] = (12,7)    
     plt.rcParams.update({'font.size': 9})
     plt.rcParams.update({'mathtext.default':  'regular' })
-    plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#aec7e8','#ffbb78','#98df8a','#ff9896','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'])
-    
+    plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#aec7e8','#ffbb78','#98df8a','#ff9896','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf','#F1C40F','#85929E','#D7BDE2','#1ABC9C','#D6EAF8'])
+    #plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabebe', '#469990', '#e6beff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9'])
     #set Leverage (1 means no leverage)
     ###############
     leverage = 3.5
@@ -633,11 +634,14 @@ if __name__ == "__main__":
     risk_free = risk_free['Rate']
     
     ################LEVERAGE########################
-    fee_adj = ((1.01)**(1/252))-1
+    fee_adj = ((1.005)**(1/252))-1
+    t_cost = ((1.00192)**(1/252))-1
+    #t_cost = ((1.0003)**(1/252))-1
+    
     if leverage:
         for i in list(Returns):
             if i not in ['SPX','SPY']:
-                Returns[i] = Returns[i]*leverage - (leverage-1)*(risk_free + fee_adj)
+                Returns[i] = Returns[i]*leverage - (leverage-1)*(risk_free + fee_adj) - (leverage)*t_cost
                 
 
     print("Prices and returns loaded!")
@@ -690,8 +694,12 @@ if __name__ == "__main__":
     #EW_Port = portfolio("Equal Weight","EW","Equal weight portfolio",EW_pos)
     
     #equal weight positions rebalanced every 30 days
-    assets = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV']
-    target = [0.08,0.06,0.06,0.06,0.12,0.06,0.06,0.04,0.04,0.04,0.04,0.04,0.06,0.04,0.06,0.06,0.04,0.04]
+    #assets = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV']
+    assets = ['MTUM','VLUE','QUAL','SIZE','USMV','IVLU','IMTM','IQLT','EMGF','ACWV','SPTL','AGG','EMB','TIP','HYG','SCHH','DBC','GLD','SHV']
+    #target = [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.1, 0.08, 0.07, 0.07, 0.05, 0.06, 0.05, 0.08, 0.08, 0.04]
+    target = [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.12, 0.08, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]        
+    #target = [0.08,0.06,0.06,0.06,0.12,0.06,0.06,0.04,0.04,0.04,0.04,0.04,0.06,0.04,0.06,0.06,0.04,0.04]
+    
     #EW_pos = EW_positions(Prices[assets],'M')
     #EW_Port = portfolio("EW All","EW","Equal weight portfolio",EW_pos,'N/A','N/A','N/A')
     
@@ -700,7 +708,7 @@ if __name__ == "__main__":
     #EW_TF_Port = portfolio("Trend Following Equal Weight","EW_TF","Equal weight portfolio with trend following overlay",EW_TF_pos,'200 SMA', 'Monthly','EW')
     
     #risk parity weights
-    #RP_pos = risk_parity_positions(Prices[['SPY','TIP','VNQ','BND']])
+    #RP_pos = risk_parity_positions(Prices[['SPY','TIP','VNQ','BND']]) 
     #RP_Port = portfolio("Static Risk Parity","RP","Risk parity portfolio with static weights",RP_pos)
     
     #risk pairty with trend following overlay
@@ -714,11 +722,43 @@ if __name__ == "__main__":
     #RP_pos = risk_parity_generator(Prices[['SPY','VNQ','BND','EEM','MUB','TIP','GLD']],'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Static Risk Parity Monthly TF","RP_TF","Risk parity portfolio with static weights and trend following overlay",RP_pos)
     #target = [.15,.15,.15,.05,.15,.05,.05,.05,.05,.05,.05,.05]
+    
+    
+    ###############################################
+    ################## MAIN #######################
+    ###############################################
+    
+    #RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
+    #RP_Port = portfolio("Aggressive","RP 3.5x","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
+    
     RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
-    RP_Port = portfolio("Aggressive","RP 3.5x","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')
+    
+    RP_Port = portfolio("Aggressive","RP 3.5x","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
     #RP_TF_Port = portfolio("Dynamic Risk Parity Trend Following","RP_TF","Risk parity portfolio with dynamic weights reblanced monthly and Trend Following Overlay",RP_TF_pos, '200 SMA','Monthly','RP 200')     
+
+
+
+
+
+
+
+
+
+
 
     #compare_portfolios([SP500_Port,TF_Port,EW_Port],datetime(2007,5,1),datetime.now())
     
