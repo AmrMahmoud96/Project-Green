@@ -219,21 +219,23 @@ def fetch_all_data():
     #convert the index as date
     temp_df.index = pd.to_datetime(temp_df.index)     
     temp_df.replace("",np.nan,inplace = True)
-    
+    temp_df.sort_index(inplace=True)
     return temp_df
 
 def load_risk_free():
     temp_df = pd.DataFrame(list(db['RF'].find({},{'_id': 0})))
     temp_df.set_index('Date',inplace=True)
     #convert the index as date
-    temp_df.index = pd.to_datetime(temp_df.index)  
+    temp_df.index = pd.to_datetime(temp_df.index)
+    temp_df.sort_index(inplace=True)
     return temp_df
 
 def load_market_factor():
     temp_df = pd.DataFrame(list(db['Raw_Prices'].find({},{'Date':1,'SPY': 1,'_id': 0})))
     temp_df.set_index('Date',inplace=True)
     #convert the index as date
-    temp_df.index = pd.to_datetime(temp_df.index)  
+    temp_df.index = pd.to_datetime(temp_df.index)
+    temp_df.sort_index(inplace=True)
     return temp_df['SPY'].replace("",np.nan).pct_change()
     
 def compare_portfolios(startdate,enddate,etfs,values):
@@ -358,8 +360,11 @@ if __name__ == "__main__":
     etf_uni = ['ACWV','AGG','DBC','EMB','EMGF','GLD','HYG','IMTM','IQLT','IVLU','MTUM','QUAL','SCHH','SIZE','SPTL','TIP','USMV','VLUE','SHV','SPY']
     Prices.dropna(inplace=True,how='any')
     returns = Prices[etf_uni].pct_change()   
-
-    #test_portfolio = portfolio_one(['SPY','AGG','SCHH','DBC'],[100,100,100,100],returns)
+    
+    end = time.time()
+    print(end - start)        
+    
+    test_portfolio = portfolio_one(['SPY','AGG','SCHH','DBC'],[100,100,100,100],returns)
     
     ####get time series of portfolio value
     #ts_value_1 = portfolio_value_ts(test_portfolio.returns,test_portfolio.initial_value,None,None)
@@ -369,7 +374,7 @@ if __name__ == "__main__":
     #plt.show()
     
     ##get time series for specific date range
-    #ts_value_2 = portfolio_value_ts(test_portfolio.returns,test_portfolio.initial_value,datetime(2011,1,1),datetime(2013,1,1))
+    #ts_value_2 = portfolio_value_ts(test_portfolio.returns,test_portfolio.initial_value,datetime(2008,1,1),datetime(2010,1,1))
     
     ##plot data
     #ts_value_2.plot()
@@ -393,7 +398,7 @@ if __name__ == "__main__":
     #plt.show()
     
     ###get time series for specific date range
-    #ts_value_2 = portfolio_value_ts(test_portfolio.returns,100,datetime(2011,1,1),datetime(2013,1,1))
+    #ts_value_2 = portfolio_value_ts(test_portfolio.returns,100,datetime(2008,1,1),datetime(2010,1,1))
     
     ###plot data
     #ts_value_2.plot()
@@ -412,11 +417,13 @@ if __name__ == "__main__":
     #inputs are starddate, enddate and user portolio parameters
     #oututs tuple of 6 elements (user portfolio object, user portfolio time series, user portfolio stats, dominating portfolio object, dominating portfolio time series, dominating portfolio stats)
     
+    start = time.time()
+    
     #test1 should select our portfolio (based on below inputs)
     #test1 = compare_portfolios(datetime(2010,1,1),datetime(2013,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
     #test2 should select the MVO portfolio (based on below inputs)
-    #test2 = compare_portfolios(datetime(2013,1,1),datetime(2016,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
+    test2 = compare_portfolios(datetime(2013,1,1),datetime(2016,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
     end = time.time()
-    print(end - start)    
+    print(end - start)         
