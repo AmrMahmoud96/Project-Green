@@ -36,9 +36,9 @@ margin:20px; */
     <h4>Based on our expert advice, we believe the following portfolio would be best for you.</h4>
         <div class='portfolio-block selected' name={{recommendation}}>
             <h4>{{recommendation}}</h4>
-            <p>CAGR: {{(recommended[0]*100)|round(2)}} %</p>
-            <p>Volatility: {{(recommended[1]*100)|round(2)}} %</p>
-            <p>Max Drawdown: {{(recommended[1]*100)|round(2)}} %</p>
+            <p>CAGR: {{(recommended[1]*100)|round(2)}} %</p>
+            <p>Volatility: {{(recommended[0]*100)|round(2)}} %</p>
+            <p>Max Drawdown: {{(recommended[2]*100)|round(2)}} %</p>
         </div>
     </div>
     <br>
@@ -49,8 +49,8 @@ margin:20px; */
         {%if column!='Stat'%}
         <div class='portfolio-block' name={{column}}>
             <h4>{{column}}</h4>
-            <p>CAGR : {{(ps[column][0]*100)|round(2)}} %</p>
-            <p>Volatility : {{(ps[column][1]*100)|round(2)}} %</p>
+            <p>CAGR : {{(ps[column][1]*100)|round(2)}} %</p>
+            <p>Volatility : {{(ps[column][0]*100)|round(2)}} %</p>
             <p>Max Drawdown : {{(ps[column][2]*100)|round(2)}} %</p>
         </div>
         {%endif%}

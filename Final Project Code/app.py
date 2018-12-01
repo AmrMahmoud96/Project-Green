@@ -392,7 +392,7 @@ def selection():
             updateuserrisk(session.get('riskTolNum'),resp['selection'])
             return jsonify(success=True)
         portfolioStats = mongo.db['Portfolio_Stats']
-        ps= pd.DataFrame(list(portfolioStats.find({"Stat":{ '$in' : [ "Vol","CAGR","Max DD"] }})))
+        ps= pd.DataFrame(list(portfolioStats.find({"Stat":{ '$in' : [ "CAGR","Vol","Max DD"] }})))
         ps=ps.drop('_id',axis=1)
         print(ps[session['riskProfile']])
         print(ps)
