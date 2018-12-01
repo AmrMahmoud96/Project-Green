@@ -22,13 +22,13 @@
 </style>
 <h1 class="title center welcome-msg">Welcome, {{session['name']}}.</h1>
 
-<h2 class="center" style="margin-bottom:50px;">Here is your balanced portfolio allocation.</h2>
+<h2 class="center" style="margin-bottom:50px;">Here is your {{session['portfolio']['risk']}} portfolio allocation.</h2>
 <div class="allocation-images" style="margin-bottom:30px;">
     <div class="aicon">
         <figure class="figicon">
             <img src="./static/images/stockimg.jpeg" width="100px" height="100px">
             <figcaption class="atitle">Equities</figcaption>
-            <figcaption>50%</figcaption>
+            <figcaption>52%</figcaption>
         </figure>
     </div>
     <div class="aicon">
@@ -40,16 +40,23 @@
     </div>
     <div class="aicon">
             <figure class="figicon">
-            <img src="./static/images/oilicon.png" width="100px" height="100px">
-            <figcaption class="atitle">Commodities</figcaption>
-            <figcaption>10%</figcaption>
+            <img src="./static/images/houseIcon.png" width="100px" height="100px">
+            <figcaption class="atitle">Real Estate</figcaption>
+            <figcaption>6%</figcaption>
         </figure>
     </div>
     <div class="aicon">
             <figure class="figicon">
-            <img src="./static/images/cashicon.png" width="100px" height="100px">
-            <figcaption class="atitle">Cash</figcaption>
-            <figcaption>10%</figcaption>
+            <img src="./static/images/oilicon.png" width="100px" height="100px">
+            <figcaption class="atitle">Commodities</figcaption>
+            <figcaption>6%</figcaption>
+        </figure>
+    </div>
+    <div class="aicon">
+            <figure class="figicon">
+            <img src="./static/images/goldicon.png" width="100px" height="100px">
+            <figcaption class="atitle">Gold</figcaption>
+            <figcaption>6%</figcaption>
         </figure>
         </div>
 

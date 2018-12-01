@@ -95,13 +95,14 @@ const options = {
 }
 const chart = new Chart(ctx, options);
 
+
      const dtx = document.getElementById('donutChart').getContext('2d');
-     var d2 = [800,480,160,160]   
-const ddata = {
-    labels : ['Equities','Bonds','Oil','Cash'],
+     var d2 = [0.52,0.3,0.06,0.06,0.06].map(function(x) {return Math.round(x*100 * {{tvalues|last}})/100});
+    const ddata = {
+    labels : ['Equities','Bonds','Real Estate','Commoditites','Gold'],
     datasets: [{
         data: d2,
-        backgroundColor:['#ff4500','#87cefa','#d2691e','#00fa9a']
+        backgroundColor:['#ff4500','#87cefa','#d2691e','#00fa9a','gold']
     }]
 }
 const doptions={

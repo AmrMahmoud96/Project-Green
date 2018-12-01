@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+ 
+{% block container %}
+<style>
+.portfolio-block{
+    padding: 10px;
+    max-width:20%;
+    border: 1px solid black;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 auto;
+    margin-top:20px;
+    margin-bottom:20px;
+    color:black;
+    background: white;
+}
+.alternatives{
+    display:flex;
+    padding: 10px;
+}
+.portfolio-block:hover{
+    cursor:pointer;
+}
+.selected{
+background-color: #F37649;
+color: white;
+/* width:110%;
+height:110%;
+flex:0 0 auto;
+margin:20px; */
+}
+</style>
+<div class="result-container">
+    <div class='recommendation center'>
+    <h1 class=>Congratulations.</h1>
+    <h4>Based on our expert advice, we believe the following portfolio would be best for you.</h4>
+        <div class='portfolio-block selected' name={{recommendation}}>
+            <h4>{{recommendation}}</h4>
+            <p>CAGR: {{(recommended[0]*100)|round(2)}} %</p>
+            <p>Volatility: {{(recommended[1]*100)|round(2)}} %</p>
+            <p>Max Drawdown: {{(recommended[1]*100)|round(2)}} %</p>
+        </div>
+    </div>
+    <br>
+
+    <h3 class='center'>You can also choose to select from our other portfolio options</h3>
+    <div class='alternatives'>
+        {%for column in ps %}
+        {%if column!='Stat'%}
+        <div class='portfolio-block' name={{column}}>
+            <h4>{{column}}</h4>
+            <p>CAGR : {{(ps[column][0]*100)|round(2)}} %</p>
+            <p>Volatility : {{(ps[column][1]*100)|round(2)}} %</p>
+            <p>Max Drawdown : {{(ps[column][2]*100)|round(2)}} %</p>
+        </div>
+        {%endif%}
+        {%endfor%}  
+    </div>
+    
+    <div class="btncontainer center">
+        <button class="btn basecolorbtn" id='continueBtn' style='margin-top: 10px;'>Continue</button>
+    </div>
+   
+</div>
+<script>
+var selection='{{recommendation}}'
+
+$('.portfolio-block').click(function(){
+    $(".portfolio-block").removeClass('selected');
+    selection =$(this).attr('name')
+    $(this).addClass('selected')
+});
+$('#continueBtn').click(function(){
+    $.ajax({
+        type: "POST",
+        contentType: "application/json;charset=utf-8",
+        url: "/selection",
+        traditional: "true",
+        data: JSON.stringify({selection}),
+        dataType: "json",
+        success: function(result){
+            window.location.href +="/finished";
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -266,11 +266,13 @@ def home():
         return redirect(url_for('advisor'))
     elif session['fillQuestions']==True:
         return redirect(url_for('questions'))
-    p = portfolio_one_b()
+    elif session['portfolio'].get('risk',None)==None:
+        return redirect(url_for('selection'))
+    p = portfolio_one_b(session['portfolio']['risk'])
     SD= datetime.datetime.now() - datetime.timedelta(days=2*365)
     ED= datetime.datetime.now()
     tcolumn_divs = portfolio_value_ts(p.returns,session['portfolio']['initial'], SD,ED)
-    stats = portfolio_stats(p.returns,SD,ED).to_frame()
+    stats = portfolio_stats(p,SD,ED).to_frame()
     labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
     return render_template('home.html',tvalues=tcolumn_divs.tolist(), labels=labels,stats=stats)
 
@@ -281,15 +283,16 @@ def login():
     if request.method == 'POST':
         users = mongo.db['_Users']
         login_user = users.find_one({'email' : request.form['email']})
-
         if login_user:
             if check_password_hash(login_user['password'], request.form['password']):
                 session['name'] = login_user['firstName'] + ' '+ login_user['lastName']
                 session['email'] = login_user['email']
                 session['logged_in']= True
+                session['riskTolNum']=login_user.get('riskTolNum')
                 session['fillQuestions'] = login_user['fillQuestions']
                 session['riskTol'] = login_user.get('riskTol')
                 session['portfolio'] = login_user.get('portfolio')
+                session['riskProfile']=login_user.get('riskProfile',None)
                 return redirect(url_for('home'))
         return render_template("login.html", error="Invalid Email/Password.")
     return render_template("login.html")
@@ -372,7 +375,7 @@ def questions():
 def check():
     if request.method == 'POST':
 	    risk = request.get_json()
-    updateuserrisk(risk['risk'],'Balanced')
+    updateuserrisk(risk['risk'],None)
     return jsonify(success=True)
 
 @app.route('/advisor', methods=['GET','POST'])
@@ -383,7 +386,10 @@ def advisor():
         if request.method == 'POST':
             users = mongo.db['_Users']
             profile = users.find_one({'email' : session['email']})
-            portfolio = {'initial':float(request.form['initial']), 'goal':float(request.form['goal']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}
+            if profile.get('portfolio',None) == None:
+                portfolio = {'initial':float(request.form['initial']),'goal':float(request.form['goal']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}
+            else:
+                portfolio = {'risk':profile['portfolio'].get('risk'),'initial':float(request.form['initial']),'goal':float(request.form['goal']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}                
             profile['portfolio']=portfolio
             session['portfolio']=portfolio
             users.save(profile)
@@ -393,7 +399,28 @@ def advisor():
 
 @app.route('/questions/finished')
 def finished():
-    #print(finished)
+    return redirect(url_for('selection'))
+
+@app.route('/selection', methods=['GET','POST'])
+def selection():
+    if session.get('riskProfile') == None or session.get('portfolio')==None:
+        return redirect(url_for('home'))
+    if session['portfolio'].get('risk', None) == None:
+        if request.method=='POST':
+            resp = request.get_json()
+            updateuserrisk(session.get('riskTolNum'),resp['selection'])
+            return jsonify(success=True)
+        portfolioStats = mongo.db['Portfolio_Stats']
+        ps= pd.DataFrame(list(portfolioStats.find({"Stat":{ '$in' : [ "Vol","CAGR","Max DD"] }})))
+        ps=ps.drop('_id',axis=1)
+        print(ps[session['riskProfile']])
+        print(ps)
+        return render_template('selection.html',portfolio=session['portfolio'],recommendation=session['riskProfile'],recommended=ps[session['riskProfile']],ps=ps.drop(session['riskProfile'],axis=1))
+    return redirect(url_for('home'))
+
+@app.route('/selection/finished')
+def selection_complete():
+    
     return redirect(url_for('home'))
 
 def updateuserrisk(risk,selected):
@@ -412,8 +439,12 @@ def updateuserrisk(risk,selected):
     login_user['riskProfile'] = riskProfile
     login_user['riskTolNum']= risk
     login_user['riskTol'] = tolerance
-    login_user['portfolio']['risk']= selected
+    if selected:
+        login_user['portfolio']['risk']= selected
+        session['portfolio']['risk']= selected
     session['riskTol'] = tolerance
+    session['riskProfile'] = riskProfile
+    session['riskTolNum']= risk
     login_user['fillQuestions']= False
     session['fillQuestions']=False
     users.save(login_user)
