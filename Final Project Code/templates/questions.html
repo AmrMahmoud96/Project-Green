@@ -155,6 +155,7 @@ $('.option').click(function () {
 
         //if there are no more questions do stuff
         if (currentQuestion == totalQuestions) {
+        $('html').load("./static/loadingmask/index.html");
         console.log(answers)
         var risk = sum_values()
         $.ajax({

@@ -51,6 +51,7 @@
 </style>
 <script>
 function validateForm() {
+    $('html').load("./static/loadingmask/index.html");
     var x = document.forms["plotForm"]["SD"].value;
     var y = document.forms["plotForm"]["ED"].value;
     if(document.forms["plotForm"]["btn"].value == 'custom'){

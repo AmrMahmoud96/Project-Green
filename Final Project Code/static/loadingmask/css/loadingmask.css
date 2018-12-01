@@ -1,0 +1,35 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.loadingMask {
+  width: 150px;
+  top: 35%;
+  left: 44%;
+  position: fixed;
+  display: block;
+  z-index: 1000;
+
+}
+
+.loadingMaskContainer {
+  width: 100%;
+  height: 100%;
+  display: table;
+  vertical-align: middle;
+  text-align: center;
+  position: absolute;
+  background-color: rgba(150, 150, 150, 0.25);
+}
+
+.loadingMaskText {
+  width: 150px;
+  top: 55%;
+  left: 44%;
+  position: fixed;
+  display: block;
+  z-index: 1000;
+  font-family: monospace;
+  font-weight: bold;
+}

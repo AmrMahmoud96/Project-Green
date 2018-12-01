@@ -10,6 +10,10 @@
 </div>
 {% if success %}
 <p>Thank you for your message. We'll get back to you shortly.</p>
+<div class="btncontainer center">
+    <a href={{url_for('home')}}><button class="btn basecolorbtn" style='margin-top: 10px;' >Return Home</button>
+    </a>
+    </div>
 {% else %}
   <form action="{{ url_for('contactus') }}" method="POST">
     {{wtf.quick_form(form,button_map={'submit':"primary"})}}

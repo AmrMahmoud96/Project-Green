@@ -12,17 +12,8 @@ import numpy as np
 import random
 import decimal
 
-#test vars
-sandpfile='^GSPC (2).csv'
-vixfile= '^GSPTSE.csv'
-tableS= pd.read_csv(sandpfile)
-tableV = pd.read_csv(vixfile)
-spf= '^GSPC.csv'
-tableD = pd.read_csv(spf)
 
 #variables for multi-page functions
-temppin = ''
-tempemail=''
 assets =[]
 values=[]
 
@@ -46,24 +37,15 @@ Bootstrap(app)
 
 app.secret_key = 'this@is!the~secret-Code1221'
 
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 465
-app.config["MAIL_USE_SSL"] = True
-app.config["MAIL_USERNAME"] = 'Alphafactory.capstone@gmail.com'
-app.config["MAIL_PASSWORD"] = 'amamdast123'
-
-mail = Mail()
-mail.init_app(app)
-
-# @app.route("/simple_chart")
-# def chart():
-#     labels = tableV['Date'].values.tolist()
-#     a = tableS['Close'].values
-#     b = tableV['Close'].values
-#     ocolumn_divs = (a/a[0])*10000
-#     tcolumn_divs = (b/b[0])*10000
-#     return render_template('chart.html', tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
-
+app.config.update(dict(
+    MAIL_SERVER = 'smtp.gmail.com',
+    MAIL_PORT = 587,
+    MAIL_USE_TLS = True,
+    MAIL_USE_SSL = False,
+    MAIL_USERNAME = 'Alphafactory.capstone@gmail.com',
+    MAIL_PASSWORD = 'amamdast123',
+))
+mail = Mail(app)
 @app.route("/about", methods=['GET', 'POST'])
 def about():
     form = PortfolioCalculationForm()
@@ -174,6 +156,7 @@ def recalculateAbout():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
+    time.sleep(500)
     return render_template('test.html')
 
 def calculateSomething():
@@ -322,23 +305,21 @@ def joinus():
 @app.route("/forgotpass", methods=['GET','POST'])
 def forgotpass(): 
     if request.method == 'POST':
-        global temppin,tempemail
         if request.form.get('email')!=None:
             users = mongo.db['_Users']
             user = users.find_one({'email' : request.form['email']})
-            tempemail=request.form['email']
             if user != None:
                 pin = ''.join(random.choice('0123456789') for _ in range(6))
-                temppin=pin
-                msg = Message('AlphaFactory Password Reset Code.', sender='contact@alphafactory.ca', recipients=[tempemail])
-                msg.html = render_template('resetpassword.html',code=temppin)
+                session['pin']=generate_password_hash(pin,method='sha256')
+                session['email']=request.form['email']
+                msg = Message('AlphaFactory Password Reset Code.', sender='contact@alphafactory.ca', recipients=[session['email']])
+                msg.html = render_template('resetpassword.html',code=pin)
                 mail.send(msg)
                 return render_template("forgotpass.html",code=True)
             else:
                 return render_template("forgotpass.html",code=None,error='No user with that email was found.')
         elif request.form.get('code')!=None:
-            print(tempemail)
-            if temppin != request.form.get('code'):
+            if not check_password_hash(session['pin'], request.form.get('code')):
                 return render_template("forgotpass.html",code =True, error='Incorrect Code')
             elif len(request.form.get('password')) <8:
                 return render_template("forgotpass.html",code =True, error='Your password must be at least 8 characters in length.')
@@ -346,7 +327,7 @@ def forgotpass():
                 return render_template("forgotpass.html",code =True, error='Your passwords must match.')
             else:
                 #update password and take to login page
-                updateuserpassword(request.form.get('password'),tempemail)
+                updateuserpassword(request.form.get('password'),session['email'])
                 return redirect(url_for('login'))
     return render_template("forgotpass.html",code=None)
 
@@ -436,6 +417,7 @@ def updateuserrisk(risk,selected):
     else:
         riskProfile = riskDefnArr1[risk]
         tolerance = riskArr1[risk]
+
     login_user['riskProfile'] = riskProfile
     login_user['riskTolNum']= risk
     login_user['riskTol'] = tolerance

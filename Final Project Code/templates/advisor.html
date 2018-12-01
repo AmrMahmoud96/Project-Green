@@ -5,11 +5,11 @@
 <html>
     <script>
         function validateForm(){
-            if (document.forms["advisorForm"]["goal"].value<= document.forms["advisorForm"]["initial"].value){
+            if (parseInt(document.forms["advisorForm"]["goal"].value)<= parseInt(document.forms["advisorForm"]["initial"].value)){
                 alert('You cannot have a financial goal less than your initial capital.')
                 return false;
             }
-            if (document.forms["advisorForm"]["goal"].value> document.forms["advisorForm"]["initial"].value*Math.pow(1.15,document.forms["advisorForm"]["horizon"].value)){
+            if (parseInt(document.forms["advisorForm"]["goal"].value)> parseInt(document.forms["advisorForm"]["initial"]).value*Math.pow(1.15,parseInt(document.forms["advisorForm"]["horizon"].value))){
                 alert('Your financial goal is infeasible with the inputed time horizon and initial capital.\nEither increase your initial capital or increase your time horizon in order to continue.')
                 return false;
             }

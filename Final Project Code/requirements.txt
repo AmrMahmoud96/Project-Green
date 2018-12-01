@@ -11,3 +11,5 @@ gunicorn
 matplotlib
 cvxopt
 wtforms_components
+statsmodels
+scipy

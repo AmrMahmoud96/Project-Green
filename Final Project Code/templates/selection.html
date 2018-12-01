@@ -71,6 +71,7 @@ $('.portfolio-block').click(function(){
     $(this).addClass('selected')
 });
 $('#continueBtn').click(function(){
+    $('html').load("./static/loadingmask/index.html");
     $.ajax({
         type: "POST",
         contentType: "application/json;charset=utf-8",

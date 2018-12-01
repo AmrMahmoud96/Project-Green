@@ -3,7 +3,12 @@
 {% import "bootstrap/wtf.html" as wtf %} 
  
 {% block container %}
-
+<script>
+function displayLoading(){
+    $('html').load("./static/loadingmask/index.html");
+    return true
+}
+</script>
 <style type="text/css">
 .class1{
 background: #f8f9fa!important;
@@ -306,12 +311,12 @@ text-align: justify;
         </ul>
         <div class="tab-content">
         <div id="simple" class="tab-pane fade show active">
-            <form action={{ url_for('about') }} method="POST">
+            <form action={{ url_for('about') }} onsubmit="displayLoading()" method="POST">
                 {{wtf.quick_form(form,button_map={'submit':"primary trybtn"})}}
             </form>
         </div>
         <div id="detailed" class="tab-pane fade">
-                <form action={{ url_for('detailedAbout') }} method="POST">
+                <form action={{ url_for('detailedAbout') }} onsubmit="displayLoading()" method="POST">
                         {% if error %}
                         <p class="flash">{{ error }}</p>
                       {% endif %}
