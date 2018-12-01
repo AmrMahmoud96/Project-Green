@@ -156,7 +156,7 @@ def recalculateAbout():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    time.sleep(500)
+    time.sleep(5)
     return render_template('test.html')
 
 def calculateSomething():
