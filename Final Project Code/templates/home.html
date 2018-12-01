@@ -63,5 +63,14 @@
 </div>
 
 {% include 'chart2.html' %}
+<div class="footer">
+    
+    <p>Want to see more details? </p><a class='joinlink basecolortext' href={{url_for('static', filename='tearsheets/'+session['portfolio']['risk']+'.pdf')}} >Download the full report here.</a>
+    <p> or </p><a class='joinlink basecolortext' href={{url_for('contactus')}}>Contact Us</a>
 
+    <!--
+    <p>Product of MIE 479 Capstone Project</p>
+    <p>Stefan Momic, Amr Mahmoud, Ameer Shaikh, Daniel Kecman</p>
+    -->
+</div>
 {% endblock %}
