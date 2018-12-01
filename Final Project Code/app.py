@@ -73,6 +73,7 @@ def about():
             tstats = comp_portfolio[2]
             ostats = comp_portfolio[5]
             stats = pd.concat([tstats,ostats],axis=1)
+            stats = stats[stats.index !=  'Treynor']
             labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
             selected=['','selected','','','']
             return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected,stats=stats, ovalues=ocolumn_divs.tolist(), labels=labels)
@@ -107,6 +108,7 @@ def detailedAbout():
         tstats = comp_portfolio[2]
         ostats = comp_portfolio[5]
         stats = pd.concat([tstats,ostats],axis=1)
+        stats = stats[stats.index !=  'Treynor']
         labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
         selected=['','selected','','','']
         return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), stats=stats,selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
@@ -150,6 +152,7 @@ def recalculateAbout():
         tstats = comp_portfolio[2]
         ostats = comp_portfolio[5]
         stats = pd.concat([tstats,ostats],axis=1)
+        stats = stats[stats.index !=  'Treynor']
         labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
         return render_template('about.html', success = True,selected=selected, stats=stats,tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
 
@@ -256,6 +259,7 @@ def home():
     ED= datetime.datetime.now()
     tcolumn_divs = portfolio_value_ts(p.returns,session['portfolio']['initial'], SD,ED)
     stats = portfolio_stats(p,SD,ED).to_frame()
+    stats = stats[stats.index !=  'Treynor']
     labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
     return render_template('home.html',tvalues=tcolumn_divs.tolist(), labels=labels,stats=stats)
 

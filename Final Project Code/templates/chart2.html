@@ -31,7 +31,7 @@
             </thead>
             <tbody>
                     {%for index, row in stats.iterrows() %}
-                        {%if index != 'Sharpe' and index != 'Sortino' %}
+                    {%if index != 'Sharpe' and index != 'Sortino' and index != 'R-Squared'and index != 'Beta'   %}
                             {% set val = row[0]*100 %}
                             {% set unit = '%' %}
                         {%else%}
