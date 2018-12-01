@@ -468,6 +468,10 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
     assets_cash = assets.copy()
     assets_cash.remove(cash)
     positions = pd.DataFrame(columns = assets)
+    #wgts = pd.DataFrame(columns = assets_cash)
+    pos_check = pd.DataFrame(columns = assets)
+    check1 = pd.DataFrame(columns = assets)
+    check2 = pd.DataFrame(columns = assets)
     static_weights = erc_ver1.get_weights(Prices[assets_cash].pct_change().dropna(how='any'),target)
     
     #if trend following option selected
@@ -483,6 +487,7 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                         weights = static_weights
                     else:
                         weights = erc_ver1.get_weights(Prices[assets_cash].loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'),target)
+                    #wgts.loc[day] = weights
                     for asset in SMA.columns:
                         if Prices.loc[day,asset] >= SMA.loc[day,asset]:
                             positions.loc[day,asset] = 1
@@ -490,6 +495,7 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                             positions.loc[day,asset] = 0
                     positions.loc[day,cash]=0
                     last_pos = positions.loc[day]*weights
+                    pos_check.loc[day] = last_pos
                     last_pos.loc[cash] = 1 - last_pos.sum()
                     positions.loc[day] = last_pos
                     
@@ -500,16 +506,20 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                     day = day + timedelta(days=1)
                 else:
                     temp_data = last_pos*(1+Returns[assets].loc[day])
+                    check1.loc[day]=last_pos
+                    check2.loc[day]=1+Returns[assets].loc[day]
                     positions.loc[day] = temp_data/temp_data.sum()
                     #if temp_data.astype(bool).sum() == len(assets):
                     #    positions.loc[day] = temp_data/temp_data.sum()
                     #else:
                     #    positions.loc[day] = temp_data  
                     last_pos = positions.loc[day]                    
-                    day = day + timedelta(days=1)                    
+                    day = day + timedelta(days=1)          
             else:
                 day = day + timedelta(days=1)
-                
+        
+        check2.to_csv('check2.csv')
+        check1.to_csv('check1.csv')
         return positions.shift(1).dropna(how='any')
     else:
         positions = pd.DataFrame(columns = assets_cash)
@@ -633,15 +643,15 @@ if __name__ == "__main__":
     #plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabebe', '#469990', '#e6beff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9'])
     #set Leverage (1 means no leverage)
     ###############
-    leverage = 3.5
+    leverage = 1.0
     ###############
     
     #load prices
     Prices = pd.DataFrame()
     for fname in os.listdir("Data/ETF_adjusted"):
-        Prices = load_data(fname,Prices)
+        Prices = load_data(fname,Prices).dropna(how='any')
     #calculate returns
-    Returns = Prices.pct_change() 
+    Returns = Prices.pct_change().dropna(how='any')
     #####Same Date Range#####
     #Prices = Prices[(Prices.index >= datetime(2008,10,6)) & (Prices.index <= datetime(2018,10,11))]
     
@@ -658,12 +668,19 @@ if __name__ == "__main__":
     t_cost = ((1.00192)**(1/252))-1
     #t_cost = ((1.0003)**(1/252))-1
     
+    
+    #back_fill risk_free rate
+    Temp = pd.concat([Returns,risk_free], axis=1,sort=True)
+    Temp.dropna(subset = list(Returns),how='any',inplace=True)
+    Temp.fillna(method='ffill',inplace=True)
+    
+    risk_free = Temp['Rate']
+    
     if leverage:
         for i in list(Returns):
             if i not in ['SPX','SPY']:
                 Returns[i] = Returns[i]*leverage - (leverage-1)*(risk_free + fee_adj) - (leverage)*t_cost
                 
-
     print("Prices and returns loaded!")
     
     ############################################################################
@@ -753,18 +770,9 @@ if __name__ == "__main__":
     
     RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
     
-    RP_Port = portfolio("Aggressive","RP 3.5x","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')    
+    RP_Port = portfolio("Preservation","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')    
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
     
     #RP_TF_pos = risk_parity_generator_V2(Prices,'M',TF=True, rolling_window=200)
