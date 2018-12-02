@@ -66,7 +66,7 @@ def about():
             print(assets)
             print(values)
             ED = datetime.datetime.now()
-            SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
+            SD = datetime.datetime.now() - datetime.timedelta(days=10*365)
             comp_portfolio = compare_portfolios(SD,ED,assets,values)
             tcolumn_divs = comp_portfolio[1]
             ocolumn_divs = comp_portfolio[4]
@@ -75,7 +75,7 @@ def about():
             stats = pd.concat([tstats,ostats],axis=1)
             stats = stats[(stats.index !=  'Treynor') & (stats.index !=  'R-Squared')]
             labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
-            selected=['','selected','','','']
+            selected=['','','selected','','']
             return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected,stats=stats, ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
             return render_template('about.html', form=form)
@@ -101,7 +101,7 @@ def detailedAbout():
         print(assets)
         print(values)
         ED = datetime.datetime.now()
-        SD = datetime.datetime.now() - datetime.timedelta(days=5*365)
+        SD = datetime.datetime.now() - datetime.timedelta(days=10*365)
         comp_portfolio = compare_portfolios(SD,ED,assets,values)
         tcolumn_divs = comp_portfolio[1]
         ocolumn_divs = comp_portfolio[4]
@@ -110,7 +110,7 @@ def detailedAbout():
         stats = pd.concat([tstats,ostats],axis=1)
         stats = stats[(stats.index !=  'Treynor') & (stats.index !=  'R-Squared')]
         labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
-        selected=['','selected','','','']
+        selected=['','','selected','','']
         return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), stats=stats,selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
     return render_template("about.html",form=form)
 
