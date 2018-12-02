@@ -286,7 +286,7 @@ def compare_portfolios(startdate,enddate,etfs,values):
     return_target = ((user_port_stats['CAGR']+1)**(1/252))-1        
     
     #initialize all of our portfolios
-    port_type = 'Balanced'
+    port_type = 'Adventurous'
     our_port = portfolio_one_b(port_type)
     #calculate stats for all portfolios
     our_port_stats = portfolio_stats(our_port,startdate,enddate)
