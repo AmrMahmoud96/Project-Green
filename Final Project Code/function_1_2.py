@@ -427,7 +427,7 @@ if __name__ == "__main__":
     #test1 = compare_portfolios(datetime(2010,1,1),datetime(2013,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
     #test2 should select the MVO portfolio (based on below inputs)
-    test2 = compare_portfolios(datetime(2008,1,1),datetime(2010,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
+    #test2 = compare_portfolios(datetime(2008,1,1),datetime(2010,1,1),['SPY','AGG','SCHH','DBC'],[100,100,100,100])
     
     end = time.time()
     print(end - start)         
