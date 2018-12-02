@@ -397,9 +397,8 @@ def selection():
             return jsonify(success=True)
         portfolioStats = mongo.db['Portfolio_Stats']
         ps= pd.DataFrame(list(portfolioStats.find({"Stat":{ '$in' : [ "CAGR","Vol","Max DD"] }})))
-        ps=ps.drop('_id',axis=1)
-        print(ps[session['riskProfile']])
-        print(ps)
+        ps=ps.drop(['_id','Stat'],axis=1)
+        ps=ps.sort_values(ps.first_valid_index(), axis=1)
         return render_template('selection.html',portfolio=session['portfolio'],recommendation=session['riskProfile'],recommended=ps[session['riskProfile']],ps=ps.drop(session['riskProfile'],axis=1))
     return redirect(url_for('home'))
 
