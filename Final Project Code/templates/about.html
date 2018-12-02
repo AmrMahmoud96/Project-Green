@@ -179,7 +179,7 @@ text-align: justify;
             <p>Alpha Factory helps you build a diversified portfolio designed to meet your unique financial goals!</p>
             <p>To ensure our customers get highly diversified portfolios, we invest in aggregate asset classes. 
             To create portfolios that perform well in all financial environments, we decided to base our asset selection methodology on Bridgewater's all-weather framework.</p>
-            <div class="center"><a style='margin-right:50px;' href={{url_for('joinus')}}><button style="border-radius: 20px; width:115px;" class="btn basecolorbtn">Join Us</button></a><a href="#learnmore"><button style="border-radius: 20px; width:115px;" class="btn basecolorbtn">Learn More</button></a></div>
+            <div class="center"><a style='margin-right:50px;' href={{url_for('joinus')}}><button style="border-radius: 20px; width:115px;" class="btn basecolorbtn">Join Us</button></a><button style="border-radius: 20px; width:115px;" onclick="movetolearnmore()" class="btn basecolorbtn">Learn More</button></div>
         </div>
 </div>
     
@@ -461,6 +461,11 @@ text-align: justify;
         -->
     </div>
     <script>
+        function movetolearnmore(){
+            $([document.documentElement, document.body]).animate({
+        scrollTop: $("#learnmore").offset().top-81
+    }, 200);
+        }
             function displayLoading(){
                 $('html').load("./static/loadingmask/index.html");
                 return true
