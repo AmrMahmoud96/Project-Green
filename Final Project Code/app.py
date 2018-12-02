@@ -167,9 +167,7 @@ def calculateSomething():
     return 'This is some elaborate test'
 @app.route('/logout')
 def logout():
-    session['name'] = None
-    session['email']=None
-    session['logged_in'] = None
+    session = None
     return redirect(url_for('about'))
 
 @app.route('/profile')
