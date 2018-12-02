@@ -255,7 +255,8 @@ def home():
     elif session['portfolio'].get('risk',None)==None:
         return redirect(url_for('selection'))
     p = portfolio_one_b(session['portfolio']['risk'])
-    SD= datetime.datetime.now() - datetime.timedelta(days=3*365)
+    #SD= datetime.datetime.now() - datetime.timedelta(days=3*365)
+    SD= datetime.datetime.now() - datetime.timedelta(days=15*365)
     ED= datetime.datetime.now()
     tcolumn_divs = portfolio_value_ts(p.returns,session['portfolio']['initial'], SD,ED)
     stats = portfolio_stats(p,SD,ED).to_frame()
