@@ -135,10 +135,10 @@ function validateForm() {
                     <td class="basecolortext">{{(val2|round(2))~ unit}}</td>
                 </tr>
                 {% endfor %}
-                <tr class='see-more'>
+                <tr class='see-more' style="border-bottom: 2px solid #dee2e6;">
                         <td class="justify" style=" text-align: center;"colspan="3">See More</td>
                 </tr>
-                {%for index, row in stats.iterrows() %}
+                {%for index, row in extrastats.iterrows() %}
                     {%if index != 'Sharpe' and index != 'Sortino' and index != 'R-Squared'and index != 'Beta'   %}
                         {% set val = row[0]*100 %}
                         {% set val2 = row[1]*100 %}

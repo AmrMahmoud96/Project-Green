@@ -76,7 +76,7 @@ def about():
             stats = stats[(stats.index !=  'Treynor') & (stats.index !=  'R-Squared')]
             labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
             selected=['','','selected','','']
-            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected,stats=stats, ovalues=ocolumn_divs.tolist(), labels=labels)
+            return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(),selected=selected,stats=stats[0:6],extrastats=stats[6:], ovalues=ocolumn_divs.tolist(), labels=labels)
         else:
             return render_template('about.html', form=form)
     return render_template("about.html",form=form)
@@ -111,7 +111,7 @@ def detailedAbout():
         stats = stats[(stats.index !=  'Treynor') & (stats.index !=  'R-Squared')]
         labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
         selected=['','','selected','','']
-        return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), stats=stats,selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
+        return render_template('about.html', success = True, tvalues=tcolumn_divs.tolist(), stats=stats[0:6],extrastats=stats[6:],selected=selected, ovalues=ocolumn_divs.tolist(), labels=labels)
     return render_template("about.html",form=form)
 
 @app.route("/recalculateAbout", methods=['POST'])
@@ -154,7 +154,7 @@ def recalculateAbout():
         stats = pd.concat([tstats,ostats],axis=1)
         stats = stats[(stats.index !=  'Treynor') & (stats.index !=  'R-Squared')]
         labels = list(map(np.datetime_as_string,tcolumn_divs.index.values))
-        return render_template('about.html', success = True,selected=selected, stats=stats,tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
+        return render_template('about.html', success = True,selected=selected, stats=stats[0:6],extrastats=stats[6:],tvalues=tcolumn_divs.tolist(), ovalues=ocolumn_divs.tolist(), labels=labels)
 
 
 @app.route('/test', methods=['GET', 'POST'])
