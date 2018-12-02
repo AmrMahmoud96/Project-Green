@@ -23,7 +23,7 @@
         <h1 class="center title">Portfolio Generator</h1>
     <div class="container advisor-container">
         <h5 class='center'>Tell us what your financial goals are and we will custom tailor a portfolio to fit your needs!</h5>
-      <form name='advisorForm' action="{{ url_for('advisor') }}" onsubmit = "return validateForm()" method="POST">
+      <form name='advisorForm' action="{{ url_for('advisor') }}" method="POST">
           {% if error %}
           <p class="flash">{{ error }}</p>
         {% endif %}
@@ -31,10 +31,22 @@
               <label for="initial">Initial investment</label>
               <input type="number" name="initial" min=0 step='0.01' class="form-control" id="initial" placeholder="Enter initial capital" required>
             </div>
-            <div class="form-group">
-                <label for="goal">Financial goal</label>
-                <input type="number" name="goal" min=0 step='0.01' class="form-control" id="goal" placeholder="Enter your financial goal" required>
-            </div>
+            <label for='options'>What are you saving towards?</label>
+            <div id='options' name='options' class='alternatives'>
+                    <div class='option-block' name="car">
+                        <img src='/static/images/car2.png' width="75px" height="75px">
+                        <p>Car</p>
+                    </div>
+                    <div class='option-block selected' name="house">
+                            <img class='inverted'src='/static/images/house.png' width="75px" height="75px">
+            
+                            <p>House</p>
+                        </div>
+                        <div class='option-block' name="retirement">
+                        <img src='/static/images/retirement.png' width="75px" height="75px">
+                            <p>Retirement</p>
+                        </div>
+                </div>
             <div class="form-group">
                 <label for="horizon">Time Horizon</label>
                 <input type="range" name="horizon" min=1 max=30 class="form-control" id="horizon"> <p id ="horizonoutput"></p>
@@ -48,11 +60,75 @@
     </body>
   
 </html>
+<style>
+
+.option-block{
+    padding: 10px;
+    max-width:110px;
+    border: 1px solid black;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 auto;
+    margin-top:10px;
+    margin-bottom:10px;
+    color:black;
+    background: white;
+
+}
+.inverted{
+    -webkit-filter: invert(1);
+   filter: invert(1);
+}
+.alternatives{
+    display:flex;
+    padding: 10px;
+    min-width: 500px;
+}
+.option-block:hover{
+    cursor:pointer;
+}
+.selected{
+background-color: #F37649;
+color: white;
+/* width:110%;
+height:110%;
+flex:0 0 auto;
+margin:20px; */
+}
+</style>
 <script>
 var slider = document.getElementById("horizon");
 var output = document.getElementById("horizonoutput");
-output.innerHTML = slider.value+' years'; // Display the default slider value
-
+// output.innerHTML = slider.value+' years'; // Display the default slider value
+$('.option-block').click(function(){
+    $(".option-block").removeClass('selected');
+    $('img').removeClass('inverted')
+    $(this).addClass('selected')
+    if ($(this).attr('name')=='car'){
+        $('#horizon').prop({
+            'min': 5,
+            'max': 10
+        });
+        slider.value=10;
+        
+    }
+    if ($(this).attr('name')=='house'){
+        $('#horizon').prop({
+            'min': 10,
+            'max': 20
+        });
+        slider.value=15;
+    }
+    if ($(this).attr('name')=='retirement'){
+        $('#horizon').prop({
+            'min': 20,
+            'max': 30
+        });
+       slider.value=25;
+    }
+    output.innerHTML = slider.value+' years';
+    $(this).children()[0].classList.add('inverted')
+});
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function() {
     output.innerHTML = this.value+' years';

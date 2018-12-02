@@ -373,9 +373,9 @@ def advisor():
             users = mongo.db['_Users']
             profile = users.find_one({'email' : session['email']})
             if profile.get('portfolio',None) == None:
-                portfolio = {'initial':float(request.form['initial']),'goal':float(request.form['goal']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}
+                portfolio = {'initial':float(request.form['initial']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}
             else:
-                portfolio = {'risk':profile['portfolio'].get('risk'),'initial':float(request.form['initial']),'goal':float(request.form['goal']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}                
+                portfolio = {'risk':profile['portfolio'].get('risk'),'initial':float(request.form['initial']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}                
             if session.get('newPortfolio',None)!=True:
                 profile['portfolio']=portfolio
                 users.save(profile)
