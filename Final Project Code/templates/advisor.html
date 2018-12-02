@@ -121,10 +121,10 @@ $('.option-block').click(function(){
     }
     if ($(this).attr('name')=='retirement'){
         $('#horizon').prop({
-            'min': 20,
-            'max': 30
+            'min': 15,
+            'max': 40
         });
-       slider.value=25;
+       slider.value=15;
     }
     output.innerHTML = slider.value+' years';
     $(this).children()[0].classList.add('inverted')
