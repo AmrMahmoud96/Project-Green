@@ -2,7 +2,7 @@
  
 {% block container %}
 <style>
-.portfolio-block{
+.option-block{
     padding: 10px;
     max-width:20%;
     border: 1px solid black;
@@ -13,12 +13,18 @@
     margin-bottom:20px;
     color:black;
     background: white;
+
+}
+.inverted{
+    -webkit-filter: invert(1);
+   filter: invert(1);
 }
 .alternatives{
     display:flex;
     padding: 10px;
+    min-width: 700px;
 }
-.portfolio-block:hover{
+.option-block:hover{
     cursor:pointer;
 }
 .selected{
@@ -31,30 +37,23 @@ margin:20px; */
 }
 </style>
 <div class="result-container">
-    <div class='recommendation center'>
-    <h1 class=>Congratulations.</h1>
-    <h4>Based on our risk assessment, we believe the following portfolio would be best for you.</h4>
-        <div class='portfolio-block selected' name={{recommendation}}>
-            <h4>{{recommendation}}</h4>
-            <p>CAGR: {{(recommended[1]*100)|round(2)}} %</p>
-            <p>Volatility: {{(recommended[0]*100)|round(2)}} %</p>
-            <p>Max Drawdown: {{(recommended[2]*100)|round(2)}} %</p>
-        </div>
-    </div>
-    <br>
+    <h1 class="center" style="margin-top:20px;">How can we help you today?</h1>
 
-    <h3 class='center'>You can also choose to select from our other portfolio options</h3>
     <div class='alternatives'>
-        {%for column in ps %}
-        {%if column!='Stat'%}
-        <div class='portfolio-block' name={{column}}>
-            <h4>{{column}}</h4>
-            <p>CAGR : {{(ps[column][1]*100)|round(2)}} %</p>
-            <p>Volatility : {{(ps[column][0]*100)|round(2)}} %</p>
-            <p>Max Drawdown : {{(ps[column][2]*100)|round(2)}} %</p>
+        <div class='option-block' name="CP">
+            <img src='/static/images/riskchange.png' width="100px" height="100px">
+            <h4>Change your portfolio type.</h4>
         </div>
-        {%endif%}
-        {%endfor%}  
+        <div class='option-block' name="CR">
+                <img src='/static/images/changeprof.png' width="100px" height="100px">
+
+                <h4>Generate a new portfolio.</h4>
+            </div>
+            <div class='option-block' name="CA">
+            <img src='/static/images/consultant.png' width="100px" height="100px">
+
+                    <h4>Schedule a meeting with an advisor.</h4>
+                </div>
     </div>
     
     <div class="btncontainer center">
@@ -63,26 +62,32 @@ margin:20px; */
    
 </div>
 <script>
-var selection='{{recommendation}}'
+var selection=''
 
-$('.portfolio-block').click(function(){
-    $(".portfolio-block").removeClass('selected');
+$('.option-block').click(function(){
+    $(".option-block").removeClass('selected');
+    $('img').removeClass('inverted')
     selection =$(this).attr('name')
     $(this).addClass('selected')
+    $(this).children()[0].classList.add('inverted')
 });
 $('#continueBtn').click(function(){
-    $('html').load("./static/loadingmask/index.html");
+    if(selection ==''){
+        alert('Please select an option to continue.')
+    }else{
     $.ajax({
         type: "POST",
         contentType: "application/json;charset=utf-8",
-        url: "/selection",
+        url: "/advisor_options",
         traditional: "true",
         data: JSON.stringify({selection}),
         dataType: "json",
         success: function(result){
-            window.location.href +="/finished";
+            // console.log(result)
+            window.location.href = window.location.origin +"/"+result.path;
         }
     });
+    }
 });
 </script>
 {% endblock %}

@@ -346,7 +346,7 @@ def updateuserpassword(password,email):
 def questions():
     if not checkLoggedIn():
         return redirect(url_for('login'))
-    if session.get('portfolio')==None:
+    if session.get('portfolio')==None or session.get('finishedInit',True)==False:
         return redirect(url_for('advisor'))
     if session.get('fillQuestions') == True:
         questionDB = mongo.db['_Questions']
@@ -368,7 +368,7 @@ def check():
 def advisor():
     if not checkLoggedIn():
         return redirect(url_for('login'))
-    if session.get('fillQuestions')==False or session.get('portfolio')==None:
+    if session.get('fillQuestions')==False or session.get('portfolio')==None or session.get('newPortfolio',None)==True:
         if request.method == 'POST':
             users = mongo.db['_Users']
             profile = users.find_one({'email' : session['email']})
@@ -376,32 +376,69 @@ def advisor():
                 portfolio = {'initial':float(request.form['initial']),'goal':float(request.form['goal']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}
             else:
                 portfolio = {'risk':profile['portfolio'].get('risk'),'initial':float(request.form['initial']),'goal':float(request.form['goal']),'horizon':int(request.form['horizon']),'dateCreated':datetime.datetime.now()}                
-            profile['portfolio']=portfolio
+            if session.get('newPortfolio',None)!=True:
+                profile['portfolio']=portfolio
+                users.save(profile)
+            else:
+                portfolio['risk']=None
             session['portfolio']=portfolio
-            users.save(profile)
+            session['finishedInit']=True
             return redirect(url_for('home'))
         return render_template('advisor.html')
     return redirect(url_for('home'))
+
+@app.route('/advisor_options', methods=['GET','POST'])
+def advisor_options():
+    if not checkLoggedIn():
+        return redirect(url_for('login'))
+    if session.get('newPortfolio')==True:
+        return redirect(url_for('home'))
+    if request.method == 'POST':
+        resp = request.get_json()
+        if resp['selection']=='CP':
+            return jsonify(success=True,path='selection')
+        if resp['selection']=='CR':
+            session['finishedInit']=False
+            session['newPortfolio']=True
+            session['fillQuestions']=True
+            return jsonify(success=True,path='advisor') 
+        if resp['selection']=='CA':
+            msg = Message('Request for meeting.', sender='contact@alphafactory.ca', recipients=['Alphafactory.capstone@gmail.com'])
+            msg.body = """
+            From: %s: <%s>
+            Hello, I would like to schedule a meeting with an advisor.
+            """ % (session['name'], session['email'])
+            mail.send(msg)
+            return jsonify(success=True,path='contact_complete')   
+    return render_template('advisor_page.html')
 
 @app.route('/questions/finished')
 def finished():
     return redirect(url_for('selection'))
 
+@app.route('/contact_complete')
+def contact_complete():
+    return render_template('contactus.html', success="True")
+
 @app.route('/selection', methods=['GET','POST'])
 def selection():
     if session.get('riskProfile') == None or session.get('portfolio')==None:
         return redirect(url_for('home'))
-    if session['portfolio'].get('risk', None) == None:
-        if request.method=='POST':
-            resp = request.get_json()
-            updateuserrisk(session.get('riskTolNum'),resp['selection'])
-            return jsonify(success=True)
-        portfolioStats = mongo.db['Portfolio_Stats']
-        ps= pd.DataFrame(list(portfolioStats.find({"Stat":{ '$in' : [ "CAGR","Vol","Max DD"] }})))
-        ps=ps.drop(['_id','Stat'],axis=1)
-        ps=ps.sort_values(ps.first_valid_index(), axis=1)
-        return render_template('selection.html',portfolio=session['portfolio'],recommendation=session['riskProfile'],recommended=ps[session['riskProfile']],ps=ps.drop(session['riskProfile'],axis=1))
-    return redirect(url_for('home'))
+    if request.method=='POST':
+        resp = request.get_json()
+        users = mongo.db['_Users']
+        profile = users.find_one({'email' : session['email']})
+        profile['portfolio']=session['portfolio']
+        users.save(profile)
+        updateuserrisk(session.get('riskTolNum'),resp['selection'])
+        session['finishedInit']=None
+        session['newPortfolio']=None
+        return jsonify(success=True)
+    portfolioStats = mongo.db['Portfolio_Stats']
+    ps= pd.DataFrame(list(portfolioStats.find({"Stat":{ '$in' : [ "CAGR","Vol","Max DD"] }})))
+    ps=ps.drop(['_id','Stat'],axis=1)
+    ps=ps.sort_values(ps.first_valid_index(), axis=1)
+    return render_template('selection.html',portfolio=session['portfolio'],recommendation=session['riskProfile'],recommended=ps[session['riskProfile']],ps=ps.drop(session['riskProfile'],axis=1))
 
 @app.route('/selection/finished')
 def selection_complete():
@@ -411,7 +448,7 @@ def selection_complete():
 def updateuserrisk(risk,selected):
     users = mongo.db['_Users']
     login_user = users.find_one({'email' : session['email']})
-    horizon = login_user['portfolio']['horizon']
+    horizon = session['portfolio']['horizon']
     if horizon>=15:
         riskProfile = riskDefnArr3[risk]
         tolerance = riskArr3[risk]
@@ -433,7 +470,8 @@ def updateuserrisk(risk,selected):
     session['riskTolNum']= risk
     login_user['fillQuestions']= False
     session['fillQuestions']=False
-    users.save(login_user)
+    if session.get('newPortfolio',None)!=True or selected:
+        users.save(login_user)
 
 @app.route("/")
 def landingpage():
