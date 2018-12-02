@@ -470,8 +470,8 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
     positions = pd.DataFrame(columns = assets)
     #wgts = pd.DataFrame(columns = assets_cash)
     pos_check = pd.DataFrame(columns = assets)
-    check1 = pd.DataFrame(columns = assets)
-    check2 = pd.DataFrame(columns = assets)
+    #check1 = pd.DataFrame(columns = assets)
+    #check2 = pd.DataFrame(columns = assets)
     static_weights = erc_ver1.get_weights(Prices[assets_cash].pct_change().dropna(how='any'),target)
     
     #if trend following option selected
@@ -506,8 +506,8 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                     day = day + timedelta(days=1)
                 else:
                     temp_data = last_pos*(1+Returns[assets].loc[day])
-                    check1.loc[day]=last_pos
-                    check2.loc[day]=1+Returns[assets].loc[day]
+                    #check1.loc[day]=last_pos
+                    #check2.loc[day]=1+Returns[assets].loc[day]
                     positions.loc[day] = temp_data/temp_data.sum()
                     #if temp_data.astype(bool).sum() == len(assets):
                     #    positions.loc[day] = temp_data/temp_data.sum()
@@ -518,8 +518,8 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
             else:
                 day = day + timedelta(days=1)
         
-        check2.to_csv('check2.csv')
-        check1.to_csv('check1.csv')
+        #check2.to_csv('check2.csv')
+        #check1.to_csv('check1.csv')
         return positions.shift(1).dropna(how='any')
     else:
         positions = pd.DataFrame(columns = assets_cash)
