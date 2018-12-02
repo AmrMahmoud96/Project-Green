@@ -3,7 +3,10 @@
 {% block container %}
 
 <html>
+    <style>
+    </style>
     <script>
+      
         function validateForm(){
             if (parseInt(document.forms["advisorForm"]["goal"].value)<= parseInt(document.forms["advisorForm"]["initial"].value)){
                 alert('You cannot have a financial goal less than your initial capital.')
