@@ -48,6 +48,9 @@
       .f{
           display: grid;
       }
+      .cell-content{
+          display:none;   
+      }
 
 </style>
 <script>
@@ -131,6 +134,27 @@ function validateForm() {
                     <td>{{(val|round(2)) ~ unit}}</td>
                     <td class="basecolortext">{{(val2|round(2))~ unit}}</td>
                 </tr>
+                {% endfor %}
+                <tr class='see-more'>
+                        <td class="justify" style=" text-align: center;"colspan="3">See More</td>
+                </tr>
+                {%for index, row in stats.iterrows() %}
+                    {%if index != 'Sharpe' and index != 'Sortino' and index != 'R-Squared'and index != 'Beta'   %}
+                        {% set val = row[0]*100 %}
+                        {% set val2 = row[1]*100 %}
+                        {% set unit = '%' %}
+                    {%else%}
+                    {% set val = row[0]*1 %}
+                    {% set val2 = row[1]*1 %}
+                        {% set unit = '' %}
+                    {%endif%}  
+                       
+                <tr class='cell-content'>
+                    <td class="justify">{{index}}</td>
+                    <td>{{(val|round(2)) ~ unit}}</td>
+                    <td class="basecolortext">{{(val2|round(2))~ unit}}</td>
+                </tr>
+                
                 {% endfor %}
         </tbody>
     </table>

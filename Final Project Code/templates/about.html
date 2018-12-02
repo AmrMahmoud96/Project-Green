@@ -148,6 +148,10 @@ text-align: justify;
     margin:10px;
     padding:10px;
 }
+.see-more:hover{
+    cursor:pointer;
+    background:lightgrey;
+}
 .bicon{
     margin:10px;
     padding:10px;
@@ -477,6 +481,17 @@ text-align: justify;
             $content = $header.next();
             //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
             $content.slideToggle(500);
+            
+            });
+            $('.see-more').click(function () {
+
+            $header = $(this);
+            $content = $('.cell-content')
+            //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+            $content.toggle(function(){
+                 //change text of header based on visibility of content div
+                    $header.children()[0].innerHTML= $content.is(":visible") ? "See Less" : "See More"
+            });
             
             });
             </script>
