@@ -3,13 +3,13 @@
 {% import "bootstrap/wtf.html" as wtf %} 
  
 {% block container %}
-<script>
-function displayLoading(){
-    $('html').load("./static/loadingmask/index.html");
-    return true
-}
-</script>
+
 <style type="text/css">
+.content {
+    display: none;
+    margin: 10px;
+    padding:10px;
+}
 .class1{
 background: #f8f9fa!important;
 }.class2{
@@ -152,6 +152,10 @@ text-align: justify;
     margin:10px;
     padding:10px;
 }
+.bicon:hover{
+    cursor:pointer;
+    background:lightgrey;
+}
 .figicon{
 
     display: flex;
@@ -223,39 +227,85 @@ text-align: justify;
                 <img class="mid-fig" src="./static/images/stockimg.jpeg" width="100px" height="100px">
                 <div class="figdesc">
                 <p class="btitle">Equities</p>
-	<p>Risk Parity portfolios rely on risk-based diversification to generate higher and more consistent returns. Since Risk Parity portfolios begin with lower exposure to equities relative to traditional portfolios, the risk of the portfolio is spread more evenly across other asset classes. With Alpha Factory striving to create portfolios that perform well in all financial environments the Risk Parity approach is critical. In general, equities do well in high-growth and low-inflation environments; bonds do well in deflationary or recessionary environments; and commodities tend to perform best during inflationary environments, so having balanced exposure to these three main asset classes allows us to produce more consistent returns over time. </p>
+			<p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
+
 </div>
             </figure>
+
         </div>
+        <div class="content">
+                <p>Risk Parity portfolios rely on risk-based diversification to generate higher and more consistent returns. Since Risk Parity portfolios begin with lower exposure to equities relative to traditional portfolios, the risk of the portfolio is spread more evenly across other asset classes. With Alpha Factory striving to create portfolios that perform well in all financial environments the Risk Parity approach is critical. In general, equities do well in high-growth and low-inflation environments; bonds do well in deflationary or recessionary environments; and commodities tend to perform best during inflationary environments, so having balanced exposure to these three main asset classes allows us to produce more consistent returns over time. </p>
+        </div>
+
         <div class="bicon">
                 <figure class="figicon">
                 <img class="mid-fig" src="./static/images/coinsicon2.jpeg" width="100px" height="100px">
+                <div class="figdesc">
+                      
                 <p class="btitle">Bonds</p>
+                    <p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
+        
+        </div>
             </figure>
+        </div>
+        <div class="content">
+                <p>Risk Parity portfolios rely on risk-based diversification to generate higher and more consistent returns. Since Risk Parity portfolios begin with lower exposure to equities relative to traditional portfolios, the risk of the portfolio is spread more evenly across other asset classes. With Alpha Factory striving to create portfolios that perform well in all financial environments the Risk Parity approach is critical. In general, equities do well in high-growth and low-inflation environments; bonds do well in deflationary or recessionary environments; and commodities tend to perform best during inflationary environments, so having balanced exposure to these three main asset classes allows us to produce more consistent returns over time. </p>
         </div>
         <div class="bicon">
                 <figure class="figicon">
                 <img class="mid-fig" src="./static/images/houseIcon.png" width="100px" height="100px">
+                <div class="figdesc">
                 <p class="btitle">Real Estate</p>
+                      
+                            <p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
+                
+                </div>
             </figure>
+        </div>
+        <div class="content">
+                <p>Risk Parity portfolios rely on risk-based diversification to generate higher and more consistent returns. Since Risk Parity portfolios begin with lower exposure to equities relative to traditional portfolios, the risk of the portfolio is spread more evenly across other asset classes. With Alpha Factory striving to create portfolios that perform well in all financial environments the Risk Parity approach is critical. In general, equities do well in high-growth and low-inflation environments; bonds do well in deflationary or recessionary environments; and commodities tend to perform best during inflationary environments, so having balanced exposure to these three main asset classes allows us to produce more consistent returns over time. </p>
         </div>
         <div class="bicon">
                 <figure class="figicon">
                 <img class="mid-fig" src="./static/images/oilicon.png" width="100px" height="100px">
+                <div class="figdesc">
                 <p class="btitle">Commodities</p>
+                      
+                            <p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
+                
+                </div>
             </figure>
+        </div>
+        <div class="content">
+                <p>Risk Parity portfolios rely on risk-based diversification to generate higher and more consistent returns. Since Risk Parity portfolios begin with lower exposure to equities relative to traditional portfolios, the risk of the portfolio is spread more evenly across other asset classes. With Alpha Factory striving to create portfolios that perform well in all financial environments the Risk Parity approach is critical. In general, equities do well in high-growth and low-inflation environments; bonds do well in deflationary or recessionary environments; and commodities tend to perform best during inflationary environments, so having balanced exposure to these three main asset classes allows us to produce more consistent returns over time. </p>
         </div>
         <div class="bicon">
                 <figure class="figicon">
                 <img class="mid-fig" src="./static/images/goldicon.png" width="100px" height="100px">
+                <div class="figdesc">
                 <p class="btitle">Gold</p>
+                      
+                            <p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
+                
+                </div>
             </figure>
+            </div>
+            <div class="content">
+                    <p>Risk Parity portfolios rely on risk-based diversification to generate higher and more consistent returns. Since Risk Parity portfolios begin with lower exposure to equities relative to traditional portfolios, the risk of the portfolio is spread more evenly across other asset classes. With Alpha Factory striving to create portfolios that perform well in all financial environments the Risk Parity approach is critical. In general, equities do well in high-growth and low-inflation environments; bonds do well in deflationary or recessionary environments; and commodities tend to perform best during inflationary environments, so having balanced exposure to these three main asset classes allows us to produce more consistent returns over time. </p>
             </div>
             <div class="bicon">
                     <figure class="figicon">
                     <img class="mid-fig" src="./static/images/cashicon.png" width="100px" height="100px">
+                    <div class="figdesc">
                     <p class="btitle">Cash</p>
+                      
+                                <p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
+                    
+                    </div>
                 </figure>
+                </div>
+                <div class="content">
+                        <p>Risk Parity portfolios rely on risk-based diversification to generate higher and more consistent returns. Since Risk Parity portfolios begin with lower exposure to equities relative to traditional portfolios, the risk of the portfolio is spread more evenly across other asset classes. With Alpha Factory striving to create portfolios that perform well in all financial environments the Risk Parity approach is critical. In general, equities do well in high-growth and low-inflation environments; bonds do well in deflationary or recessionary environments; and commodities tend to perform best during inflationary environments, so having balanced exposure to these three main asset classes allows us to produce more consistent returns over time. </p>
                 </div>
 	</div>
 
@@ -406,6 +456,21 @@ text-align: justify;
         <p>Stefan Momic, Amr Mahmoud, Ameer Shaikh, Daniel Kecman</p>
         -->
     </div>
+    <script>
+            function displayLoading(){
+                $('html').load("./static/loadingmask/index.html");
+                return true
+            }
+            $('.bicon').click(function () {
+            // console.log('clicked')
+            $header = $(this);
+            //getting the next element
+            $content = $header.next();
+            //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+            $content.slideToggle(500);
+            
+            });
+            </script>
     {%if error_occured or error%}
 <script>
     $([document.documentElement, document.body]).animate({
