@@ -643,7 +643,7 @@ if __name__ == "__main__":
     #plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabebe', '#469990', '#e6beff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9'])
     #set Leverage (1 means no leverage)
     ###############
-    leverage = 1.0
+    leverage = 1.5
     ###############
     
     #load prices
@@ -770,7 +770,7 @@ if __name__ == "__main__":
     
     RP_pos = risk_parity_generator_V2(Prices[assets],'M',TF=True, rolling_window=200,static=False,target=target)
     
-    RP_Port = portfolio("Preservation","RP","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')    
+    RP_Port = portfolio("Conservative","RP 1.5x","Risk parity portfolio with dynamic weights reblanced monthly",RP_pos, '200 SMA','Monthly','RP 200')    
     
 
     
