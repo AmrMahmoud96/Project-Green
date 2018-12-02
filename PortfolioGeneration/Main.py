@@ -487,6 +487,7 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
                         weights = static_weights
                     else:
                         weights = erc_ver1.get_weights(Prices[assets_cash].loc[Prices.index <= day].iloc[-1*rolling_window::].pct_change().dropna(how='any'),target)
+                    
                     #wgts.loc[day] = weights
                     for asset in SMA.columns:
                         if Prices.loc[day,asset] >= SMA.loc[day,asset]:
@@ -518,7 +519,7 @@ def risk_parity_generator_V2(Prices,rebal_freq,TF=None, rolling_window=None,stat
             else:
                 day = day + timedelta(days=1)
         
-        #check2.to_csv('check2.csv')
+        last_pos.to_csv('wgts.csv')
         #check1.to_csv('check1.csv')
         return positions.shift(1).dropna(how='any')
     else:
@@ -643,7 +644,7 @@ if __name__ == "__main__":
     #plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabebe', '#469990', '#e6beff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9'])
     #set Leverage (1 means no leverage)
     ###############
-    leverage = 1.5
+    leverage = 1.0
     ###############
     
     #load prices
