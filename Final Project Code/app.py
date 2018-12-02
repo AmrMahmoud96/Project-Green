@@ -167,7 +167,7 @@ def calculateSomething():
     return 'This is some elaborate test'
 @app.route('/logout')
 def logout():
-    session = None
+    session.clear()
     return redirect(url_for('about'))
 
 @app.route('/profile')
@@ -179,7 +179,7 @@ def profile():
     if session.get('fillQuestions')==True:
         return redirect(url_for('questions'))
     users = mongo.db['_Users']
-    profile = users.find_one({'email' : session['email']})
+    profile = users.find_one({'email' : session.get('email')})
     profile['risk'] = profile.get('riskTol')
     profile['riskPortfolio'] = profile.get('portfolio').get('risk')
     profile['riskProfile'] = profile.get('riskProfile')
@@ -190,7 +190,7 @@ def change_password():
     if not checkLoggedIn():
         return redirect(url_for('forgotpass'))
     users = mongo.db['_Users']
-    profile = users.find_one({'email' : session['email']})
+    profile = users.find_one({'email' : session.get('email')})
     if request.method == 'POST':
         if check_password_hash(profile['password'], request.form['password']):
             if(request.form['newpassword'] == request.form['confirmpassword']):
@@ -211,7 +211,7 @@ def change_risk():
     if not checkLoggedIn():
         return redirect(url_for('login'))
     users = mongo.db['_Users']
-    profile = users.find_one({'email' : session['email']})
+    profile = users.find_one({'email' : session.get('email')})
     profile['fillQuestions'] = True
     session['fillQuestions'] = True
     users.save(profile)
@@ -220,7 +220,7 @@ def change_risk():
 def checkLoggedIn():
     if session==None:
         return False
-    elif session['logged_in']==None:
+    elif session.get('logged_in')==None:
         return False
     return True
 
@@ -248,7 +248,7 @@ def home():
         return redirect(url_for('about'))
     elif session.get('portfolio') == None:
         return redirect(url_for('advisor'))
-    elif session['fillQuestions']==True:
+    elif session.get('fillQuestions')==True:
         return redirect(url_for('questions'))
     elif session['portfolio'].get('risk',None)==None:
         return redirect(url_for('selection'))
@@ -405,7 +405,7 @@ def advisor_options():
             msg.body = """
             From: %s: <%s>
             Hello, I would like to schedule a meeting with an advisor.
-            """ % (session['name'], session['email'])
+            """ % (session.get('name'), session.get('email'))
             mail.send(msg)
             return jsonify(success=True,path='contact_complete')   
     return render_template('advisor_page.html')

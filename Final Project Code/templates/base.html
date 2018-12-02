@@ -108,7 +108,7 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-            {% if session['logged_in'] == None and session['name']== None%}
+            {% if session.get('logged_in') == None and session.get('name')== None%}
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
                   <a class="nav-item navbar-text nav-link active" href={{url_for('about')}}>About<span class="sr-only">(current)</span></a>
@@ -120,13 +120,13 @@
             {% else %}
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto center">
-                  <a class="nav-item navbar-text nav-link active " href={{url_for('home')}}>Home</a>
+                  <a class="nav-item navbar-text nav-link active " id ='home' href={{url_for('home')}}>Home</a>
                   <a class="nav-item navbar-text nav-link active advisorLink" href={{url_for('advisor_options')}}>Advisor</a>
                   <a class="nav-item navbar-text  nav-link active" href={{url_for('about')}}>About</a>
                   <a class="nav-item navbar-text  nav-link active" href={{url_for('contactus')}}>Contact Us</a>
                   <li class="nav-item dropdown">
                       <a class="nav-link navbar-text dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{session['name']}}
+                        {{session.get('name')}}
                       </a>
                       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                         <a class="dropdown-item" href={{url_for('profile')}}>View Profile</a>
@@ -140,4 +140,10 @@
       </nav>
       {% block container %}{% endblock %}
   </body>
+  <script>
+  $('#home').click(function(){
+    $('html').load("./static/loadingmask/index.html");
+
+  });
+  </script>
 </html>
