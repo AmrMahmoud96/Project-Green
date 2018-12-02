@@ -1,6 +1,6 @@
 from wtforms import  TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField, DecimalField
 from wtforms.fields.html5 import DateField
-from wtforms_components import DateRange,DateTimeField
+from wtforms_components import DateRange
 from flask_wtf import FlaskForm
 from datetime import datetime,date
 from dateutil.relativedelta import relativedelta
@@ -24,10 +24,11 @@ class PortfolioCalculationForm(FlaskForm):
 class RegisterForm(FlaskForm):
   firstName = TextField("First Name",[validators.DataRequired("Please enter your name.")])
   lastName= TextField("Last Name",[validators.DataRequired("Please enter your name.")])
-  dob = DateTimeField("Date of Birth", format='%Y-%m-%d',validators=[DateRange(
-            min=datetime(1900, 1, 1),
-            max=datetime(2000,1,1)
-        )],render_kw={"placeholder": "yyyy-mm-dd"})
+
+  dob = DateField("Date of Birth", format='%Y-%m-%d',validators=[DateRange(
+            min=date(1900, 1, 1),
+            max=date(2000,1,1)
+        )])
   email = TextField("Email",[validators.DataRequired("Please enter your Email."),validators.Email("Please enter a valid email.")])
   password = PasswordField("Password",[ validators.Regexp('^\w+$', message="Password must contain only letters, numbers, or underscore"),
         validators.Length(min=8, max=25, message="Password must be betwen 8 & 25 characters"),
