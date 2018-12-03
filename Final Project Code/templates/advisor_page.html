@@ -75,6 +75,10 @@ $('#continueBtn').click(function(){
     if(selection ==''){
         alert('Please select an option to continue.')
     }else{
+        if(selection=='CA'){
+            $('html').load("./static/loadingmask/index3.html");
+
+        }
     $.ajax({
         type: "POST",
         contentType: "application/json;charset=utf-8",
