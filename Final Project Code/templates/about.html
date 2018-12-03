@@ -222,8 +222,9 @@ text-align: justify;
 				<li><b>Long-term (20+ years):</b> saving for retirement </li>
 			</ul>
 			<p>Finally, our unique portfolio generation techniques depend on the risk-tolerance level of our investors. Rather than overfitting with a continuous spectrum of return goals and risk constraints, Alpha Factory created five distinct portfolios to accommodate the different risk-tolerance levels of our customers. We find this strategy better fits our mission as it helps lower fees.</p>
-			<p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
             {% if session.get('logged_in') == None and session.get('name')== None%}
+            <p>To determine the return goals and risk-tolerance of our investors we require them to fill out a quick questionnaire when joining our platform. Find your risk-tolerance level by joining us today!</p>
+            
             <div class="center"><a href={{url_for('joinus')}}><button style="border-radius: 20px;" class="btn basecolorbtn">Join Us</button></a></div>
             {%endif%}
         </div>
