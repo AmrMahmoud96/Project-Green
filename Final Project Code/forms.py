@@ -24,7 +24,6 @@ class PortfolioCalculationForm(FlaskForm):
 class RegisterForm(FlaskForm):
   firstName = TextField("First Name",[validators.DataRequired("Please enter your name.")])
   lastName= TextField("Last Name",[validators.DataRequired("Please enter your name.")])
-
   dob = DateField("Date of Birth", format='%Y-%m-%d',validators=[DateRange(
             min=date(1900, 1, 1),
             max=date(2000,1,1)
