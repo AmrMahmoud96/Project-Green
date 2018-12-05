@@ -488,15 +488,20 @@ text-align: justify;
     </div>
     <script>
         function movetolearnmore(){
+            //used to scroll to exact location of the learn more section
             $([document.documentElement, document.body]).animate({
         scrollTop: $("#learnmore").offset().top-81
     }, 200);
         }
             function displayLoading(){
+                //display cool loading mask
                 $('html').load("./static/loadingmask/index.html");
                 return true
             }
+
+            //active listener for the expansion of the asset universe content
             $('.bicon').click(function () {
+            
             // console.log('clicked')
             $header = $(this);
             //getting the next element
@@ -505,6 +510,7 @@ text-align: justify;
             $content.slideToggle(500);
             
             });
+            //active listener for the see more stats header
             $('.see-more').click(function () {
 
             $header = $(this);
@@ -519,11 +525,13 @@ text-align: justify;
             </script>
     {%if error_occured or error%}
 <script>
+    //if there is an error, scroll to the form to display it
     $([document.documentElement, document.body]).animate({
         scrollTop: $(".port-form").offset().top-91
     }, 200);
 
 {%if error%}
+//if the error is in the deatiled section, display the detailed section
 $(document).ready(function(){
     activateTab('detailed');
   });

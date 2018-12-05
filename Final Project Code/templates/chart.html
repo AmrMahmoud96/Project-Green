@@ -149,11 +149,11 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"  ></script>
 <script>
         function validateForm() {
+            //checks to see that dates are neither empty nor are they invalid (SD>ED)
         
             var x = document.forms["plotForm"]["SD"].value;
             var y = document.forms["plotForm"]["ED"].value;
             if($(document.activeElement).val()=='custom'){
-                console.log('hello')
                 if(x == ''){
                 alert('Please enter a starting date for the time period.')
                 return false;
@@ -167,6 +167,7 @@
                 return false;
             }
             }
+                //display cool loading mask for this lengthy process
             $('html').load("./static/loadingmask/index.html");
 
         
@@ -174,6 +175,7 @@
         }
         </script>
  <script defer>
+     //loads the data sets to produce Chart.js time series charts.
      const ctx = document.getElementById('chart').getContext('2d');
      //console.log(new Date('2018-11-02'))
      var d1 = {{tvalues | tojson}}
@@ -227,6 +229,7 @@ const options = {
     }
 }
 const chart = new Chart(ctx, options);
+//scroll to the location of the chart if produced.
 $([document.documentElement, document.body]).animate({
         scrollTop: $(".portfolio-tester").offset().top-91
     }, 200);

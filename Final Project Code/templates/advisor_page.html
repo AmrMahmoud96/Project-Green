@@ -64,7 +64,7 @@ margin:20px; */
 </div>
 <script>
 var selection=''
-
+//update selection variable and styling on selection/option click
 $('.option-block').click(function(){
     $(".option-block").removeClass('selected');
     $('img').removeClass('inverted')
@@ -74,12 +74,14 @@ $('.option-block').click(function(){
 });
 $('#continueBtn').click(function(){
     if(selection ==''){
+        //if there is no option but user is trying to click continue, stop them from sending request.
         alert('Please select an option to continue.')
     }else{
         if(selection=='CA'){
+            //if they select to contact us, show the loading mask as this is a lengthy process at times
             $('html').load("./static/loadingmask/index3.html");
-
         }
+        //send ajax request to back end with selection and move to returned path on success.
     $.ajax({
         type: "POST",
         contentType: "application/json;charset=utf-8",

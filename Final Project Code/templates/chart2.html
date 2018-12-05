@@ -98,6 +98,8 @@ const chart = new Chart(ctx, options);
 
 
      const dtx = document.getElementById('donutChart').getContext('2d');
+     //map each value of the portfolio weightings (in percent) to the current value of the portfolio to show the current
+     //allocation into each asset class as a direct monetary decimal value.
      var d2 = [0.0616,0.0954,0.0286,0.0376,0,0.7769].map(function(x) {return Math.round(x*100 * {{tvalues|last}})/100});
     const ddata = {
     labels : ['Equities','Bonds','Real Estate','Commoditites','Gold','Cash'],

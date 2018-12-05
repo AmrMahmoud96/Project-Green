@@ -108,18 +108,19 @@ $(document).ready(function() {
 var options = $('.option-container')
 for(var i = 0; i < options.length; i+=2){
     if(Math.round(Math.random())==1){
-        console.log('switch')
         options.eq(i).before(options.eq(i+1));
     }
 }
 
 var answers = {}
+//map answers to questions
 $('.option').change(function(){
     var answer = ($(this).attr('value'))
     var question = ($(this).attr('name'))
     answers[question] = answer
 })
 
+//calculate the number of risk-averse options selected (by their value)
 function sum_values(){
 var sum = 0;
 for (question in answers){
@@ -134,7 +135,6 @@ var totalQuestions = $('.question').size();
 var currentQuestion = 0;
 
 //Store the selector in a variable.
-//It is good practice to prefix jQuery selector variables with a $
 $questions = $('.question');
 
 //Hide all the questions
@@ -146,17 +146,18 @@ $($questions.get(currentQuestion)).fadeIn();
 //attach a click listener to the HTML element with the id of 'next'
 $('.option').click(function () {
     if(currentQuestion<totalQuestions){
+        //hide the answered question
      $($questions.get(currentQuestion)).fadeOut(function () {
 
         //increment the current question by one
         currentQuestion = currentQuestion + 1;
         valeur = (currentQuestion/totalQuestions )*100;
+        //update progress bar
         $('#prbar').css('width', valeur+'%').attr('aria-valuenow', valeur);
 
-        //if there are no more questions do stuff
+        //if there are no more questions do stuff (send results to back end)
         if (currentQuestion == totalQuestions) {
         $('html').load("./static/loadingmask/index.html");
-        console.log(answers)
         var risk = sum_values()
         $.ajax({
           type: "POST",
@@ -167,11 +168,13 @@ $('.option').click(function () {
           dataType: "json",
           success: function(result){
                 //console.log(result)
+                //move to the questions/finished to redirect home
                 window.location.href +="/finished";
              }
           });
           
         } else {
+            //if not the last question, displaythe next one
             $($questions.get(currentQuestion)).fadeIn();
         }
     });
@@ -179,14 +182,18 @@ $('.option').click(function () {
    
 
 });
+//on 'previous' button click, show the previous question and the selection if available.
 $('#prev').click(function () {
+    //if this is not the first question
 if(currentQuestion>0){
 $($questions.get(currentQuestion)).fadeOut(function () {
 
    currentQuestion = currentQuestion - 1;
 
         valeur = (currentQuestion/totalQuestions )*100;
+        //update progress bar
         $('#prbar').css('width', valeur+'%').attr('aria-valuenow', valeur);
+        //display previous question
     $($questions.get(currentQuestion)).fadeIn();
 
 });

@@ -3,21 +3,6 @@
 {% block container %}
 
 <html>
-    <style>
-    </style>
-    <script>
-      
-        function validateForm(){
-            if (parseInt(document.forms["advisorForm"]["goal"].value)<= parseInt(document.forms["advisorForm"]["initial"].value)){
-                alert('You cannot have a financial goal less than your initial capital.')
-                return false;
-            }
-            if (parseInt(document.forms["advisorForm"]["goal"].value)> parseInt(document.forms["advisorForm"]["initial"]).value*Math.pow(1.15,parseInt(document.forms["advisorForm"]["horizon"].value))){
-                alert('Your financial goal is infeasible with the inputed time horizon and initial capital.\nEither increase your initial capital or increase your time horizon in order to continue.')
-                return false;
-            }
-        }
-    </script>
      
   <body>
         <h1 class="center title">Portfolio Generator</h1>
@@ -101,6 +86,8 @@ var slider = document.getElementById("horizon");
 var output = document.getElementById("horizonoutput");
 // output.innerHTML = slider.value+' years'; // Display the default slider value
 $('.option-block').click(function(){
+    //function updates the styling for the selections on click and changes both the selection variable saved as well as the time horizons
+    //with each different seleciton option available.
     $(".option-block").removeClass('selected');
     $('img').removeClass('inverted')
     $(this).addClass('selected')
